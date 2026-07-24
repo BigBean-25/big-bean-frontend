@@ -1,0 +1,243 @@
+/* ─── Offers Big Coins Rewards Section ──────────────────────────── */
+
+.bigCoinsWrapper {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 4rem 2rem 0;
+}
+
+.bigCoinsSection {
+  position: relative;
+  overflow: hidden;
+  border-radius: 36px;
+  background: linear-gradient(135deg, #120905 0%, #3D1F0D 55%, #6B3520 100%);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.bigCoinsSection::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(201, 148, 58, 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.bigCoinsGlow {
+  position: absolute;
+  top: 50%;
+  left: 25%;
+  width: 280px;
+  height: 280px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(201, 148, 58, 0.14);
+  filter: blur(65px);
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+.bigCoinsLeft {
+  position: relative;
+  z-index: 1;
+  padding: 3.5rem 3rem;
+}
+
+.bigCoinsBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(201, 148, 58, 0.14);
+  border: 1px solid rgba(201, 148, 58, 0.28);
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.bigCoinsBadge svg {
+  width: 13px;
+  height: 13px;
+  color: #C9943A;
+}
+
+.bigCoinsBadge span {
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  color: #F3D59B;
+  text-transform: uppercase;
+}
+
+.bigCoinsTitle {
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 900;
+  color: #FFF7ED;
+  line-height: 1.15;
+  margin-bottom: 1.1rem;
+}
+
+.bigCoinsTitle span {
+  background: linear-gradient(90deg, #F6D58D, #C9943A);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bigCoinsSubtitle {
+  font-size: 0.9rem;
+  color: #C7A489;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  max-width: 380px;
+}
+
+.bigCoinsButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #C9943A;
+  color: #120905;
+  border-radius: 999px;
+  padding: 0.75rem 1.6rem;
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: background 0.22s ease;
+  box-shadow: 0 8px 24px rgba(201, 148, 58, 0.3);
+}
+
+.bigCoinsButton:hover { background: #F6D58D; }
+
+.bigCoinsButton svg {
+  width: 14px;
+  height: 14px;
+}
+
+.bigCoinsRight {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 247, 237, 0.05);
+  border-left: 1px solid rgba(201, 148, 58, 0.16);
+  padding: 3rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.bigCoinsRewardCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 16px;
+  background: rgba(255, 247, 237, 0.06);
+  border: 1px solid rgba(201, 148, 58, 0.12);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.bigCoinsRewardCard:hover {
+  background: rgba(201, 148, 58, 0.1);
+  border-color: rgba(201, 148, 58, 0.22);
+}
+
+.bigCoinsIconCircle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(201, 148, 58, 0.2);
+  border: 1px solid rgba(201, 148, 58, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bigCoinsIconCircle svg {
+  width: 16px;
+  height: 16px;
+  color: #C9943A;
+}
+
+.bigCoinsRewardTitle {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #FFF7ED;
+  margin-bottom: 3px;
+}
+
+.bigCoinsRewardDesc {
+  font-size: 0.76rem;
+  color: #C7A489;
+  line-height: 1.55;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .bigCoinsLeft { padding: 2.5rem 2rem; }
+  .bigCoinsRight { padding: 2.5rem 2rem; }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .bigCoinsWrapper {
+    padding: 3rem 1rem 0;
+  }
+
+  .bigCoinsSection {
+    grid-template-columns: 1fr;
+    border-radius: 28px;
+  }
+
+  .bigCoinsGlow { display: none; }
+
+  .bigCoinsLeft {
+    padding: 2rem 1.25rem;
+    text-align: center;
+  }
+
+  .bigCoinsSubtitle {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .bigCoinsTitle {
+    font-size: 1.75rem;
+    line-height: 1.15;
+  }
+
+  .bigCoinsButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .bigCoinsRight {
+    padding: 1.4rem 1rem 1.8rem;
+    border-left: 0;
+    border-top: 1px solid rgba(201, 148, 58, 0.16);
+    gap: 0.8rem;
+  }
+
+  .bigCoinsRewardCard {
+    padding: 0.9rem;
+    border-radius: 16px;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .bigCoinsRewardTitle {
+    font-size: 14px;
+  }
+
+  .bigCoinsRewardDesc {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+}

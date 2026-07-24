@@ -1,0 +1,466 @@
+/* OffersPreview — premium café offer banner styles */
+
+/* ─────────────────────── SECTION ─────────────────────── */
+
+.section {
+  padding: 5rem 0;
+  background: linear-gradient(160deg, #FBF4EC 0%, #FFF7ED 50%, #F8EAD8 100%);
+}
+
+/* ── Section reveal ── */
+.sectionReveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.sectionReveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─────────────────────── HEADING ─────────────────────── */
+
+.eyebrow {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: #C9943A;
+  margin-bottom: 0.55rem;
+}
+
+.heading {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 700;
+  color: #3D1F0D;
+  margin-bottom: 0.8rem;
+  line-height: 1.2;
+}
+
+.subheading {
+  font-size: 1rem;
+  color: #7A4A2E;
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ─────────────────────── SLIDER WRAP ─────────────────────── */
+
+.sliderWrap {
+  position: relative;
+  /* NO overflow:hidden — badge needs to breathe, arrows sit outside */
+}
+
+/* ─────────────────────── CARD ─────────────────────── */
+
+.card {
+  position: relative;
+  max-width: 1180px;
+  margin: 0 auto;
+  min-height: 300px;
+  border-radius: 26px;
+  /* NO overflow:hidden on card — image is absolute inside, badge sits on top */
+  background: linear-gradient(90deg, #FFF7ED 0%, #FFF2E3 46%, #F8EBDD 100%);
+  border: 1px solid rgba(201, 148, 58, 0.28);
+  box-shadow: 0 24px 70px rgba(61, 31, 13, 0.12);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  cursor: default;
+  animation: cardSlideIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.card:hover {
+  box-shadow: 0 32px 90px rgba(61, 31, 13, 0.18);
+  transform: translateY(-2px);
+}
+
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ─────────────────────── LEFT TEXT PANEL ─────────────────────── */
+
+.textPanel {
+  position: relative;
+  z-index: 3;
+  width: 50%;
+  padding: 2.6rem 2rem 2.6rem 2.8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: inherit;
+}
+
+/* small label: ● LIMITED TIME OFFER */
+.offerLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: #8B5A3C;
+  margin-bottom: 0.6rem;
+}
+
+.offerLabelDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #C9943A;
+  flex-shrink: 0;
+}
+
+/* big discount text — NOT a pill, just large bold text */
+.discountText {
+  font-size: clamp(1.7rem, 3.5vw, 2.1rem);
+  font-weight: 900;
+  color: #A92517;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+
+/* offer title */
+.offerTitle {
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 800;
+  color: #3D1F0D;
+  line-height: 1.25;
+  margin-bottom: 0.65rem;
+}
+
+/* description */
+.offerDesc {
+  font-size: 0.9rem;
+  color: #6B3520;
+  line-height: 1.65;
+  margin-bottom: 0.9rem;
+  max-width: 420px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* code chip — dashed border */
+.codeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.60);
+  border: 1px dashed rgba(169, 37, 23, 0.38);
+  border-radius: 10px;
+  padding: 0.45rem 1rem;
+  color: #A92517;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.9rem;
+  width: fit-content;
+}
+
+/* validity */
+.validity {
+  display: flex;
+  align-items: center;
+  gap: 0.38rem;
+  font-size: 0.78rem;
+  color: #9B7355;
+  margin-bottom: 1.4rem;
+}
+
+/* CTA button */
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #A92517;
+  color: #FFF7ED;
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.85rem 1.85rem;
+  border-radius: 999px;
+  text-decoration: none;
+  box-shadow: 0 12px 28px rgba(139, 46, 27, 0.28);
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.18s ease;
+  width: fit-content;
+  margin-top: auto;
+}
+
+.ctaBtn:hover {
+  background: #8B2E1B;
+  box-shadow: 0 16px 36px rgba(139, 46, 27, 0.38);
+  transform: translateY(-2px);
+}
+
+/* ─────────────────────── RIGHT IMAGE (absolute) ─────────────────────── */
+
+/* wrapper: clips to the rounded-card shape on the right side */
+.imageWrap {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 58%;
+  height: 100%;
+  border-radius: 0 26px 26px 0;
+  border-top-left-radius: 190px;
+  border-bottom-left-radius: 190px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.offerImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.8s ease;
+  display: block;
+}
+
+.card:hover .offerImg {
+  transform: scale(1.05);
+}
+
+/* subtle gradient over image left edge */
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 247, 237, 0.22), rgba(255, 247, 237, 0.02));
+  z-index: 2;
+  pointer-events: none;
+}
+
+.imgFallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #3D1F0D 0%, #8B5A3C 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─────────────────────── BEST DEAL BADGE ─────────────────────── */
+
+.badge {
+  position: absolute;
+  top: 28px;
+  left: calc(50% - 20px);
+  z-index: 10;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: #C93024;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.6rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  box-shadow: 0 12px 30px rgba(139, 46, 27, 0.30), 0 0 0 4px rgba(201, 148, 58, 0.20);
+  pointer-events: none;
+}
+
+/* ─────────────────────── DOTS ─────────────────────── */
+
+.dotsRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.6rem;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #D4B08A;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: width 0.3s ease, background 0.3s ease;
+  flex-shrink: 0;
+}
+
+.dotActive {
+  width: 26px;
+  background: #A92517;
+}
+
+/* ─────────────────────── ARROW BUTTONS ─────────────────────── */
+
+.arrowBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  background: rgba(255, 247, 237, 0.94);
+  border: 1.5px solid #E6C7A8;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(61, 31, 13, 0.13);
+  transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  color: #3D1F0D;
+}
+
+.arrowBtn:hover {
+  background: #3D1F0D;
+  color: #FFF7ED;
+  box-shadow: 0 8px 24px rgba(61, 31, 13, 0.24);
+}
+
+.arrowLeft  { left: -56px; }
+.arrowRight { right: -56px; }
+
+/* ─────────────────────── SKELETON ─────────────────────── */
+
+.skeleton {
+  display: flex;
+  border-radius: 26px;
+  overflow: hidden;
+  border: 1px solid #E8CFA8;
+  min-height: 300px;
+  background: #FDF6EC;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.skeletonText {
+  flex: 1;
+  padding: 2.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skeletonLine {
+  border-radius: 999px;
+  background: #E8CFA8;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.skeletonImage {
+  width: 58%;
+  background: #E2C49A;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* ─────────────────────── VIEW ALL BUTTON ─────────────────────── */
+
+.viewAllBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 2px solid #C9943A;
+  color: #3D1F0D;
+  background: transparent;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.85rem 2.2rem;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.viewAllBtn:hover {
+  background: #3D1F0D;
+  color: #FFF7ED;
+  border-color: #3D1F0D;
+}
+
+/* ─────────────────────── TABLET ─────────────────────── */
+
+@media (max-width: 1024px) {
+  .card {
+    min-height: 260px;
+  }
+  .textPanel {
+    width: 50%;
+    padding: 2rem 1.5rem 2rem 2.2rem;
+  }
+  .imageWrap {
+    width: 56%;
+    border-top-left-radius: 140px;
+    border-bottom-left-radius: 140px;
+  }
+  .arrowLeft  { left: -48px; }
+  .arrowRight { right: -48px; }
+}
+
+/* ─────────────────────── MOBILE ─────────────────────── */
+
+@media (max-width: 767px) {
+  .card {
+    flex-direction: column;
+    min-height: unset;
+    border-radius: 24px;
+  }
+
+  /* image moves to top on mobile */
+  .imageWrap {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    border-radius: 24px 24px 0 0;
+    border-top-left-radius: 24px;
+    border-bottom-left-radius: 0;
+    order: 0;
+  }
+
+  .textPanel {
+    width: 100%;
+    padding: 1.8rem 1.4rem 2rem;
+    order: 1;
+  }
+
+  .discountText {
+    font-size: 1.6rem;
+  }
+
+  .offerTitle {
+    font-size: 1.35rem;
+  }
+
+  .badge {
+    top: 10px;
+    left: auto;
+    right: 16px;
+    width: 72px;
+    height: 72px;
+    font-size: 0.55rem;
+  }
+
+  .ctaBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .arrowLeft  { left: 8px; }
+  .arrowRight { right: 8px; }
+}

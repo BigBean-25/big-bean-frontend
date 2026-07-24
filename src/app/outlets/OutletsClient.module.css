@@ -1,0 +1,721 @@
+/* ─── Outlet Franchise CTA — Circular ──────────────────────────── */
+
+/* Outer wrapper */
+.franchiseCircleSection {
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto 3rem;
+  padding: 0 2rem;
+}
+
+/* Main rounded container */
+.franchiseCircleInner {
+  position: relative;
+  overflow: hidden;
+  border-radius: 42px;
+  padding: 2.5rem 2.5rem;
+  background:
+    radial-gradient(circle at center, rgba(201, 148, 58, 0.20), transparent 34%),
+    linear-gradient(135deg, #120905 0%, #2A120B 50%, #5C2E12 100%);
+  box-shadow: 0 25px 70px rgba(18, 9, 5, 0.28);
+}
+
+/* Dotted texture */
+.franchiseCircleDots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(201, 148, 58, 0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Large soft glow */
+.franchiseCircleGlow {
+  position: absolute;
+  top: 56%;
+  left: 50%;
+  width: 320px;
+  height: 320px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(201, 148, 58, 0.14);
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.55;
+  animation: glowPulse 6s ease-in-out infinite;
+}
+
+/* Small floating gold dots */
+.franchiseGoldDot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(246, 213, 141, 0.55);
+  box-shadow: 0 0 10px rgba(246, 213, 141, 0.4);
+  pointer-events: none;
+  animation: dotDrift 7s ease-in-out infinite;
+}
+
+.franchiseGoldDotOne { top: 18%; left: 10%; animation-delay: 0s; }
+.franchiseGoldDotTwo { top: 22%; right: 12%; animation-delay: 1.5s; }
+.franchiseGoldDotThree { bottom: 24%; left: 14%; animation-delay: 3s; }
+.franchiseGoldDotFour { bottom: 20%; right: 10%; animation-delay: 4.5s; }
+
+/* Top content */
+.franchiseCircleContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.franchiseCircleBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(201, 148, 58, 0.14);
+  border: 1px solid rgba(201, 148, 58, 0.3);
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  margin-bottom: 1rem;
+  color: #F3D59B;
+  font-size: 0.6rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.franchiseCircleBadge svg {
+  color: #C9943A;
+  width: 14px;
+  height: 14px;
+}
+
+.franchiseCircleTitle {
+  font-size: clamp(1.7rem, 3.2vw, 2.7rem);
+  font-weight: 900;
+  line-height: 1.1;
+  color: #FFF7ED;
+  margin-bottom: 0.8rem;
+  max-width: 650px;
+}
+
+.franchiseCircleTitle span {
+  background: linear-gradient(to right, #F6D58D, #C9943A);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.franchiseCircleSubtitle {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #E6C7A8;
+  max-width: 620px;
+  margin-bottom: 1.4rem;
+}
+
+/* Orbit / arc area */
+.franchiseOrbit {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  height: 210px;
+  margin: 0 auto 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+/* Center circle */
+.franchiseCenterCircle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #F6D58D, #C9943A);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #120905;
+  z-index: 1;
+  opacity: 0.9;
+  animation: centerPulse 3.5s ease-in-out infinite;
+}
+
+.franchiseCenterCircle::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(201, 148, 58, 0.35);
+  box-shadow: 0 0 24px rgba(201, 148, 58, 0.16);
+  animation: centerPulse 3.5s ease-in-out infinite;
+}
+
+.franchiseCenterCircle svg {
+  width: 34px;
+  height: 34px;
+}
+
+/* Arc connector */
+.franchiseArcLine {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  right: 8%;
+  height: 170px;
+  border-top: 1.5px solid rgba(201, 148, 58, 0.22);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Orbit cards */
+.franchiseOrbitCard {
+  position: absolute;
+  z-index: 5;
+  width: 240px;
+  min-height: 135px;
+  text-align: center;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 247, 237, 0.20);
+  background: rgba(42, 18, 11, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 22px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 247, 237, 0.05);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  animation-duration: 5s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.franchiseOrbitCard * {
+  position: relative;
+  z-index: 6;
+}
+
+.franchiseOrbitCard:hover {
+  border-color: rgba(201, 148, 58, 0.50);
+  box-shadow: 0 16px 40px rgba(201, 148, 58, 0.18), inset 0 1px 0 rgba(255, 247, 237, 0.08);
+  animation-play-state: paused;
+}
+
+.franchiseOrbitCardOne {
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  animation-name: floatSide;
+  animation-delay: 0s;
+}
+
+.franchiseOrbitCardOne:hover { transform: translateY(calc(-50% - 6px)); }
+
+.franchiseOrbitCardTwo {
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-name: floatTop;
+  animation-delay: 0.7s;
+}
+
+.franchiseOrbitCardTwo:hover { transform: translateX(-50%) translateY(-6px); }
+
+.franchiseOrbitCardThree {
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  animation-name: floatSide;
+  animation-delay: 1.4s;
+}
+
+.franchiseOrbitCardThree:hover { transform: translateY(calc(-50% - 6px)); }
+
+.orbitCardIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(201, 148, 58, 0.18);
+  color: #F6D58D;
+  margin: 0 auto 0.7rem;
+}
+
+.orbitCardIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.orbitCardTitle {
+  font-size: 18px;
+  font-weight: 900;
+  color: #FFF7ED;
+  margin-bottom: 0.35rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+.orbitCardText {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #E6C7A8;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+/* Buttons */
+.franchiseCircleActions {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.9rem;
+}
+
+.franchiseCirclePrimary,
+.franchiseCircleSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  height: 48px;
+  padding: 0 1.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+.franchiseCirclePrimary {
+  position: relative;
+  overflow: hidden;
+  background: #C9943A;
+  color: #120905;
+  box-shadow: 0 8px 22px rgba(201, 148, 58, 0.28);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.franchiseCirclePrimary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-25deg);
+  transition: left 0.5s ease;
+}
+
+.franchiseCirclePrimary:hover::before { left: 120%; }
+.franchiseCirclePrimary:hover { background: #F6D58D; transform: translateY(-2px); }
+
+.franchiseCircleSecondary {
+  background: transparent;
+  color: #FFF7ED;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.franchiseCircleSecondary:hover {
+  background: #FFF7ED;
+  color: #3D1F0D;
+  transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.45; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.85; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+@keyframes centerPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 148, 58, 0.25), 0 0 30px rgba(201, 148, 58, 0.15); }
+  50% { box-shadow: 0 0 45px 16px rgba(201, 148, 58, 0.16), 0 0 60px rgba(201, 148, 58, 0.22); }
+}
+
+@keyframes floatSide {
+  0%, 100% { transform: translateY(-50%); }
+  50% { transform: translateY(calc(-50% - 8px)); }
+}
+
+@keyframes floatTop {
+  0%, 100% { transform: translateX(-50%); }
+  50% { transform: translateX(-50%) translateY(-8px); }
+}
+
+@keyframes dotDrift {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.45; }
+  50% { transform: translateY(-14px) translateX(8px); opacity: 0.9; }
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .franchiseCircleInner { padding: 2.2rem 2rem; }
+  .franchiseOrbit { max-width: 640px; height: 190px; }
+  .franchiseOrbitCard { width: 190px; padding: 1rem; min-height: 120px; }
+  .franchiseCenterCircle { width: 86px; height: 86px; }
+  .franchiseCenterCircle svg { width: 30px; height: 30px; }
+  .franchiseArcLine { height: 140px; }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .franchiseCircleSection { padding: 0 1rem; }
+  .franchiseCircleInner { padding: 1.6rem 1rem; border-radius: 28px; }
+  .franchiseCircleTitle { font-size: clamp(1.55rem, 6vw, 1.85rem); margin-bottom: 0.6rem; }
+  .franchiseCircleSubtitle { font-size: 0.9rem; max-width: 100%; margin-bottom: 1.2rem; }
+
+  .franchiseOrbit {
+    position: static;
+    height: auto;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .franchiseCenterCircle {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 18px;
+  }
+
+  .franchiseCenterCircle svg { width: 28px; height: 28px; }
+
+  .franchiseArcLine,
+  .franchiseGoldDot,
+  .franchiseCircleGlow { display: none; }
+
+  .franchiseOrbitCard {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    min-height: auto;
+    animation: none;
+    text-align: center;
+  }
+
+  .franchiseOrbitCard:hover { transform: translateY(-4px); }
+
+  .franchiseCircleActions {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .franchiseCircleActions > * { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .franchiseCircleSection *,
+  .franchiseCircleSection *::before,
+  .franchiseCircleSection *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ─── Outlet Locator Section ──────────────────────────── */
+.locatorSectionWrapper {
+  max-width: 1280px;
+  margin: 0 auto 3rem;
+  padding: 0 2rem;
+}
+
+.locatorSection {
+  position: relative;
+  overflow: hidden;
+  border-radius: 36px;
+  background: linear-gradient(135deg, #120905 0%, #3D1F0D 60%, #6B3520 100%);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.locatorSection::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(201, 148, 58, 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.locatorGlow {
+  position: absolute;
+  top: 50%;
+  left: 25%;
+  width: 300px;
+  height: 300px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(201, 148, 58, 0.15);
+  filter: blur(70px);
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.locatorLeft {
+  position: relative;
+  z-index: 1;
+  padding: 3.5rem 3rem;
+}
+
+.locatorBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(201, 148, 58, 0.14);
+  border: 1px solid rgba(201, 148, 58, 0.28);
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.locatorBadge svg {
+  width: 13px;
+  height: 13px;
+  color: #C9943A;
+}
+
+.locatorBadge span {
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  color: #F3D59B;
+  text-transform: uppercase;
+}
+
+.locatorTitle {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 900;
+  color: #FFF7ED;
+  line-height: 1.15;
+  margin-bottom: 1.2rem;
+}
+
+.locatorTitle span {
+  background: linear-gradient(90deg, #F6D58D, #C9943A);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.locatorSubtitle {
+  font-size: 0.9rem;
+  color: #C7A489;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  max-width: 380px;
+}
+
+.locatorButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #C9943A;
+  color: #120905;
+  border-radius: 999px;
+  padding: 0.75rem 1.6rem;
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: background 0.22s ease;
+}
+
+.locatorButton:hover { background: #F6D58D; }
+
+.locatorButton svg {
+  width: 13px;
+  height: 13px;
+}
+
+.locatorRight {
+  position: relative;
+  z-index: 1;
+  padding: 3rem 2.5rem;
+  border-left: 1px solid rgba(201, 148, 58, 0.18);
+  background: rgba(255, 247, 237, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.locatorHeading {
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  color: #C9943A;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.locatorItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 0.8rem;
+  border-radius: 14px;
+  background: rgba(255, 247, 237, 0.05);
+  border: 1px solid rgba(201, 148, 58, 0.12);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.locatorItem:hover {
+  background: rgba(201, 148, 58, 0.1);
+  border-color: rgba(201, 148, 58, 0.22);
+}
+
+.locatorItemIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(201, 148, 58, 0.2);
+  border: 1px solid rgba(201, 148, 58, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.locatorItemIcon svg {
+  width: 14px;
+  height: 14px;
+  color: #C9943A;
+}
+
+.locatorItemText {
+  min-width: 0;
+}
+
+.locatorItemTitle {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #FFF7ED;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.locatorItemAddress {
+  font-size: 0.73rem;
+  color: #C7A489;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.locatorMore {
+  font-size: 0.76rem;
+  color: #C9943A;
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.locatorMore svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .locatorLeft { padding: 2.5rem 2rem; }
+  .locatorRight { padding: 2.5rem 2rem; }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .locatorSectionWrapper {
+    padding: 0 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .locatorSection {
+    grid-template-columns: 1fr;
+    border-radius: 28px;
+  }
+
+  .locatorLeft {
+    padding: 2rem 1.25rem;
+    text-align: center;
+  }
+
+  .locatorSubtitle {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .locatorTitle {
+    font-size: 1.75rem;
+    line-height: 1.15;
+  }
+
+  .locatorButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .locatorRight {
+    padding: 1.5rem 1rem 1.75rem;
+    border-left: 0;
+    border-top: 1px solid rgba(201, 148, 58, 0.18);
+    gap: 0.75rem;
+  }
+
+  .locatorItem {
+    padding: 0.85rem;
+    gap: 0.75rem;
+    background: rgba(255, 247, 237, 0.06);
+    border: 1px solid rgba(201, 148, 58, 0.14);
+    border-radius: 16px;
+  }
+
+  .locatorItemTitle {
+    font-size: 14px;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+
+  .locatorItemAddress {
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+}

@@ -1,0 +1,542 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import Header from '@/components/common/Header'
+import Footer from '@/components/common/Footer'
+import Link from 'next/link'
+import {
+  Briefcase, Coffee, Users, CheckCircle, Mail, MapPin,
+  Building2, BookOpen, Gift, ChevronRight, ArrowRight,
+  Sparkles, BadgeCheck, Store, UtensilsCrossed, Star
+} from 'lucide-react'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+const API_BASE_URL = API_URL.replace('/api', '')
+
+interface CorporateHero {
+  eyebrow: string; title: string; highlight_text: string | null; subtitle: string | null
+  button_primary_text: string; button_primary_url: string
+  button_secondary_text: string; button_secondary_url: string
+  image: string | null
+  stat_1_value: string; stat_1_label: string
+  stat_2_value: string; stat_2_label: string
+  stat_3_value: string; stat_3_label: string
+}
+
+const defaultHero: CorporateHero = {
+  eyebrow: 'CORPORATE ORDERS',
+  title: 'Premium Coffee Solutions',
+  highlight_text: 'for Modern Workplaces',
+  subtitle: 'From office coffee requirements to event catering, meetings, bulk orders and custom café solutions — Big Bean Café brings quality, freshness and service to your business.',
+  button_primary_text: 'Request Corporate Quote', button_primary_url: '#corporate-form',
+  button_secondary_text: 'Explore Solutions', button_secondary_url: '#corporate-solutions',
+  image: null,
+  stat_1_value: 'Bulk', stat_1_label: 'Orders',
+  stat_2_value: 'Events', stat_2_label: 'Catering',
+  stat_3_value: 'Custom', stat_3_label: 'Solutions',
+}
+
+const SOLUTIONS = [
+  { icon: Coffee, title: 'Office Coffee Supply', desc: 'Regular coffee, beverages and snacks for your team and office pantry.' },
+  { icon: UtensilsCrossed, title: 'Bulk Beverage Orders', desc: 'Large-quantity orders for corporate events, launches and office requirements.' },
+  { icon: Users, title: 'Event Catering', desc: 'Professional catering for corporate events, product launches and conferences.' },
+  { icon: Store, title: 'Coffee Beans & Merchandise', desc: 'Curated coffee beans, drip packs and branded Big Bean merchandise.' },
+  { icon: Briefcase, title: 'Meeting Refreshments', desc: 'Freshly prepared refreshments for meetings, board sessions and workshops.' },
+  { icon: Gift, title: 'Custom Corporate Packages', desc: 'Tailored menu, quantity and packaging based on your exact requirements.' },
+]
+
+const WHO_WE_SERVE = [
+  { icon: Building2, title: 'Offices & IT Companies', desc: 'Daily coffee supplies and pantry management for corporate offices.' },
+  { icon: Users, title: 'Co-working Spaces', desc: 'Flexible bulk orders for shared workspaces with changing team sizes.' },
+  { icon: BookOpen, title: 'Colleges & Institutions', desc: 'Café-quality beverages for campus events, canteens and faculty lounges.' },
+  { icon: Sparkles, title: 'Events & Workshops', desc: 'Live catering and beverage setups for corporate events and workshops.' },
+  { icon: Briefcase, title: 'Corporate Meetings', desc: 'Freshly curated refreshment boxes for your important business meetings.' },
+  { icon: Gift, title: 'Gifting & Hampers', desc: 'Curated coffee hampers and gift boxes for clients, employees and occasions.' },
+]
+
+const WHY_US = [
+  { icon: BadgeCheck, title: 'Freshly Prepared Menu', desc: 'Every item freshly prepared by our kitchen team with quality ingredients.' },
+  { icon: Store, title: 'Scalable Bulk Orders', desc: 'From 20 to 2000+ servings — we scale to your order size and timeline.' },
+  { icon: Sparkles, title: 'Custom Packages', desc: 'Menu curated and quantities planned based on your specific business requirement.' },
+  { icon: Users, title: 'Professional Coordination', desc: 'Dedicated team to coordinate, confirm and execute your order seamlessly.' },
+  { icon: MapPin, title: 'Multiple Outlet Support', desc: 'Served from our network of café outlets for better reach and fresh preparation.' },
+  { icon: CheckCircle, title: 'Reliable Delivery Planning', desc: 'Planned delivery schedule with lead time coordination and delivery confirmation.' },
+]
+
+const PACKAGES = [
+  {
+    name: 'Team Coffee Break',
+    tag: 'Office Daily',
+    desc: 'For daily office coffee and snack requirements.',
+    items: ['Filtered coffee / cold brew selection', 'Snack boxes (cookies, crackers, bites)', 'Custom frequency — daily, weekly', 'Quantity starting from 10 servings'],
+    cta: 'Request Quote',
+  },
+  {
+    name: 'Meeting & Event Box',
+    tag: 'Most Requested',
+    desc: 'For meetings, product launches and workshops.',
+    items: ['Hot & cold beverage combo', 'Curated snack and light bite boxes', 'Branded packaging available', 'Coordination for on-site events'],
+    cta: 'Request Quote',
+    highlight: true,
+  },
+  {
+    name: 'Custom Corporate Plan',
+    tag: 'Enterprise',
+    desc: 'Tailored menu and quantity based on requirement.',
+    items: ['Full menu customisation', 'Dedicated account coordination', 'Repeat order scheduling', 'Special occasion packaging'],
+    cta: 'Request Quote',
+  },
+]
+
+const TIMELINE = [
+  { n: 1, title: 'Share Requirement', desc: 'Fill our corporate order form with your needs, quantities and delivery details.' },
+  { n: 2, title: 'Team Discussion', desc: 'Our business team reaches out within 24 hours to discuss and clarify.' },
+  { n: 3, title: 'Custom Quote', desc: 'We send a tailored quote based on your order type, quantity and location.' },
+  { n: 4, title: 'Order Confirmation', desc: 'Confirm the quote and finalise your order with our coordination team.' },
+  { n: 5, title: 'Preparation & Delivery', desc: 'Your order is freshly prepared and delivered on your scheduled date.' },
+  { n: 6, title: 'Feedback & Repeat Plan', desc: 'We follow up on satisfaction and set up a repeat plan if needed.' },
+]
+
+const emptyForm = {
+  companyName: '', contactPerson: '', email: '', phone: '',
+  orderType: '', quantity: '', deliveryDate: '', deliveryAddress: '',
+  budgetRange: '', requirements: ''
+}
+
+export default function CorporateOrders() {
+  const [hero, setHero] = useState<CorporateHero | null>(null)
+  const [formData, setFormData] = useState(emptyForm)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+  const [submittedEnquiry, setSubmittedEnquiry] = useState<{
+    companyName: string; contactPerson: string; email: string; phone: string; orderType: string
+  } | null>(null)
+
+  useEffect(() => {
+    fetch(`${API_URL}/corporate-hero/active`)
+      .then(r => r.json())
+      .then(d => { if (d.success && d.data) setHero(d.data) })
+      .catch(() => {})
+  }, [])
+
+  const h = hero || defaultHero
+  const heroImageUrl = h.image ? `${API_BASE_URL}/${h.image}` : null
+
+  const ic = 'w-full px-4 py-3 rounded-2xl border border-[#E6C7A8] text-sm focus:outline-none focus:ring-2 focus:ring-[#C9943A]/40 bg-white'
+  const lc = 'block text-sm font-semibold mb-1.5'
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+    if (submitError) setSubmitError('')
+  }
+
+  const getMinDate = () => {
+    const d = new Date(); d.setDate(d.getDate() + 3)
+    return d.toISOString().split('T')[0]
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!formData.companyName.trim() || !formData.contactPerson.trim() || !formData.email.trim() || !formData.phone.trim() || !formData.orderType) {
+      setSubmitError('Company name, contact person, email, phone and order type are required.')
+      return
+    }
+    setIsSubmitting(true); setSubmitError('')
+    try {
+      const res = await fetch(`${API_URL}/corporate-enquiries`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          company_name: formData.companyName,
+          contact_person: formData.contactPerson,
+          email: formData.email,
+          phone: formData.phone,
+          order_type: formData.orderType,
+          quantity: formData.quantity,
+          delivery_date: formData.deliveryDate || null,
+          delivery_address: formData.deliveryAddress,
+          budget_range: formData.budgetRange,
+          requirements: formData.requirements,
+        })
+      })
+      const data = await res.json()
+      if (data.success) {
+        setSubmittedEnquiry({
+          companyName: formData.companyName,
+          contactPerson: formData.contactPerson,
+          email: formData.email,
+          phone: formData.phone,
+          orderType: formData.orderType,
+        })
+        setIsSubmitted(true)
+        setFormData(emptyForm)
+      } else {
+        setSubmitError(data.message || 'Failed to submit. Please try again.')
+      }
+    } catch {
+      setSubmitError('Network error. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  if (isSubmitted && submittedEnquiry) {
+    return (
+      <div className="min-h-screen" style={{ background: '#FFF7ED' }}>
+        <Header />
+        <main className="flex items-center justify-center min-h-[80vh] px-4 py-20">
+          <div className="max-w-lg w-full text-center animate-fade-up">
+            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'linear-gradient(135deg,#C9943A,#8B4A2F)' }}>
+              <CheckCircle className="w-10 h-10 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: '#120905', fontFamily: 'var(--font-heading)' }}>Corporate Enquiry Submitted!</h1>
+            <p className="text-sm font-semibold mb-6" style={{ color: '#C9943A' }}>Corporate Order Enquiry Received</p>
+            <div className="rounded-3xl p-6 mb-6 text-left space-y-3 border" style={{ background: '#FBF4EC', borderColor: '#E6C7A8' }}>
+              <div className="flex justify-between text-sm"><span className="font-semibold" style={{ color: '#6B3520' }}>Company</span><span style={{ color: '#3D1F0D' }}>{submittedEnquiry.companyName}</span></div>
+              <div className="flex justify-between text-sm"><span className="font-semibold" style={{ color: '#6B3520' }}>Contact Person</span><span style={{ color: '#3D1F0D' }}>{submittedEnquiry.contactPerson}</span></div>
+              <div className="flex justify-between text-sm"><span className="font-semibold" style={{ color: '#6B3520' }}>Order Type</span><span style={{ color: '#3D1F0D' }}>{submittedEnquiry.orderType}</span></div>
+              <div className="flex justify-between text-sm"><span className="font-semibold" style={{ color: '#6B3520' }}>Email</span><span style={{ color: '#3D1F0D' }}>{submittedEnquiry.email}</span></div>
+            </div>
+            <p className="text-sm mb-8" style={{ color: '#6B3520' }}>Our business team will review your requirement and contact you within 24 hours.</p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button onClick={() => { setIsSubmitted(false); setSubmittedEnquiry(null) }}
+                className="px-6 py-3 rounded-2xl text-sm font-bold text-white shadow-lg hover:shadow-xl transition-all"
+                style={{ background: 'linear-gradient(to right,#C9943A,#8B4A2F)' }}>
+                Submit Another Enquiry
+              </button>
+              <Link href="/corporate-orders" className="px-6 py-3 rounded-2xl text-sm font-bold border transition-all hover:shadow-md"
+                style={{ borderColor: '#C9943A', color: '#8B4A2F' }}>
+                Back to Corporate Orders
+              </Link>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen" style={{ background: '#FFF7ED' }}>
+      <Header />
+      <main>
+
+        {/* ── HERO ── */}
+        <section className="relative overflow-hidden min-h-[560px] md:min-h-[520px] flex items-center" style={{ background: '#120905' }}>
+          {heroImageUrl && (
+            <div className="absolute inset-0 overflow-hidden">
+              <img src={heroImageUrl} alt="Corporate hero" className="w-full h-full object-cover opacity-30 animate-slow-zoom" />
+            </div>
+          )}
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(120deg,rgba(18,9,5,0.97) 45%,rgba(18,9,5,0.55) 100%)' }} />
+
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-20 lg:py-24 grid lg:grid-cols-2 gap-12 items-center">
+            <div className="animate-fade-up">
+              <p className="text-xs font-bold tracking-[0.25em] mb-4" style={{ color: '#C9943A' }}>{h.eyebrow}</p>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4" style={{ color: '#FFF7ED', fontFamily: 'var(--font-heading)' }}>
+                {h.title}
+                {h.highlight_text && <><br /><span style={{ color: '#C9943A' }}>{h.highlight_text}</span></>}
+              </h1>
+              {h.subtitle && <p className="text-base md:text-lg mb-8 max-w-xl leading-relaxed" style={{ color: '#E6C7A8' }}>{h.subtitle}</p>}
+              <div className="flex flex-wrap gap-4">
+                <a href={h.button_primary_url}
+                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-bold text-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-0.5"
+                  style={{ background: 'linear-gradient(to right,#C9943A,#8B4A2F)' }}>
+                  {h.button_primary_text} <ChevronRight className="w-4 h-4" />
+                </a>
+                <a href={h.button_secondary_url}
+                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-bold border-2 transition-all hover:-translate-y-0.5"
+                  style={{ borderColor: '#C9943A', color: '#C9943A' }}>
+                  {h.button_secondary_text}
+                </a>
+              </div>
+            </div>
+
+            <div className="hidden lg:flex flex-col gap-4 animate-fade-up-delay">
+              <div className="rounded-3xl p-6 animate-float-soft" style={{ background: 'rgba(201,148,58,0.12)', border: '1px solid rgba(201,148,58,0.3)', backdropFilter: 'blur(12px)' }}>
+                <p className="text-sm font-bold mb-4" style={{ color: '#C9943A' }}>Corporate Coffee Desk</p>
+                {['Office supplies','Bulk coffee','Event catering','Custom solutions'].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 py-2.5 border-b last:border-0" style={{ borderColor: 'rgba(201,148,58,0.15)' }}>
+                    <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: '#C9943A' }} />
+                    <span className="text-sm" style={{ color: '#F5E6D3' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                {[[h.stat_1_value,h.stat_1_label],[h.stat_2_value,h.stat_2_label],[h.stat_3_value,h.stat_3_label]].map(([val,lbl],i) => (
+                  <div key={i} className="rounded-2xl p-4 text-center" style={{ background: 'rgba(255,247,237,0.07)', border: '1px solid rgba(201,148,58,0.2)' }}>
+                    <p className="text-2xl font-bold" style={{ color: '#C9943A' }}>{val}</p>
+                    <p className="text-xs mt-1" style={{ color: '#E6C7A8' }}>{lbl}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="absolute bottom-0 left-0 right-0 lg:hidden grid grid-cols-3 z-10" style={{ background: 'rgba(18,9,5,0.85)', borderTop: '1px solid rgba(201,148,58,0.2)' }}>
+            {[[h.stat_1_value,h.stat_1_label],[h.stat_2_value,h.stat_2_label],[h.stat_3_value,h.stat_3_label]].map(([val,lbl],i) => (
+              <div key={i} className="py-4 text-center border-r last:border-0" style={{ borderColor: 'rgba(201,148,58,0.2)' }}>
+                <p className="text-lg font-bold" style={{ color: '#C9943A' }}>{val}</p>
+                <p className="text-xs" style={{ color: '#E6C7A8' }}>{lbl}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── CORPORATE SOLUTIONS ── */}
+        <section id="corporate-solutions" className="py-20 px-6" style={{ background: '#FFF7ED' }}>
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-14">
+              <p className="text-xs font-bold tracking-widest mb-3" style={{ color: '#C9943A' }}>WHAT WE OFFER</p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: '#120905', fontFamily: 'var(--font-heading)' }}>Corporate Solutions</h2>
+              <p className="text-sm max-w-2xl mx-auto" style={{ color: '#6B3520' }}>From daily office coffee to large-scale event catering — we have a solution for every corporate requirement.</p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {SOLUTIONS.map((s, i) => (
+                <div key={i} className="group rounded-3xl p-7 border transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-default"
+                  style={{ background: '#FBF4EC', borderColor: '#E6C7A8' }}>
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5" style={{ background: 'linear-gradient(135deg,#C9943A22,#8B4A2F22)' }}>
+                    <s.icon className="w-6 h-6" style={{ color: '#C9943A' }} />
+                  </div>
+                  <h3 className="text-base font-bold mb-2" style={{ color: '#120905' }}>{s.title}</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: '#6B3520' }}>{s.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── WHO WE SERVE ── */}
+        <section className="py-20 px-6" style={{ background: 'linear-gradient(135deg,#120905,#1A0D07,#3D1F0D)' }}>
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-14">
+              <p className="text-xs font-bold tracking-widest mb-3" style={{ color: '#C9943A' }}>WHO WE SERVE</p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: '#FFF7ED', fontFamily: 'var(--font-heading)' }}>Trusted by Businesses of All Sizes</h2>
+              <p className="text-sm max-w-xl mx-auto" style={{ color: '#E6C7A8' }}>We partner with businesses across industries to deliver quality café experiences at scale.</p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {WHO_WE_SERVE.map((w, i) => (
+                <div key={i} className="flex gap-4 rounded-3xl p-6 border" style={{ background: 'rgba(255,247,237,0.05)', borderColor: 'rgba(201,148,58,0.2)' }}>
+                  <div className="w-10 h-10 rounded-2xl flex-shrink-0 flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#C9943A22,#8B4A2F22)' }}>
+                    <w.icon className="w-5 h-5" style={{ color: '#C9943A' }} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold mb-1" style={{ color: '#F5E6D3' }}>{w.title}</h3>
+                    <p className="text-xs leading-relaxed" style={{ color: '#E6C7A8' }}>{w.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── WHY BIG BEAN ── */}
+        <section className="py-20 px-6" style={{ background: '#FBF4EC' }}>
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-14">
+              <p className="text-xs font-bold tracking-widest mb-3" style={{ color: '#C9943A' }}>WHY BIG BEAN CAFÉ</p>
+              <h2 className="text-3xl md:text-4xl font-bold" style={{ color: '#120905', fontFamily: 'var(--font-heading)' }}>Why Choose Us for Your Business</h2>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {WHY_US.map((w, i) => (
+                <div key={i} className="flex gap-4 rounded-3xl p-6 border hover:-translate-y-1 transition-all hover:shadow-md" style={{ background: '#FFF7ED', borderColor: '#E6C7A8' }}>
+                  <div className="w-10 h-10 rounded-2xl flex-shrink-0 flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#C9943A22,#8B4A2F22)' }}>
+                    <w.icon className="w-5 h-5" style={{ color: '#C9943A' }} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold mb-1" style={{ color: '#120905' }}>{w.title}</h3>
+                    <p className="text-xs leading-relaxed" style={{ color: '#6B3520' }}>{w.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── PACKAGES ── */}
+        <section className="py-20 px-6" style={{ background: '#FFF7ED' }}>
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-14">
+              <p className="text-xs font-bold tracking-widest mb-3" style={{ color: '#C9943A' }}>OUR PACKAGES</p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: '#120905', fontFamily: 'var(--font-heading)' }}>Corporate Package Options</h2>
+              <p className="text-sm max-w-xl mx-auto" style={{ color: '#6B3520' }}>Custom quote based on quantity, menu and delivery location.</p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {PACKAGES.map((pkg, i) => (
+                <div key={i} className={`relative rounded-3xl p-7 border flex flex-col transition-all hover:-translate-y-1 hover:shadow-xl ${pkg.highlight ? 'shadow-lg' : ''}`}
+                  style={{ background: pkg.highlight ? 'linear-gradient(135deg,#120905,#3D1F0D)' : '#FBF4EC', borderColor: pkg.highlight ? 'rgba(201,148,58,0.4)' : '#E6C7A8' }}>
+                  {pkg.highlight && <div className="absolute -top-3 left-1/2 -translate-x-1/2"><span className="px-4 py-1 rounded-full text-xs font-bold text-white" style={{ background: 'linear-gradient(to right,#C9943A,#8B4A2F)' }}><Star className="w-3 h-3 inline mr-1" />{pkg.tag}</span></div>}
+                  {!pkg.highlight && <span className="text-xs font-bold mb-4 inline-block" style={{ color: '#C9943A' }}>{pkg.tag}</span>}
+                  <h3 className="text-xl font-bold mb-2" style={{ color: pkg.highlight ? '#FFF7ED' : '#120905', fontFamily: 'var(--font-heading)' }}>{pkg.name}</h3>
+                  <p className="text-sm mb-5 leading-relaxed" style={{ color: pkg.highlight ? '#E6C7A8' : '#6B3520' }}>{pkg.desc}</p>
+                  <ul className="space-y-2 mb-6 flex-1">
+                    {pkg.items.map((item, j) => (
+                      <li key={j} className="flex items-start gap-2 text-xs" style={{ color: pkg.highlight ? '#F5E6D3' : '#6B3520' }}>
+                        <CheckCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: '#C9943A' }} />{item}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-xs italic mb-5" style={{ color: pkg.highlight ? '#E6C7A8' : '#8B4A2F' }}>Custom quote based on quantity and location.</p>
+                  <a href="#corporate-form"
+                    className="block text-center py-3 rounded-2xl text-sm font-bold transition-all hover:-translate-y-0.5"
+                    style={{ background: pkg.highlight ? 'linear-gradient(to right,#C9943A,#8B4A2F)' : 'transparent', color: pkg.highlight ? '#fff' : '#C9943A', border: pkg.highlight ? 'none' : '2px solid #C9943A' }}>
+                    {pkg.cta}
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── TIMELINE ── */}
+        <section className="py-20 px-6" style={{ background: '#FBF4EC' }}>
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-14">
+              <p className="text-xs font-bold tracking-widest mb-3" style={{ color: '#C9943A' }}>HOW IT WORKS</p>
+              <h2 className="text-3xl md:text-4xl font-bold" style={{ color: '#120905', fontFamily: 'var(--font-heading)' }}>From Enquiry to Delivery</h2>
+            </div>
+            <div className="space-y-4">
+              {TIMELINE.map((step, i) => (
+                <div key={i} className="flex gap-5 items-start animate-fade-up rounded-3xl p-6 border transition-all hover:shadow-md"
+                  style={{ background: '#FFF7ED', borderColor: '#E6C7A8', animationDelay: `${i * 0.08}s` }}>
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold" style={{ background: 'linear-gradient(135deg,#C9943A,#8B4A2F)', color: '#fff' }}>{step.n}</div>
+                  <div>
+                    <h3 className="text-sm font-bold mb-1" style={{ color: '#120905' }}>{step.title}</h3>
+                    <p className="text-xs leading-relaxed" style={{ color: '#6B3520' }}>{step.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── FORM ── */}
+        <section id="corporate-form" className="py-20 px-6" style={{ background: '#FFF7ED' }}>
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-14">
+              <p className="text-xs font-bold tracking-widest mb-3" style={{ color: '#C9943A' }}>GET STARTED</p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: '#120905', fontFamily: 'var(--font-heading)' }}>Request Corporate Quote</h2>
+              <p className="text-sm max-w-xl mx-auto" style={{ color: '#6B3520' }}>Fill in your business details and our team will reach out within 24 hours with a tailored quote.</p>
+            </div>
+
+            <div className="grid lg:grid-cols-5 gap-8 items-start">
+              <div className="lg:col-span-3">
+                <div className="rounded-3xl p-8 shadow-xl border" style={{ background: '#fff', borderColor: '#E6C7A8' }}>
+                  {submitError && <div className="mb-5 px-4 py-3 rounded-2xl text-sm border border-red-200 bg-red-50 text-red-600">{submitError}</div>}
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div><label className={lc} style={{ color: '#3D1F0D' }}>Company Name <span className="text-red-500">*</span></label>
+                        <input className={ic} name="companyName" value={formData.companyName} onChange={handleChange} placeholder="Your company name" required /></div>
+                      <div><label className={lc} style={{ color: '#3D1F0D' }}>Contact Person <span className="text-red-500">*</span></label>
+                        <input className={ic} name="contactPerson" value={formData.contactPerson} onChange={handleChange} placeholder="Your name" required /></div>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div><label className={lc} style={{ color: '#3D1F0D' }}>Email <span className="text-red-500">*</span></label>
+                        <input className={ic} type="email" name="email" value={formData.email} onChange={handleChange} placeholder="your@company.com" required /></div>
+                      <div><label className={lc} style={{ color: '#3D1F0D' }}>Phone <span className="text-red-500">*</span></label>
+                        <input className={ic} type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="+91 98765 43210" required /></div>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div><label className={lc} style={{ color: '#3D1F0D' }}>Order Type <span className="text-red-500">*</span></label>
+                        <select className={ic} name="orderType" value={formData.orderType} onChange={handleChange} required>
+                          <option value="">Select order type</option>
+                          <option>Office Coffee Supply</option>
+                          <option>Bulk Beverage Order</option>
+                          <option>Event Catering</option>
+                          <option>Meeting Refreshments</option>
+                          <option>Corporate Gifting</option>
+                          <option>Custom Solution</option>
+                        </select>
+                      </div>
+                      <div><label className={lc} style={{ color: '#3D1F0D' }}>Quantity / Requirements</label>
+                        <input className={ic} name="quantity" value={formData.quantity} onChange={handleChange} placeholder="e.g. 50 coffee and snacks" /></div>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div><label className={lc} style={{ color: '#3D1F0D' }}>Delivery Date</label>
+                        <input className={ic} type="date" name="deliveryDate" value={formData.deliveryDate} onChange={handleChange} min={getMinDate()} /></div>
+                      <div><label className={lc} style={{ color: '#3D1F0D' }}>Budget Range</label>
+                        <select className={ic} name="budgetRange" value={formData.budgetRange} onChange={handleChange}>
+                          <option value="">Select budget range</option>
+                          <option>₹10,000 - ₹25,000</option>
+                          <option>₹25,000 - ₹50,000</option>
+                          <option>₹50,000 - ₹1,00,000</option>
+                          <option>Above ₹1,00,000</option>
+                          <option>Need guidance</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div><label className={lc} style={{ color: '#3D1F0D' }}>Delivery Address</label>
+                      <textarea className={ic} name="deliveryAddress" value={formData.deliveryAddress} onChange={handleChange} rows={2} placeholder="Delivery location or address..." /></div>
+                    <div><label className={lc} style={{ color: '#3D1F0D' }}>Additional Requirements</label>
+                      <textarea className={ic} name="requirements" value={formData.requirements} onChange={handleChange} rows={3} placeholder="Menu preferences, dietary requirements, special requests..." /></div>
+                    <button type="submit" disabled={isSubmitting}
+                      className="w-full py-4 rounded-2xl text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                      style={{ background: 'linear-gradient(to right,#C9943A,#8B4A2F)' }}>
+                      {isSubmitting ? 'Submitting...' : <><span>Submit Corporate Enquiry</span><ArrowRight className="w-4 h-4" /></>}
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              <div className="lg:col-span-2 space-y-5">
+                <div className="rounded-3xl p-6 border" style={{ background: 'linear-gradient(135deg,#120905,#3D1F0D)', borderColor: 'rgba(201,148,58,0.3)' }}>
+                  <p className="text-xs font-bold tracking-widest mb-4" style={{ color: '#C9943A' }}>ORDER SNAPSHOT</p>
+                  {[
+                    ['Min. Order', '10 servings / ₹10,000'],
+                    ['Response Time', 'Within 24 hours'],
+                    ['Delivery Lead Time', '3+ days from confirmation'],
+                    ['Custom Menu', 'Available on request'],
+                    ['Multiple Locations', 'Supported'],
+                  ].map(([k,v],i) => (
+                    <div key={i} className="flex justify-between py-2.5 border-b text-sm last:border-0" style={{ borderColor: 'rgba(201,148,58,0.15)' }}>
+                      <span style={{ color: '#E6C7A8' }}>{k}</span>
+                      <span className="font-semibold text-right" style={{ color: '#F5E6D3' }}>{v}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="rounded-3xl p-6 border" style={{ background: '#FBF4EC', borderColor: '#E6C7A8' }}>
+                  <p className="text-xs font-bold tracking-widest mb-4" style={{ color: '#C9943A' }}>CONTACT OUR TEAM</p>
+                  <div className="space-y-3">
+                    <a href="mailto:corporate@bigbeancafe.in" className="flex items-center gap-3 text-sm hover:underline" style={{ color: '#3D1F0D' }}>
+                      <Mail className="w-4 h-4 flex-shrink-0" style={{ color: '#C9943A' }} />corporate@bigbeancafe.in
+                    </a>
+                    <div className="flex items-center gap-3 text-sm" style={{ color: '#3D1F0D' }}>
+                      <MapPin className="w-4 h-4 flex-shrink-0" style={{ color: '#C9943A' }} />Bangalore, India
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── FINAL CTA ── */}
+        <section className="py-20 px-6" style={{ background: 'linear-gradient(135deg,#120905,#1A0D07,#3D1F0D)' }}>
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="text-xs font-bold tracking-widest mb-4" style={{ color: '#C9943A' }}>LET'S BREW BETTER BUSINESS</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: '#FFF7ED', fontFamily: 'var(--font-heading)' }}>Ready to Brew Better Business Moments?</h2>
+            <p className="text-sm mb-10 max-w-lg mx-auto" style={{ color: '#E6C7A8' }}>Share your requirement with us and let our corporate team craft the perfect coffee experience for your business.</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="#corporate-form" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-bold text-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-0.5"
+                style={{ background: 'linear-gradient(to right,#C9943A,#8B4A2F)' }}>
+                Request Quote <ArrowRight className="w-4 h-4" />
+              </a>
+              <a href="mailto:corporate@bigbeancafe.in" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-bold border-2 transition-all hover:-translate-y-0.5"
+                style={{ borderColor: '#C9943A', color: '#C9943A' }}>
+                <Mail className="w-4 h-4" /> corporate@bigbeancafe.in
+              </a>
+              <Link href="/outlets" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-bold border-2 transition-all hover:-translate-y-0.5"
+                style={{ borderColor: 'rgba(255,247,237,0.25)', color: '#F5E6D3' }}>
+                Visit Outlets
+              </Link>
+            </div>
+          </div>
+        </section>
+
+      </main>
+      <Footer />
+    </div>
+  )
+}

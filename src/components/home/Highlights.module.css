@@ -1,0 +1,266 @@
+/* ── Section ── */
+.section {
+  background: linear-gradient(180deg, #FFF7ED 0%, #FBF4EC 45%, #F5E6D3 100%);
+  padding: 80px 0 88px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle radial glow behind heading */
+.section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 300px;
+  background: radial-gradient(ellipse at center, rgba(201,148,58,0.10) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Heading underline ── */
+.underline {
+  display: block;
+  width: 120px;
+  height: 4px;
+  margin: 12px auto 0;
+  background: linear-gradient(90deg, #C9943A, #8B5A3C);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(201,148,58,0.35);
+  position: relative;
+  overflow: hidden;
+}
+.underline::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+  animation: hlShine 2.4s ease-in-out infinite;
+}
+@keyframes hlShine {
+  0%   { left: -100%; }
+  100% { left: 160%; }
+}
+
+/* ── Marquee wrapper ── */
+.marqueeOuter {
+  width: 100%;
+  overflow: hidden;
+  margin: 0 0 56px;
+  padding: 10px 0 14px;
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  cursor: grab;
+}
+.marqueeOuter:active { cursor: grabbing; }
+
+.marqueeTrack {
+  display: flex;
+  gap: 28px;
+  width: max-content;
+  animation: hlMarquee 35s linear infinite;
+  will-change: transform;
+}
+.marqueeTrack.paused { animation-play-state: paused; }
+
+@keyframes hlMarquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── Image card in marquee ── */
+.imgCard {
+  position: relative;
+  flex-shrink: 0;
+  width: 300px;
+  height: 200px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(201,148,58,0.35);
+  box-shadow: 0 18px 45px rgba(61,31,13,0.18);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+.imgCard:hover {
+  transform: scale(1.04) translateY(-4px);
+  box-shadow: 0 28px 60px rgba(61,31,13,0.26);
+}
+
+.imgCardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Bottom gradient overlay */
+.imgCard::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 55%;
+  background: linear-gradient(to top, rgba(30,10,5,0.68) 0%, transparent 100%);
+  border-radius: 0 0 24px 24px;
+  pointer-events: none;
+}
+
+/* Image label */
+.imgLabel {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 2;
+  background: rgba(61,31,13,0.68);
+  color: #FFF7ED;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.imgCardPlaceholder {
+  flex-shrink: 0;
+  width: 300px;
+  height: 200px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #4A2518, #8B4A2F);
+  border: 1px solid rgba(201,148,58,0.25);
+  box-shadow: 0 18px 45px rgba(61,31,13,0.18);
+}
+
+/* ── Cards ── */
+.card {
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #EED9C0;
+  border-radius: 24px;
+  padding: 2.25rem 1.75rem;
+  text-align: center;
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+  opacity: 0;
+  transform: translateY(28px);
+}
+.card.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.55s ease, transform 0.55s ease,
+              box-shadow 0.28s ease, border-color 0.28s ease;
+}
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 24px 60px rgba(61,31,13,0.16);
+  border-color: #C9943A;
+}
+
+/* Caramel glow on hover */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  box-shadow: inset 0 0 0 1px rgba(201,148,58,0);
+  transition: box-shadow 0.28s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+.card:hover::before {
+  box-shadow: inset 0 0 0 1.5px rgba(201,148,58,0.55),
+              0 0 30px rgba(201,148,58,0.10);
+}
+
+/* Faint background image on hover */
+.cardBgImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  border-radius: 24px;
+  z-index: 0;
+}
+.card:hover .cardBgImg { opacity: 0.09; }
+
+/* Caramel overlay on hover */
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(245,230,211,0.50);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  border-radius: 24px;
+  z-index: 0;
+}
+.card:hover::after { opacity: 1; }
+
+/* Keep content above pseudo-elements */
+.cardInner { position: relative; z-index: 1; }
+
+.iconWrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, #F5E6D3, #EED5BA);
+  box-shadow: 0 4px 18px rgba(201,148,58,0.18);
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+.card:hover .iconWrap {
+  transform: scale(1.12);
+  box-shadow: 0 8px 28px rgba(201,148,58,0.28);
+}
+
+.stat {
+  display: inline-block;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+.statLabel {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: #8B5A3C;
+}
+
+/* ── Tablet ── */
+@media (max-width: 1024px) {
+  .imgCard { width: 260px; height: 175px; }
+  .imgCardPlaceholder { width: 260px; height: 175px; }
+  .marqueeTrack { gap: 22px; }
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .section { padding: 64px 0 72px; }
+  .card { padding: 1.75rem 1.25rem; border-radius: 20px; }
+  .imgCard { width: 210px; height: 140px; border-radius: 18px; }
+  .imgCardPlaceholder { width: 210px; height: 140px; border-radius: 18px; }
+  .marqueeTrack { gap: 18px; animation-duration: 28s; }
+  .marqueeOuter { margin-bottom: 44px; }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .underline::after,
+  .marqueeTrack { animation: none !important; }
+  .card { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .cardBgImg, .card::after, .card::before { transition: none !important; }
+}
