@@ -426,3 +426,86 @@
     transition: none !important;
   }
 }
+
+/* ─── BIGBEAN Flip Animation — Brand Column ─────────────── */
+.brandFlipWrap {
+  margin-top: 22px;
+}
+
+.brandFlipLabel {
+  margin-bottom: 12px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #c9943a;
+}
+
+.brandFlipButton {
+  justify-content: flex-start !important;
+  padding: 0 !important;
+  max-width: 100%;
+}
+
+.brandFlipButton > div {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 6px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  width: max-content !important;
+  max-width: 100% !important;
+}
+
+.brandFlipItem {
+  height: 32px !important;
+  width: 32px !important;
+  flex: 0 0 32px !important;
+}
+
+.brandFlipFront {
+  background: #fff7ed !important;
+  color: #3d1f0d !important;
+  border: 1px solid rgba(201, 148, 58, 0.45) !important;
+  border-radius: 9px !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  box-shadow: 0 8px 18px rgba(18, 9, 5, 0.16) !important;
+}
+
+.brandFlipBack {
+  background: #c9943a !important;
+  color: #120905 !important;
+  border-radius: 9px !important;
+  font-size: 14px !important;
+  box-shadow: 0 8px 18px rgba(18, 9, 5, 0.18) !important;
+}
+
+@media (max-width: 768px) {
+  .brandFlipWrap {
+    margin-top: 20px;
+  }
+
+  .brandFlipButton > div {
+    gap: 5px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .brandFlipItem {
+    height: 29px !important;
+    width: 29px !important;
+    flex: 0 0 29px !important;
+  }
+
+  .brandFlipFront {
+    font-size: 11px !important;
+    border-radius: 8px !important;
+  }
+
+  .brandFlipBack {
+    font-size: 13px !important;
+    border-radius: 8px !important;
+  }
+}

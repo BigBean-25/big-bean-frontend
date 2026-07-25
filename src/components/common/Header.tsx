@@ -11,6 +11,33 @@ import {
 } from 'lucide-react'
 import { cartCount } from '@/lib/cart'
 import { getCustomer, clearCustomerSession, isCustomerLoggedIn } from '@/lib/customerAuth'
+import GooeySearch from '@/components/ui/gooey-search'
+
+function GooeySearchTrigger({ onClick, isMobile = false }: { onClick: () => void; isMobile?: boolean }) {
+  return (
+    <button
+      type="button"
+      aria-label="Search"
+      onClick={onClick}
+      className={
+        isMobile
+          ? 'group relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#3D1F0D] text-[#FFF7ED] shadow-[0_8px_20px_rgba(61,31,13,0.18)] transition hover:scale-105 active:scale-95'
+          : 'group relative flex h-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#3D1F0D] px-3.5 text-[#FFF7ED] shadow-[0_8px_20px_rgba(61,31,13,0.18)] transition-all duration-300 hover:bg-[#6B3520] active:scale-95'
+      }
+    >
+      <span
+        className="absolute inset-0 rounded-full opacity-0 blur-md transition group-hover:opacity-100"
+        style={{ background: 'radial-gradient(circle,#C9943A55,transparent 65%)' }}
+      />
+      <Search className={isMobile ? 'relative z-10 h-[18px] w-[18px]' : 'relative z-10 h-[18px] w-[18px] shrink-0'} />
+      {!isMobile && (
+        <span className="relative z-10 ml-2 max-w-0 overflow-hidden whitespace-nowrap text-[11px] font-black uppercase tracking-[0.12em] opacity-0 transition-all duration-300 group-hover:max-w-[70px] group-hover:opacity-100">
+          Search
+        </span>
+      )}
+    </button>
+  )
+}
 
 const NAV_PRIMARY = [
   { name: 'HOME',      href: '/' },
@@ -161,12 +188,20 @@ export default function Header() {
     setSearchQuery('')
   }
 
+  const gooeySearchItems = SEARCH_ITEMS.map((i) => i.title)
+
+  const handleGooeySelect = (title: string) => {
+    const item = SEARCH_ITEMS.find((i) => i.title === title)
+    if (item) router.push(item.href)
+    else { setIsSearchOpen(true); setSearchQuery(title) }
+  }
+
   const allNavActive = NAV_MORE.some((i) => isActive(i.href))
 
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-[9999] w-full border-b border-[#E6C7A8]/70 bg-[#FFF7ED]/95 shadow-[0_4px_24px_rgba(61,31,13,0.08)] backdrop-blur-xl">
-        <div className="mx-auto flex h-[70px] max-w-[1500px] items-center justify-between px-4 sm:px-6 lg:px-8 md:h-[82px]">
+        <div className="mx-auto flex h-[70px] max-w-[1500px] items-center px-4 sm:px-6 lg:px-8 md:h-[82px]">
 
           {/* Logo */}
           <Link href="/" className="flex shrink-0 items-center">
@@ -181,7 +216,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-0.5 lg:flex xl:gap-1">
+          <nav className="hidden items-center gap-0.5 lg:ml-auto lg:mr-8 lg:flex xl:mr-10 xl:gap-1 2xl:mr-12">
             {NAV_PRIMARY.map((item) => {
               const active = isActive(item.href)
               return (
@@ -238,22 +273,41 @@ export default function Header() {
           </nav>
 
           {/* Desktop right */}
-          <div className="hidden items-center gap-2 lg:flex xl:gap-2.5">
-            {/* Search */}
+          <div className="hidden items-center gap-3 lg:flex xl:gap-4">
+            {/* Search — icon on lg, GooeySearch on xl */}
             <button
               type="button"
               aria-label="Search"
               onClick={() => setIsSearchOpen(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-[#3D1F0D] transition hover:bg-[#F5E6D3]"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#3D1F0D] transition hover:bg-[#F5E6D3] xl:hidden"
             >
-              <Search className="h-4.5 w-4.5 h-[18px] w-[18px]" />
+              <Search className="h-[18px] w-[18px]" />
             </button>
+            <div
+              className="hidden xl:flex items-center"
+              style={{
+                '--foreground': '#3D1F0D',
+                '--background': '#FFF7ED',
+                marginRight: '3rem',
+              } as React.CSSProperties}
+            >
+              <GooeySearch
+                key={pathname}
+                items={gooeySearchItems}
+                buttonLabel="Search"
+                placeholder="Search..."
+                maxResults={5}
+                debounceMs={250}
+                onSelect={handleGooeySelect}
+                className="bigbean-gooey-search"
+              />
+            </div>
 
             {/* Login / Profile */}
             {customer ? (
-              <div className="relative" ref={profileRef}>
+              <div className="relative shrink-0" ref={profileRef}>
                 <button type="button" onClick={() => setProfileOpen(o => !o)} aria-label="Profile"
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[#3D1F0D] text-[#FFF7ED] text-sm font-black transition hover:bg-[#6B3520]">
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#3D1F0D] text-[#FFF7ED] text-sm font-black transition hover:bg-[#6B3520]">
                   {customer.full_name?.[0]?.toUpperCase() || 'C'}
                 </button>
                 {profileOpen && (
@@ -281,7 +335,7 @@ export default function Header() {
               </div>
             ) : (
               <Link href="/login" aria-label="Login"
-                className="flex h-10 w-10 items-center justify-center rounded-full text-[#3D1F0D] transition hover:bg-[#F5E6D3]">
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#3D1F0D] transition hover:bg-[#F5E6D3]">
                 <User className="h-[18px] w-[18px]" />
               </Link>
             )}
@@ -290,7 +344,7 @@ export default function Header() {
             <Link
               href="/cart"
               aria-label="Cart"
-              className="relative flex h-10 w-10 items-center justify-center rounded-full text-[#3D1F0D] transition hover:bg-[#F5E6D3]"
+              className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#3D1F0D] transition hover:bg-[#F5E6D3]"
             >
               <ShoppingBag className="h-[18px] w-[18px]" />
               {cartCountValue > 0 && (
@@ -305,22 +359,15 @@ export default function Header() {
               href="https://bigbeancafe.store"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-nav ml-1 rounded-full bg-[#3D1F0D] px-5 py-2.5 text-[12px] font-extrabold uppercase tracking-[0.12em] leading-none text-[#FFF7ED] shadow-md transition hover:-translate-y-0.5 hover:bg-[#6B3520] hover:shadow-lg"
+              className="font-nav ml-1 shrink-0 rounded-full bg-[#3D1F0D] px-5 py-2.5 text-[12px] font-extrabold uppercase tracking-[0.12em] leading-none text-[#FFF7ED] shadow-md transition hover:-translate-y-0.5 hover:bg-[#6B3520] hover:shadow-lg"
             >
               Order Now
             </a>
           </div>
 
           {/* Mobile right */}
-          <div className="flex items-center gap-1.5 lg:hidden">
-            <button
-              type="button"
-              aria-label="Search"
-              onClick={() => setIsSearchOpen(true)}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-[#3D1F0D] transition hover:bg-[#F5E6D3]"
-            >
-              <Search className="h-[18px] w-[18px]" />
-            </button>
+          <div className="ml-auto flex items-center gap-1.5 lg:hidden">
+            <GooeySearchTrigger onClick={() => setIsSearchOpen(true)} isMobile />
             <Link
               href="/cart"
               aria-label="Cart"

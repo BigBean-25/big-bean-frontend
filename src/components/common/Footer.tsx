@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { MapPin, Mail, Phone, Globe, Facebook, Instagram, Youtube, Linkedin, Twitter, Send, ArrowRight } from 'lucide-react'
+import { MapPin, Mail, Phone, Globe, Send, ArrowRight } from 'lucide-react'
+import { FaInstagram, FaFacebook, FaLinkedin, FaEnvelope, FaPhone, FaGlobe, FaWhatsapp } from 'react-icons/fa'
 import s from './Footer.module.css'
+import SocialFlipButton, { SocialItem } from '@/components/ui/social-flip-button'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 
@@ -18,11 +20,14 @@ const DEFAULTS: PublicSettings = {
   address: 'Bengaluru, Karnataka',
   website_url: 'https://www.bigbeancafe.in',
   store_url: 'https://bigbeancafe.store',
-  social_facebook: 'https://facebook.com',
-  social_instagram: 'https://www.instagram.com/bigbeancafe.in/',
+  social_facebook: '',
+  social_instagram: '',
   social_linkedin: '',
   social_youtube: '',
   social_twitter: '',
+  social_zomato: '',
+  social_swiggy: '',
+  social_threads: '',
   copyright_text: '© {year} Big Bean Café Coffee Roasters. All rights reserved.',
   terms_url: '/terms-and-conditions',
   privacy_url: '/privacy-policy',
@@ -43,6 +48,26 @@ export default function Footer() {
 
   const g = (key: string) => settings[key] ?? DEFAULTS[key] ?? ''
   const copyright = g('copyright_text').replace('{year}', String(new Date().getFullYear()))
+
+  const cleanUrl = (url: string) => {
+    const v = (url || '').trim()
+    if (!v) return ''
+    if (v.startsWith('http://') || v.startsWith('https://')) return v
+    return `https://${v}`
+  }
+
+  const cleanPhone = g('contact_phone').replace(/\D/g, '')
+  const whatsappNumber = cleanPhone.length >= 10 ? cleanPhone.slice(-10) : ''
+
+  const footerFlipItems: SocialItem[] = [
+    { letter: 'B', icon: <FaInstagram />, label: 'Instagram', href: cleanUrl(g('social_instagram')) },
+    { letter: 'I', icon: <FaFacebook />,  label: 'Facebook',  href: cleanUrl(g('social_facebook')) },
+    { letter: 'G', icon: <FaLinkedin />,  label: 'LinkedIn',  href: cleanUrl(g('social_linkedin')) },
+    { letter: 'B', icon: <FaEnvelope />,  label: 'Email',     href: g('contact_email') ? `mailto:${g('contact_email')}` : '' },
+    { letter: 'E', icon: <FaPhone />,     label: 'Call',      href: cleanPhone ? `tel:${cleanPhone}` : '' },
+    { letter: 'A', icon: <FaWhatsapp />,  label: 'WhatsApp',  href: whatsappNumber ? `https://wa.me/91${whatsappNumber}` : '' },
+    { letter: 'N', icon: <FaGlobe />,     label: 'Website',   href: cleanUrl(g('website_url')) },
+  ].filter(item => Boolean(item.href))
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -89,33 +114,18 @@ export default function Footer() {
               />
             </Link>
             <p className={s.footerDescription}>{g('footer_description')}</p>
-            <div className={s.socialRow}>
-              {g('social_facebook') && (
-                <a href={g('social_facebook')} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className={s.socialLink}>
-                  <Facebook />
-                </a>
-              )}
-              {g('social_instagram') && (
-                <a href={g('social_instagram')} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className={s.socialLink}>
-                  <Instagram />
-                </a>
-              )}
-              {g('social_youtube') && (
-                <a href={g('social_youtube')} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className={s.socialLink}>
-                  <Youtube />
-                </a>
-              )}
-              {g('social_linkedin') && (
-                <a href={g('social_linkedin')} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className={s.socialLink}>
-                  <Linkedin />
-                </a>
-              )}
-              {g('social_twitter') && (
-                <a href={g('social_twitter')} target="_blank" rel="noopener noreferrer" aria-label="Twitter" className={s.socialLink}>
-                  <Twitter />
-                </a>
-              )}
-            </div>
+            {footerFlipItems.length > 0 && (
+              <div className={s.brandFlipWrap}>
+                <p className={s.brandFlipLabel}>Connect with Big Bean</p>
+                <SocialFlipButton
+                  items={footerFlipItems}
+                  className={s.brandFlipButton}
+                  itemClassName={s.brandFlipItem}
+                  frontClassName={s.brandFlipFront}
+                  backClassName={s.brandFlipBack}
+                />
+              </div>
+            )}
           </div>
 
           {/* Quick Links */}

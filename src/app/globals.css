@@ -657,3 +657,13 @@
   background: #A07830;
 }
 
+/* ── Gooey Search header ──────────────────────────────────── */
+.bigbean-gooey-search {
+  transform: scale(0.92);
+  transform-origin: center;
+}
+
+.bigbean-gooey-search input {
+  font-family: inherit;
+  font-weight: 700;
+}
