@@ -9,7 +9,7 @@ import { getImageUrl } from '@/lib/imageUrl'
 import toast from 'react-hot-toast'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_BASE = API_URL.replace('/api', '')
+const API_BASE = API_URL.replace(/\/api$/, '')
 
 const inputClass = 'w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C9943A]/40 focus:border-[#C9943A] transition-all bg-white'
 const labelClass = 'block text-sm font-semibold text-gray-700 mb-2'

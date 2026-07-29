@@ -7,7 +7,7 @@ import { apiFetch } from '@/lib/api'
 import styles from './FeaturedMenu.module.css'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const BACKEND_ORIGIN = API_URL.replace('/api', '')
+const BACKEND_ORIGIN = API_URL.replace(/\/api$/, '')
 const STORE_ORIGIN = 'https://admin.bigbeancafe.store'
 const STORE_PRODUCT_IMAGE_BASE = 'https://admin.bigbeancafe.store/storage/app/public/product'
 const ORDER_URL = 'https://bigbeancafe.store'

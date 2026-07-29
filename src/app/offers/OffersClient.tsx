@@ -58,7 +58,7 @@ interface MenuCombo {
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_BASE_URL = API_URL.replace('/api', '')
+const API_BASE_URL = API_URL.replace(/\/api$/, '')
 
 const FALLBACK_OFFERS: Offer[] = [
   {
@@ -411,6 +411,34 @@ function ComboCard({ combo, single }: { combo: MenuCombo; single: boolean }) {
   )
 }
 
+const OFFERS_FAQS = [
+  {
+    question: 'Are these offers available at every outlet?',
+    answer:
+      'Most Big Bean Café offers are available across participating outlets. Availability may vary based on outlet, timing, stock, and offer terms.',
+  },
+  {
+    question: 'Can I use these offers online?',
+    answer:
+      'Selected Big Bean Café offers are available through Swiggy, Zomato, and the official Big Bean Café ordering platform. Please check the offer details before placing your order.',
+  },
+  {
+    question: 'How often are offers updated?',
+    answer:
+      'Big Bean Café offers are updated regularly with seasonal promotions, app-exclusive deals, combo offers, and limited-time café specials.',
+  },
+  {
+    question: 'Can offers be combined?',
+    answer:
+      'Usually, offers cannot be combined with other discounts, coupons, or promotions unless clearly mentioned in the specific offer terms.',
+  },
+  {
+    question: 'Where can I find the latest offers?',
+    answer:
+      'You can find the latest Big Bean Café offers on this Offers page. Visit this page regularly to explore current deals, combo offers, and app-exclusive promotions.',
+  },
+]
+
 export default function Offers() {
   const [offers, setOffers] = useState<Offer[]>([])
   const [loading, setLoading] = useState(true)
@@ -452,10 +480,24 @@ export default function Offers() {
     carouselRef.current.scrollBy({ left: dir === 'left' ? -400 : 400, behavior: 'smooth' })
   }
 
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: OFFERS_FAQS.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  }
+
   return (
     <div className="min-h-screen" style={{ background: '#FBF4EC' }}>
       <Header />
       <main>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
         {/* ── HERO ── */}
         <section className="relative flex items-center overflow-hidden min-h-auto md:min-h-[460px] lg:min-h-[500px] xl:min-h-[540px]" style={{ padding: '5rem 0 3.5rem' }}>
@@ -793,6 +835,36 @@ export default function Offers() {
                   Order Now <ExternalLink style={{ width: 12, height: 12 }} />
                 </div>
               </a>
+            ))}
+          </div>
+        </section>
+
+        {/* ── FAQ ── */}
+        <section style={{ maxWidth: 1100, margin: '0 auto', padding: '4rem 2rem 0' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <p style={{ fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.22em', color: '#C9943A', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
+              FAQ
+            </p>
+            <h2 className="font-heading" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.5rem)', fontWeight: 900, color: '#3D1F0D', lineHeight: 1.1, marginBottom: '0.8rem' }}>
+              Frequently Asked Questions
+            </h2>
+            <p style={{ fontSize: '0.95rem', color: '#6B3520', maxWidth: 560, margin: '0 auto', lineHeight: 1.75 }}>
+              Quick answers about Big Bean Café offers, online deals, outlet availability and offer terms.
+            </p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: '1.25rem' }}>
+            {OFFERS_FAQS.map((faq, index) => (
+              <div
+                key={index}
+                style={{ borderRadius: 24, background: '#FFF7ED', border: '1px solid #E6C7A8', padding: '1.5rem 1.6rem', boxShadow: '0 4px 20px rgba(61,31,13,0.07)' }}
+              >
+                <h3 className="font-heading" style={{ fontSize: '1.05rem', fontWeight: 900, color: '#3D1F0D', lineHeight: 1.25, marginBottom: '0.75rem' }}>
+                  {faq.question}
+                </h3>
+                <p style={{ fontSize: '0.85rem', color: '#6B3520', lineHeight: 1.7 }}>
+                  {faq.answer}
+                </p>
+              </div>
             ))}
           </div>
         </section>

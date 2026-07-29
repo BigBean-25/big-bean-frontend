@@ -4,7 +4,7 @@ import { useRouter, useParams } from 'next/navigation'
 import apiRequest from '@/utils/api'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_BASE = API_URL.replace('/api', '')
+const API_BASE = API_URL.replace(/\/api$/, '')
 
 const ic = 'w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#C9943A]/30'
 const lc = 'block text-sm font-semibold text-gray-700 mb-1.5'

@@ -7,7 +7,7 @@ import { ArrowLeft, Upload, Image as ImageIcon } from 'lucide-react'
 import apiRequest from '@/utils/api'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_BASE = API_URL.replace('/api', '')
+const API_BASE = API_URL.replace(/\/api$/, '')
 
 interface Banner {
   id: number

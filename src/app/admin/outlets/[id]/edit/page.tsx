@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { ArrowLeft, Save, MapPin, Phone, Mail, Clock, ImageIcon } from 'lucide-react'
 import apiRequest from '@/utils/api'
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace('/api', '')
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '')
 
 function getImageUrl(p: string | null | undefined): string | null {
   if (!p) return null

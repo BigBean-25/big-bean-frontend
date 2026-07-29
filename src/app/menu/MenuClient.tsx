@@ -5,7 +5,7 @@ import Header from '@/components/common/Header'
 import Footer from '@/components/common/Footer'
 import { Coffee, Search, Leaf, ShoppingBag, AlertCircle, SlidersHorizontal, X, ArrowRight, ChevronDown, Star, BadgeCheck } from 'lucide-react'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'
+const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api$/, '') || 'http://localhost:5000'
 const ORDER_URL = 'https://bigbeancafe.store'
 
 interface MenuHero {

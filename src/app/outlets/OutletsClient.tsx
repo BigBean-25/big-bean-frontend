@@ -8,7 +8,7 @@ import { MapPin, Phone, Clock, Navigation, Search, Store, ArrowRight, Coffee, X,
 import s from './OutletsClient.module.css'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_BASE_URL = API_URL.replace('/api', '')
+const API_BASE_URL = API_URL.replace(/\/api$/, '')
 
 const getImageUrl = (image?: string | null): string | null => {
   if (!image) return null

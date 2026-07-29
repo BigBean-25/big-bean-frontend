@@ -8,7 +8,7 @@ import Footer from '@/components/common/Footer'
 import { Coffee, Store, Users, Heart, Sparkles, MapPin, Award, Leaf, ArrowRight, Star, Smartphone, QrCode, Check, Plus, Minus, HelpCircle } from 'lucide-react'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_BASE = API_URL.replace('/api', '')
+const API_BASE = API_URL.replace(/\/api$/, '')
 
 const getImg = (img?: string | null): string | null => {
   if (!img) return null

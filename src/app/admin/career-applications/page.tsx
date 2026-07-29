@@ -5,7 +5,7 @@ import { Search, Download, Eye, X, ChevronDown, MessageCircle } from 'lucide-rea
 import apiRequest from '@/utils/api'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_BASE_URL = API_URL.replace('/api', '')
+const API_BASE_URL = API_URL.replace(/\/api$/, '')
 
 const STATUS_STYLES: Record<string, string> = {
   new: 'bg-yellow-100 text-yellow-800',

@@ -8,7 +8,7 @@ import Footer from '@/components/common/Footer'
 import { Calendar, Clock, User, ArrowLeft, Share2, ExternalLink } from 'lucide-react'
 
 const API_URL      = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_BASE_URL = API_URL.replace('/api', '')
+const API_BASE_URL = API_URL.replace(/\/api$/, '')
 
 const CATEGORIES: Record<string, string> = {
   'coffee-culture': 'Coffee Culture', 'brewing-tips': 'Brewing Tips',

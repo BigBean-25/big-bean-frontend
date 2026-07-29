@@ -12,7 +12,7 @@ import { isCustomerLoggedIn, customerFetch } from '@/lib/customerAuth'
 import { Heart, Trash2, RefreshCw, ShoppingBag, ExternalLink } from 'lucide-react'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace('/api', '')
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '')
 type WItem = Record<string, string | number | null>
 
 function getImg(img: string | number | null): string | null {

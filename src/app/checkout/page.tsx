@@ -12,7 +12,7 @@ import { getCart, clearCart, CartItem } from '@/lib/cart'
 import { getCustomerToken } from '@/lib/customerAuth'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_BASE = API_URL.replace('/api', '')
+const API_BASE = API_URL.replace(/\/api$/, '')
 
 const getImageUrl = (img?: string | null): string | null => {
   if (!img) return null

@@ -16,7 +16,7 @@ import {
 } from 'lucide-react'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace('/api', '')
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '')
 
 type HistoryItem = { status: string; note: string | null; created_at: string }
 type OrderItem   = { product_name: string; quantity: number; price: number; total: number; product_image?: string | null }

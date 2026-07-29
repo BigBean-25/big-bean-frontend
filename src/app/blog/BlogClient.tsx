@@ -7,7 +7,7 @@ import Footer from '@/components/common/Footer'
 import { Calendar, Clock, User, Search, ArrowRight, Star } from 'lucide-react'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_BASE_URL = API_URL.replace('/api', '')
+const API_BASE_URL = API_URL.replace(/\/api$/, '')
 
 interface BlogHero {
   eyebrow: string; title: string; highlight_text: string | null; subtitle: string | null

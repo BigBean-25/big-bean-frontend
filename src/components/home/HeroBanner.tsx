@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react'
 import Link from 'next/link'
 
 // Helper function to get media URL
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace('/api', '')
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '')
 
 const getMediaUrl = (filePath?: string | null): string => {
   if (!filePath || filePath === 'null') return ''

@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 
 const API_URL      = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_BASE_URL = API_URL.replace('/api', '')
+const API_BASE_URL = API_URL.replace(/\/api$/, '')
 
 interface ReviewData {
   average_rating: number
@@ -96,8 +96,13 @@ export default function MerchandiseProductClient() {
       .then(data => {
         if (data.success && data.data) {
           setProduct(data.data)
-          // Fetch reviews after product is loaded
           fetchReviews(data.data.id)
+          try {
+            const raw = localStorage.getItem('bigbean_recently_viewed_products')
+            const existing: string[] = raw ? JSON.parse(raw) : []
+            const updated = [data.data.slug, ...existing.filter((s: string) => s !== data.data.slug)].slice(0, 8)
+            localStorage.setItem('bigbean_recently_viewed_products', JSON.stringify(updated))
+          } catch {}
         }
         else setNotFound(true)
       })
@@ -404,6 +409,41 @@ export default function MerchandiseProductClient() {
                     <span className="text-xs font-semibold text-[#4A2810]">{label}</span>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Product Details */}
+          <div className="mt-12 border-t border-[#E6C7A8] pt-10">
+            <h2 className="mb-6 text-2xl font-bold text-[#3D1F0D]">Product Details</h2>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="rounded-[20px] border border-[#E6C7A8] bg-white/80 p-5">
+                <h3 className="mb-2 text-sm font-black uppercase tracking-wide text-[#C9943A]">Coffee Origin</h3>
+                <p className="text-sm leading-relaxed text-[#4A2810]">Sourced and roasted for the Big Bean Café coffee experience.</p>
+              </div>
+              <div className="rounded-[20px] border border-[#E6C7A8] bg-white/80 p-5">
+                <h3 className="mb-2 text-sm font-black uppercase tracking-wide text-[#C9943A]">Roast Level</h3>
+                <p className="text-sm leading-relaxed text-[#4A2810]">Medium roast. As mentioned on product packaging.</p>
+              </div>
+              <div className="rounded-[20px] border border-[#E6C7A8] bg-white/80 p-5">
+                <h3 className="mb-2 text-sm font-black uppercase tracking-wide text-[#C9943A]">Brewing Guide</h3>
+                <p className="text-sm leading-relaxed text-[#4A2810]">Use as per preferred brewing method. For best taste, store in an airtight container after opening.</p>
+              </div>
+              <div className="rounded-[20px] border border-[#E6C7A8] bg-white/80 p-5">
+                <h3 className="mb-2 text-sm font-black uppercase tracking-wide text-[#C9943A]">Ingredients</h3>
+                <p className="text-sm leading-relaxed text-[#4A2810]">
+                  {(product.category_name || '').toLowerCase().includes('coffee') ? 'Coffee' : 'See product details'}
+                </p>
+              </div>
+              <div className="rounded-[20px] border border-[#E6C7A8] bg-white/80 p-5">
+                <h3 className="mb-2 text-sm font-black uppercase tracking-wide text-[#C9943A]">Specifications</h3>
+                <dl className="space-y-1 text-sm text-[#4A2810]">
+                  <div className="flex justify-between"><dt className="font-semibold">Price</dt><dd>₹{product.price.toLocaleString('en-IN')}</dd></div>
+                  <div className="flex justify-between"><dt className="font-semibold">Status</dt><dd>{inStock ? 'In Stock' : 'Out of Stock'}</dd></div>
+                  {product.category_name && <div className="flex justify-between"><dt className="font-semibold">Category</dt><dd>{product.category_name}</dd></div>}
+                  {product.sku && <div className="flex justify-between"><dt className="font-semibold">SKU</dt><dd>{product.sku}</dd></div>}
+                  {product.weight && <div className="flex justify-between"><dt className="font-semibold">Weight</dt><dd>{product.weight}</dd></div>}
+                </dl>
               </div>
             </div>
           </div>

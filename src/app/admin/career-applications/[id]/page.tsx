@@ -6,7 +6,7 @@ import { ArrowLeft, User, Briefcase, GraduationCap, FileText, StickyNote, Hash, 
 import apiRequest from '@/utils/api'
 import ReplyPanel from '@/components/admin/ReplyPanel'
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace('/api', '')
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '')
 
 const STATUS_STYLE: Record<string, string> = {
   new: 'bg-yellow-50 text-yellow-700 border-yellow-200',

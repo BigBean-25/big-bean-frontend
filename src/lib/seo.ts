@@ -1,7 +1,7 @@
 import { generateFaqSchema } from './schema'
 
 const API_URL      = process.env.NEXT_PUBLIC_API_URL      || 'http://localhost:5000/api'
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace('/api', '')
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '')
 
 export async function getSeo(pageKey: string) {
   try {

@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 import { getApiUrl } from '@/lib/api'
 
 const API_URL = getApiUrl()
-const API_BASE = API_URL.replace('/api', '')
+const API_BASE = API_URL.replace(/\/api$/, '')
 const SITE_URL = process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000'
 
 export const metadata: Metadata = {

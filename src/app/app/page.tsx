@@ -8,7 +8,7 @@ import { Smartphone, QrCode, ArrowRight, Check, Coffee, MapPin, Gift, Plus } fro
 import s from './AppPage.module.css'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_BASE_URL = API_URL.replace('/api', '')
+const API_BASE_URL = API_URL.replace(/\/api$/, '')
 
 const getImageUrl = (image?: string | null): string | null => {
   if (!image) return null
@@ -54,40 +54,59 @@ const FALLBACK: AppPromoData = {
 
 const HERO_DESC = 'Order your favourites, scan at the café, earn Big Coins, and enjoy seamless dine-in, takeaway, and delivery ordering.'
 
+const BIG_COINS_RATE_COPY = '₹100 spent = 3 Big Coins'
+
+const BIG_COINS_FULL_COPY =
+  'Base rewards start at ₹100 spent = 3 Big Coins. Higher loyalty tiers can earn up to ₹100 spent = 7 Big Coins, based on the active Big Bean Café loyalty program.'
+
+const STATIC_KEY_FEATURES = [
+  'Order Ahead',
+  'Big Coins Rewards',
+  'Saved Favourites',
+  'Multiple Outlets',
+]
+
+const QR_FEATURES = [
+  'Order Ahead',
+  'Big Coins Rewards',
+  'Saved Favourites',
+  'Multiple Outlets',
+]
+
 const BLOCK_FEATURES = [
   {
     icon: MapPin,
     label: 'Discover',
     title: 'Discover',
-    desc: 'Find nearby Big Bean Café outlets, offers, and café updates — all in one place.',
+    desc: 'Browse the Big Bean Café menu, nearby outlets, latest offers, and café updates in one place.',
   },
   {
     icon: Smartphone,
     label: 'Choose',
     title: 'Choose',
-    desc: 'Choose dine-in QR ordering, takeaway pickup, or delivery — however suits you best.',
+    desc: 'Customize your order and choose dine-in QR ordering, takeaway pickup, or delivery.',
   },
   {
     icon: Gift,
     label: 'Earn',
     title: 'Earn',
-    desc: 'Earn Big Coins, unlock app-only deals, and enjoy rewards with every order.',
+    desc: `Collect Big Coins on every eligible app order — ${BIG_COINS_RATE_COPY}.`,
   },
 ]
 
 const HOW_STEPS = [
-  { step: '1', title: 'Download & Sign Up', desc: 'Get the app from App Store or Google Play and create your account in minutes.' },
-  { step: '2', title: 'Browse & Order', desc: 'Explore our full menu, customise your order, and pay securely in the app.' },
-  { step: '3', title: 'Collect & Enjoy', desc: 'Pick up at the counter or use QR ordering right at your café table.' },
+  { step: '1', title: 'Download the App', desc: 'Download the Big Bean Café app from Google Play or the App Store and sign up in minutes.' },
+  { step: '2', title: 'Browse & Order', desc: 'Explore the menu, customize your favourites, choose your outlet, and pay securely.' },
+  { step: '3', title: 'Pickup, Dine-in or Get it Delivered', desc: 'Choose takeaway pickup, scan-to-order dine-in, or delivery wherever available.' },
 ]
 
 const FAQS = [
-  { q: 'How do I place an order through the app?', a: 'Download the Big Bean Café app, sign up or log in, browse the menu, add items to your cart, and checkout securely. Your order goes straight to the café.' },
-  { q: 'Can I use QR ordering inside the café?', a: 'Yes! Scan the QR code at your table or counter to open the menu and place your order without waiting in line.' },
-  { q: 'What payment methods are available?', a: 'We support all major credit/debit cards, UPI, net banking, and digital wallets through our secure payment gateway.' },
-  { q: 'How do Big Coins rewards work?', a: 'Earn Big Coins on every purchase made through the app. Accumulated coins can be redeemed for discounts, free items, and exclusive app-only offers.' },
-  { q: 'Can I order for takeaway or delivery?', a: 'Absolutely. Select takeaway to schedule a pickup from your nearest Big Bean Café, or choose delivery where available.' },
-  { q: 'When will my pickup order be ready?', a: 'Estimated prep time is shown at checkout. You\'ll receive a notification when your order is ready to collect.' },
+  { q: 'How do I place an order through the app?', a: 'Download the Big Bean Café app, sign up or log in, choose your nearest outlet, browse the menu, customize your items, add them to cart, and complete payment securely. Your order will be sent directly to the selected café outlet.' },
+  { q: 'Can I use QR ordering inside the café?', a: 'Yes. Scan the QR code at your table to open the Big Bean Café menu, place your order, and pay without waiting in line. This makes dine-in ordering faster and more convenient.' },
+  { q: 'What payment methods are available?', a: 'The Big Bean Café app supports secure online payments including UPI, cards, net banking, and supported digital wallets through the available payment gateway.' },
+  { q: 'How do Big Coins rewards work?', a: `${BIG_COINS_FULL_COPY} Big Coins can be used for eligible discounts and rewards as per the current app terms and loyalty rules.` },
+  { q: 'Can I order for takeaway or delivery?', a: 'Yes. You can choose takeaway pickup from your nearest Big Bean Café outlet or select delivery wherever delivery service is available for your location.' },
+  { q: 'When will my pickup order be ready?', a: 'The estimated preparation time is shown during checkout. You will receive order updates, and your pickup order can be collected from the selected café outlet once it is ready.' },
 ]
 
 export default function AppPage() {
@@ -106,7 +125,13 @@ export default function AppPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  const features = [data.feature_1, data.feature_2, data.feature_3, data.feature_4].filter(Boolean) as string[]
+  const adminFeatures = [
+    data.feature_1,
+    data.feature_2,
+    data.feature_3,
+    data.feature_4,
+  ].filter(Boolean) as string[]
+  const features = Array.from(new Set([...adminFeatures, ...STATIC_KEY_FEATURES]))
   const qrUrl     = getImageUrl(data.qr_image)
   const mockupUrl = getImageUrl(data.mockup_image)
   const bgUrl     = getImageUrl(data.background_image)
@@ -120,8 +145,37 @@ export default function AppPage() {
 
   const toggleFaq = (i: number) => setOpenFaq(prev => prev === i ? null : i)
 
+  const howToSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: 'How to order using the Big Bean Café app',
+    description:
+      'Download the Big Bean Café app, browse the menu, place your order, and choose pickup, dine-in QR ordering, or delivery.',
+    step: HOW_STEPS.map((item, index) => ({
+      '@type': 'HowToStep',
+      position: index + 1,
+      name: item.title,
+      text: item.desc,
+    })),
+  }
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQS.map((faq) => ({
+      '@type': 'Question',
+      name: faq.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.a,
+      },
+    })),
+  }
+
   return (
     <div className={s.page}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <Header />
       <main>
 
@@ -261,7 +315,7 @@ export default function AppPage() {
           <div className={s.qrInner}>
             <div className={s.qrCard}>
               {qrUrl ? (
-                <img src={qrUrl} alt="QR Code" className={s.qrImg} />
+                <img src={qrUrl} alt="Scan QR to Order at Big Bean Cafe" className={s.qrImg} />
               ) : (
                 <div className={s.qrImgFallback}>
                   <QrCode size={80} color="#C9943A" />
@@ -272,10 +326,18 @@ export default function AppPage() {
             </div>
             <div className={s.qrTextBlock}>
               <p className={s.eyebrowLabel} style={{ marginBottom: '0.6rem' }}>QR Ordering</p>
-              <h2 className={`font-heading ${s.qrScanTitle}`}>Scan. Order. Enjoy.</h2>
+              <h2 className={`font-heading ${s.qrScanTitle}`}>Skip the line, order from your table</h2>
               <p className={s.qrDesc}>
-                Scan the QR at your table or counter to open the menu, place your order, and enjoy a smoother café experience — no app download required for in-café ordering.
+                Scan the QR at your table to browse the menu, customize your order, pay securely, and enjoy a smoother Big Bean Café experience without waiting in line.
               </p>
+              <div className={s.qrFeatureList}>
+                {QR_FEATURES.map((feature) => (
+                  <span key={feature} className={s.qrFeaturePill}>
+                    <Check size={14} color="#A92517" strokeWidth={3} />
+                    {feature}
+                  </span>
+                ))}
+              </div>
               <a href={orderUrl} target="_blank" rel="noopener noreferrer" className={s.orderBtn}>
                 Order Online <ArrowRight size={15} />
               </a>

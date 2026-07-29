@@ -48,8 +48,8 @@
 .hero {
   position: relative;
   overflow: hidden;
-  padding: 7rem 0 6rem;
-  min-height: 680px;
+  padding: clamp(5rem, 7vw, 6.5rem) 0 clamp(3rem, 5vw, 4.5rem);
+  min-height: clamp(560px, 72vh, 720px);
   display: flex;
   align-items: center;
 }
@@ -76,6 +76,9 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 1.5rem;
+  min-height: auto;
+  padding-top: 0;
+  padding-bottom: 0;
   display: flex;
   align-items: center;
   gap: 3rem;
@@ -118,14 +121,14 @@
   font-weight: 800;
   color: #FFF7ED;
   line-height: 1.15;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1rem;
   animation: fadeUp 0.7s 0.2s ease both;
 }
 .heroSubtitle {
   font-size: 1.05rem;
   color: #C7A489;
   line-height: 1.75;
-  margin-bottom: 2rem;
+  margin-bottom: 0.8rem;
   max-width: 480px;
   animation: fadeUp 0.7s 0.3s ease both;
 }
@@ -134,6 +137,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
+  margin-top: 1.4rem;
   animation: fadeUp 0.7s 0.4s ease both;
 }
 .heroBadgeLink {
@@ -172,12 +176,13 @@
   font-size: 0.95rem;
   color: rgba(199,164,137,0.85);
   line-height: 1.75;
-  margin-bottom: 2rem;
+  margin-bottom: 1.4rem;
   max-width: 480px;
 }
 
 .heroRight {
-  flex: 0 1 540px;
+  flex: 0 1 480px;
+  min-height: 420px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -187,10 +192,10 @@
 .mockupFloat {
   animation: floatPhone 5s ease-in-out infinite;
   filter: drop-shadow(0 40px 60px rgba(0,0,0,0.50));
-  max-width: 520px;
-  width: 100%;
-  max-height: 560px;
+  max-width: 460px;
+  max-height: 520px;
   object-fit: contain;
+  width: 100%;
 }
 .mockupGlow {
   position: absolute;
@@ -215,7 +220,8 @@
   z-index: 0;
 }
 .mockupFallback {
-  width: 260px; height: 440px;
+  width: 240px; height: 420px;
+  min-height: 420px;
   background: rgba(255,247,237,0.08);
   border-radius: 40px;
   border: 1px solid rgba(255,247,237,0.15);
@@ -409,6 +415,26 @@
   transition: background 0.2s, transform 0.2s;
 }
 .orderBtn:hover { background: #8B2E1B; transform: translateY(-2px); }
+
+.qrFeatureList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin: 1.2rem 0 1.4rem;
+}
+
+.qrFeaturePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid rgba(201, 148, 58, 0.28);
+  background: rgba(255, 247, 237, 0.82);
+  color: #3D1F0D;
+  border-radius: 999px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
 
 /* ─── How It Works ──────────────────────────────────── */
 .howGrid {
@@ -819,8 +845,15 @@
   .howGrid::before { display: none; }
   .blockGrid { grid-template-columns: 1fr; }
 }
+@media (max-width: 1024px) {
+  .hero { min-height: auto; padding: 5.5rem 0 3.5rem; }
+  .heroRight { min-height: 380px; }
+  .mockupFloat { max-height: 440px; }
+  .mockupFallback { min-height: 380px; }
+}
 @media (max-width: 768px) {
-  .hero { padding: 5rem 0 4rem; min-height: auto; }
+  .hero { padding: 5rem 0 3rem; min-height: auto; }
+  .heroInner { gap: 2rem; }
   .heroInner { flex-direction: column; text-align: center; }
   .heroLeft { align-items: center; display: flex; flex-direction: column; }
   .heroSubtitle { text-align: center; }

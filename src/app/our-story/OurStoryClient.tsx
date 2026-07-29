@@ -49,24 +49,30 @@ const DEFAULT_HERO: PageHero = {
 
 const TIMELINE = [
   {
-    year: '2019',
+    year: 'June 2024',
     title: 'The Beginning',
-    text: 'A dream to create a café that feels warm, premium, and welcoming.',
+    text: 'Big Bean Café started its journey with the first outlet at RR Nagar, creating a warm and welcoming café space for coffee lovers.',
+    startDate: '2024-06-01',
   },
   {
-    year: '2020',
+    year: 'April 2025',
     title: 'Crafting Better Coffee',
-    text: 'Focus on quality coffee, fresh ingredients, and a consistent café experience.',
+    text: 'The journey expanded with M5 and Koramangala outlets, strengthening our focus on quality coffee, fresh ingredients, and a consistent café experience.',
+    startDate: '2025-04-01',
   },
   {
-    year: '2022',
+    year: 'Aug – Oct 2025',
     title: 'Growing Across Bengaluru',
-    text: 'Expanding to multiple outlets while keeping the same taste and service standards.',
+    text: 'Big Bean Café grew further across Bengaluru with HSR Layout and Jayanagar outlets, bringing the same taste, ambience, and service standards to more guests.',
+    startDate: '2025-08-01',
+    endDate: '2025-10-31',
   },
   {
-    year: 'Today',
+    year: 'Nov 2025 – Mar 2026',
     title: 'Building a Café Community',
-    text: 'Creating a space for friends, families, professionals, and coffee lovers.',
+    text: 'With Indiranagar and Kammanahalli outlets, Big Bean Café continued building a community for friends, families, professionals, and coffee lovers through today.',
+    startDate: '2025-11-01',
+    endDate: '2026-03-31',
   },
 ]
 
@@ -75,6 +81,29 @@ const STATS = [
   { value: 50, suffix: 'K+', label: 'Happy Customers' },
   { value: 100, suffix: '%', label: 'Quality Focus' },
   { value: 1, suffix: '', label: 'Freshly Brewed Everyday' },
+]
+
+const STORY_FAQS = [
+  {
+    question: 'When was Big Bean Cafe founded?',
+    answer:
+      'Big Bean Cafe started with a single outlet and has grown into a coffee community across Bengaluru.',
+  },
+  {
+    question: 'How many Big Bean Cafe outlets are there?',
+    answer:
+      'Big Bean Cafe has 3+ outlets across Bengaluru, with more opening soon.',
+  },
+  {
+    question: 'What makes Big Bean Cafe different?',
+    answer:
+      'Big Bean Cafe focuses on premium, freshly sourced coffee and a warm, consistent café experience at every outlet.',
+  },
+  {
+    question: 'Does Big Bean Cafe offer franchise opportunities?',
+    answer:
+      'Yes, Big Bean Cafe offers franchise opportunities. Visit the Franchise page for more details.',
+  },
 ]
 
 const VALUES = [
@@ -364,6 +393,46 @@ export default function OurStoryClient() {
                   </div>
                 )
               })}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section className="section-padding" style={{ background: '#FFF7ED' }}>
+          <div className="container-custom px-5 lg:px-8">
+            <div className="mx-auto mb-10 max-w-3xl text-center">
+              <p className="mb-3 text-[0.65rem] font-black uppercase tracking-[0.22em] text-[#C9943A]">
+                FAQ
+              </p>
+              <h2 className="font-heading text-[clamp(1.7rem,3vw,2.4rem)] font-black text-[#3D1F0D]">
+                Frequently Asked Questions
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-[#6B3520]">
+                Quick answers about Big Bean Café, our journey, outlets and franchise opportunities.
+              </p>
+            </div>
+            <div className="mx-auto grid max-w-5xl gap-4 md:grid-cols-2">
+              {STORY_FAQS.map((faq) => (
+                <div
+                  key={faq.question}
+                  className="rounded-[1.4rem] border border-[#E7CFAF] bg-white/85 p-6 shadow-[0_18px_45px_rgba(61,31,13,0.08)]"
+                >
+                  <h3 className="font-heading mb-3 text-lg font-black text-[#3D1F0D]">
+                    {faq.question}
+                  </h3>
+                  {faq.question.includes('franchise') ? (
+                    <p className="text-sm leading-relaxed text-[#6B3520]">
+                      Yes, Big Bean Cafe offers franchise opportunities. Visit the{' '}
+                      <Link href="/franchise" className="font-bold text-[#C9943A] underline underline-offset-4">
+                        Franchise page
+                      </Link>{' '}
+                      for more details.
+                    </p>
+                  ) : (
+                    <p className="text-sm leading-relaxed text-[#6B3520]">{faq.answer}</p>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </section>

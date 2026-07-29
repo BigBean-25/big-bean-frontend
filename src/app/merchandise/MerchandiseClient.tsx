@@ -31,7 +31,7 @@ import {
 } from 'lucide-react'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_BASE = API_URL.replace('/api', '')
+const API_BASE = API_URL.replace(/\/api$/, '')
 
 interface Product {
   id: number
@@ -90,6 +90,33 @@ const categoryIcon = (name: string, size = 18) => {
   return <Tag style={style} />
 }
 
+const createSlug = (value: string): string =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+const getCategoryHref = (category: Category): string =>
+  `/merchandise/category/${category.slug || createSlug(category.name)}`
+
+const getProductAlt = (product: Product) => {
+  const name = product.name.toLowerCase()
+  if (name.includes('vienna')) return 'Big Bean Cafe Vienna Roast Coffee Powder'
+  if (name.includes('signature') && name.includes('filter')) return 'Big Bean Cafe Signature Filter Coffee'
+  if (name.includes('single origin')) return 'Big Bean Cafe Single Origin Coffee'
+  return `Big Bean Cafe ${product.name}`
+}
+
+const SHOP_INTERNAL_LINKS = [
+  { label: 'Menu', href: '/menu', external: false },
+  { label: 'Offers', href: '/offers', external: false },
+  { label: 'Order Online', href: 'https://bigbeancafe.store', external: true },
+  { label: 'Outlets', href: '/outlets', external: false },
+  { label: 'Contact', href: '/contact', external: false },
+]
+
 const safeJson = async (url: string) => {
   try {
     const response = await fetch(url, { cache: 'no-store' })
@@ -111,6 +138,16 @@ export default function MerchandisePage() {
   const [addedProductId, setAddedProductId] = useState<number | null>(null)
   const [cartCountValue, setCartCountValue] = useState(0)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [recentSlugs, setRecentSlugs] = useState<string[]>([])
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('bigbean_recently_viewed_products')
+      setRecentSlugs(raw ? JSON.parse(raw) : [])
+    } catch {
+      setRecentSlugs([])
+    }
+  }, [])
 
   useEffect(() => {
     const updateCartCount = () => setCartCountValue(cartCount())
@@ -214,6 +251,13 @@ export default function MerchandisePage() {
     router.push('/checkout')
   }
 
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const q = searchTerm.trim()
+    if (!q) return
+    router.push(`/merchandise/search?q=${encodeURIComponent(q)}`)
+  }
+
   const getDiscount = (product: Product) => {
     if (!product.mrp || Number(product.mrp) <= Number(product.price)) return null
     return Math.round((1 - Number(product.price) / Number(product.mrp)) * 100)
@@ -236,7 +280,7 @@ export default function MerchandisePage() {
             {imageUrl ? (
               <img
                 src={imageUrl}
-                alt={product.name}
+                alt={getProductAlt(product)}
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
             ) : (
@@ -356,7 +400,12 @@ export default function MerchandisePage() {
   }
 
   const mightAlsoLike = products.slice(0, 3)
-  const recentlyViewed = products.slice(3, 7)
+  // Vienna Roast price is controlled from admin/database. Update price in admin if incorrect.
+  const recentlyViewed = useMemo(() => {
+    if (recentSlugs.length === 0) return []
+    const bySlug = new Map(products.map((p) => [p.slug, p]))
+    return recentSlugs.map((slug) => bySlug.get(slug)).filter(Boolean) as Product[]
+  }, [products, recentSlugs])
 
   return (
     <div className="min-h-screen bg-[#F7EFE7]">
@@ -449,13 +498,12 @@ export default function MerchandisePage() {
                   Home
                 </Link>
 
-                <div className="px-4 pt-3 pb-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#9B6B50]">
+                <h2 className="px-4 pt-3 pb-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#9B6B50]">
                   Categories
-                </div>
+                </h2>
 
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategory('all')}
+                <Link
+                  href="/merchandise"
                   className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-black transition ${
                     selectedCategory === 'all'
                       ? 'bg-[#3D1F0D] text-white shadow-lg'
@@ -464,16 +512,15 @@ export default function MerchandisePage() {
                 >
                   <ShoppingBag className="h-4 w-4" />
                   All Products
-                </button>
+                </Link>
 
                 {categories.map((category) => {
                   const active = selectedCategory === String(category.id)
 
                   return (
-                    <button
+                    <Link
                       key={category.id}
-                      type="button"
-                      onClick={() => setSelectedCategory(String(category.id))}
+                      href={getCategoryHref(category)}
                       className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-black transition ${
                         active
                           ? 'bg-[#3D1F0D] text-white shadow-lg'
@@ -482,7 +529,7 @@ export default function MerchandisePage() {
                     >
                       {categoryIcon(category.name)}
                       {category.name}
-                    </button>
+                    </Link>
                   )
                 })}
 
@@ -533,7 +580,8 @@ export default function MerchandisePage() {
           {/* Main Content */}
           <section>
             {/* Top Search Bar */}
-            <div className="mb-6 rounded-[28px] border border-[#E6C7A8] bg-white p-3 shadow-[0_14px_40px_rgba(61,31,13,0.07)]">
+            <div className="mb-4 rounded-[28px] border border-[#E6C7A8] bg-white p-3 shadow-[0_14px_40px_rgba(61,31,13,0.07)]">
+              <form onSubmit={handleSearchSubmit}>
               <div className="flex items-center gap-3">
                 <div className="relative flex-1">
                   <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9B6B50]" />
@@ -563,6 +611,32 @@ export default function MerchandisePage() {
                   )}
                 </Link>
               </div>
+              </form>
+            </div>
+
+            {/* Internal Links */}
+            <div className="mb-5 flex flex-wrap items-center gap-2">
+              {SHOP_INTERNAL_LINKS.map((link) =>
+                link.external ? (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center rounded-full border border-[#E6C7A8] bg-white px-4 py-1.5 text-xs font-black text-[#3D1F0D] transition hover:border-[#C9943A] hover:bg-[#FFF7ED]"
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    className="inline-flex items-center rounded-full border border-[#E6C7A8] bg-white px-4 py-1.5 text-xs font-black text-[#3D1F0D] transition hover:border-[#C9943A] hover:bg-[#FFF7ED]"
+                  >
+                    {link.label}
+                  </Link>
+                )
+              )}
             </div>
 
             {/* Hero Banner */}
@@ -615,6 +689,7 @@ export default function MerchandisePage() {
             </div>
 
             {/* Category Icons Row */}
+            <h2 className="mb-3 text-xl font-black text-[#3D1F0D]">Shop by Category</h2>
             <div className="mb-6 rounded-[28px] border border-[#E6C7A8] bg-white p-4 shadow-[0_14px_40px_rgba(61,31,13,0.07)]">
               <div className="flex gap-4 overflow-x-auto pb-1">
                 <button
@@ -637,10 +712,9 @@ export default function MerchandisePage() {
                   const categoryImage = getImageUrl(category.image)
 
                   return (
-                    <button
+                    <Link
                       key={category.id}
-                      type="button"
-                      onClick={() => setSelectedCategory(String(category.id))}
+                      href={getCategoryHref(category)}
                       className={`flex min-w-[105px] flex-col items-center gap-3 rounded-[22px] px-4 py-4 text-center transition ${
                         active
                           ? 'bg-[#3D1F0D] text-white'
@@ -655,7 +729,7 @@ export default function MerchandisePage() {
                         )}
                       </span>
                       <span className="text-xs font-black">{category.name}</span>
-                    </button>
+                    </Link>
                   )
                 })}
 
@@ -866,10 +940,10 @@ function MobileSidebarContent({
         Home
       </Link>
 
-      <div className="px-4 pt-3 pb-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#9B6B50]">Categories</div>
+      <h2 className="px-4 pt-3 pb-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#9B6B50]">Categories</h2>
 
-      <button
-        type="button"
+      <Link
+        href="/merchandise"
         onClick={() => onSelectCategory('all')}
         className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-black transition ${
           selectedCategory === 'all'
@@ -879,15 +953,15 @@ function MobileSidebarContent({
       >
         <ShoppingBag className="h-4 w-4" />
         All Products
-      </button>
+      </Link>
 
       {categories.map((category) => {
         const active = selectedCategory === String(category.id)
 
         return (
-          <button
+          <Link
             key={category.id}
-            type="button"
+            href={getCategoryHref(category)}
             onClick={() => onSelectCategory(String(category.id))}
             className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-black transition ${
               active
@@ -897,7 +971,7 @@ function MobileSidebarContent({
           >
             {categoryIcon(category.name)}
             {category.name}
-          </button>
+          </Link>
         )
       })}
 
