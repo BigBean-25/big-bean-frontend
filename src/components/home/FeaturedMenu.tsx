@@ -89,11 +89,13 @@ function SkeletonCard() {
   return (
     <div className={`${styles.skeleton} animate-pulse`}>
       <div className={styles.skeletonImg} />
-      <div className={styles.skeletonBadge} />
-      <div className={styles.skeletonTitle} />
-      <div className={styles.skeletonDesc} />
-      <div className={styles.skeletonDesc} style={{ width: '60%' }} />
-      <div className={styles.skeletonBtn} />
+      <div className={styles.skeletonBody}>
+        <div className={styles.skeletonBadge} />
+        <div className={styles.skeletonTitle} />
+        <div className={styles.skeletonDesc} />
+        <div className={styles.skeletonDesc} style={{ width: '60%' }} />
+        <div className={styles.skeletonBtn} />
+      </div>
     </div>
   )
 }
@@ -202,11 +204,11 @@ export default function FeaturedMenu() {
       <div className="container-custom">
 
         {/* ── Heading ── */}
-        <div className="text-center mb-14">
+        <div className={`text-center ${styles.headingWrap}`}>
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em]" style={{ color: '#C9943A' }}>
             Signature Picks
           </p>
-          <h2 className="font-heading text-3xl font-bold md:text-4xl" style={{ color: '#3D1F0D' }}>
+          <h2 className={`font-heading font-bold ${styles.heading}`} style={{ color: '#3D1F0D' }}>
             Our Best Coffee, Breakfast & Desserts
           </h2>
           <div className={styles.headingLine} />
@@ -275,7 +277,7 @@ export default function FeaturedMenu() {
         )}
 
         {/* ── Footer CTAs ── */}
-        <div className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className={`${styles.ctaRow} flex flex-col sm:flex-row items-center justify-center gap-4`}>
           <a
             href={ORDER_URL}
             target="_blank"
