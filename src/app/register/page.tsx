@@ -63,14 +63,14 @@ export default function CustomerRegister() {
   return (
     /* Root — exact 100vh, no overflow, two-column grid on 900px+ */
     <div
-      className="w-full bg-[#FFF7ED] min-[900px]:grid min-[900px]:grid-cols-[42%_58%]"
+      className="w-full bg-[#FFF7ED] min-[900px]:grid min-[900px]:grid-cols-[46%_54%] min-[1180px]:grid-cols-[42%_58%]"
       style={{ height: '100vh', overflow: 'hidden' }}
     >
 
       {/* ── Left panel ── */}
       <div
         className="relative flex h-full items-center justify-center overflow-hidden"
-        style={{ padding: 'clamp(14px, 2vw, 28px)' }}
+        style={{ padding: '18px 22px' }}
       >
         {/* Background image — single-column view only (< 900px) */}
         <img
@@ -84,7 +84,7 @@ export default function CustomerRegister() {
         {/* Form card */}
         <div
           className="relative z-10 w-full max-w-[520px] rounded-[22px] border border-[#E6C7A8]/70 bg-white/92 shadow-[0_20px_60px_rgba(61,31,13,0.13)] backdrop-blur-xl"
-          style={{ maxHeight: 'calc(100vh - 48px)', overflow: 'hidden', padding: 'clamp(18px, 2vw, 26px)', boxSizing: 'border-box' }}
+          style={{ maxHeight: 'calc(100vh - 36px)', overflow: 'hidden', padding: 'clamp(16px, 1.8vw, 26px)', boxSizing: 'border-box' }}
         >
 
           {/* Badge + Logo */}
@@ -98,7 +98,7 @@ export default function CustomerRegister() {
               width={140}
               height={64}
               className="object-contain"
-              style={{ width: 'clamp(80px, 9vw, 140px)', height: 'auto', maxWidth: '140px' }}
+              style={{ width: 'clamp(78px, 8vw, 120px)', height: 'auto', maxWidth: '120px' }}
               priority
             />
           </div>
@@ -205,7 +205,7 @@ export default function CustomerRegister() {
         <img
           src="/images/auth/customer-auth-bg.png"
           alt="Big Bean Café"
-          className="absolute inset-0 h-full w-full object-cover object-center"
+          className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: '60% center' }}
         />
         <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#FFF7ED]/25" />
       </div>
