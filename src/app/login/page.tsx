@@ -64,8 +64,8 @@ export default function CustomerLogin() {
   }
 
   return (
-    /* h-[100svh] + overflow-hidden — no page scroll */
-    <div className="relative h-[100svh] w-full overflow-hidden bg-[#FFF7ED]">
+    /* h-screen + overflow-hidden — no page scroll */
+    <div className="relative h-screen w-full overflow-hidden bg-[#FFF7ED]" style={{ minHeight: '100dvh' }}>
 
       {/* Full-screen background */}
       <img
@@ -78,11 +78,11 @@ export default function CustomerLogin() {
       <div className="absolute inset-0 bg-gradient-to-r from-[#FFF7ED]/96 via-[#FFF7ED]/78 to-transparent" />
 
       {/* Centred form column — left half */}
-      <div className="relative z-10 flex h-[100svh] items-center px-4 sm:px-6 lg:px-10">
+      <div className="relative z-10 flex h-full items-center px-4 sm:px-6 lg:px-10">
         <div className="w-full max-w-[500px] lg:ml-[6vw]">
 
           {/* Card — inner scroll on very small screens */}
-          <div className="max-h-[92vh] max-h-[calc(100svh-32px)] overflow-y-auto rounded-[28px] border border-[#E6C7A8]/70 bg-white/72 p-5 shadow-[0_24px_70px_rgba(61,31,13,0.16)] backdrop-blur-xl sm:max-h-[92vh] sm:p-6 lg:p-7">
+          <div className="max-h-[calc(100vh-32px)] overflow-y-auto rounded-[28px] border border-[#E6C7A8]/70 bg-white/72 p-5 shadow-[0_24px_70px_rgba(61,31,13,0.16)] backdrop-blur-xl sm:p-6 lg:p-7">
 
             {/* Badge + Logo */}
             <div className="mb-4 flex items-center justify-between">
@@ -92,10 +92,9 @@ export default function CustomerLogin() {
               <Image
                 src="/logo/big-bean-cafe-logo-transparent.png"
                 alt="Big Bean Café"
-                width={105}
-                height={48}
-                className="w-[90px] md:w-[105px] object-contain"
-                style={{ width: 'auto', height: 'auto' }}
+                width={180}
+                height={80}
+                className="h-auto w-[90px] sm:w-[130px] lg:w-[180px] max-w-[180px] object-contain"
                 priority
               />
             </div>
