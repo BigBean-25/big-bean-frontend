@@ -331,7 +331,7 @@ export default function AdminEvents() {
       </div>
 
       {/* Event table */}
-      <div className={`${card} overflow-hidden`}>
+      <div className={card}>
         {loading ? (
           <div className="p-6">
             <div className="overflow-x-auto">
@@ -407,9 +407,10 @@ export default function AdminEvents() {
             <table className="w-full">
               <thead className="bg-[#F9FDFB]">
                 <tr>
-                  {['Image', 'Title', 'Category', 'Date', 'Time', 'Outlet', 'Price', 'Bookings', 'Status', 'Actions'].map(h => (
+                  {['Image', 'Title', 'Category', 'Date', 'Time', 'Outlet', 'Price', 'Bookings', 'Status'].map(h => (
                     <th key={h} className="whitespace-nowrap px-4 py-3 text-left text-xs font-black uppercase text-[#5F6F68]">{h}</th>
                   ))}
+                  <th className="whitespace-nowrap px-4 py-3 text-left text-xs font-black uppercase text-[#5F6F68]" style={{ minWidth: '180px' }}>Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F3F8F6]">
