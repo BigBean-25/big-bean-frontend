@@ -213,15 +213,20 @@ export default function AppPromo() {
               {/* Inner glow */}
               <div className="pointer-events-none absolute inset-0 rounded-[44px] bg-[radial-gradient(circle_at_35%_20%,rgba(255,247,237,0.20),transparent_55%)]" />
 
-              <div className="relative flex items-center justify-center rounded-[32px] bg-gradient-to-b from-white/10 to-transparent px-4 pb-5 pt-6 sm:px-6 sm:pb-6 sm:pt-8">
+              {/* Phone screen — overflow-hidden clips image bg/edges to rounded frame.
+                  For cleanest look, upload a transparent-background PNG mockup. */}
+              <div
+                className="relative w-full overflow-hidden rounded-[32px] bg-black/20"
+                style={{ height: 'clamp(220px, 52vw, 420px)' }}
+              >
                 {mockupUrl ? (
                   <img
                     src={mockupUrl}
                     alt="Big Bean Café App"
-                    className="h-auto max-h-[280px] w-auto object-contain drop-shadow-2xl sm:max-h-[360px] lg:max-h-[440px]"
+                    className="h-full w-full object-cover object-top"
                   />
                 ) : (
-                  <div className="flex h-[240px] w-[160px] flex-col items-center justify-center gap-4 rounded-[2rem] border border-white/10 bg-white/5 sm:h-[300px] sm:w-[200px]">
+                  <div className="flex h-full w-full flex-col items-center justify-center gap-4 border border-white/10 bg-white/5">
                     <Smartphone className="h-14 w-14 text-[#FFF7ED]/40" />
                     <span className="text-center text-xs font-bold uppercase tracking-widest text-[#FFF7ED]/50">
                       Big Bean Café App
