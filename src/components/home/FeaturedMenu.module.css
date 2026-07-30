@@ -4,6 +4,12 @@
   padding: 88px 0 100px;
 }
 
+/* ── Inner container — safe horizontal padding on every breakpoint ── */
+.innerContainer {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
 /* ── Heading wrapper (replaces Tailwind mb-14) ── */
 .headingWrap {
   margin-bottom: 56px;
@@ -247,9 +253,15 @@
 .skeletonDesc  { height: 13px; width: 90%;   background: #EED9C0; border-radius: 4px;   margin-bottom: 6px; }
 .skeletonBtn   { height: 38px; width: 100%;  background: #DDB98A; border-radius: 999px; margin-top: 14px; }
 
+/* ── Desktop: extra inner breathing room before max-width kicks in ── */
+@media (min-width: 1025px) {
+  .innerContainer { padding-left: 40px; padding-right: 40px; }
+}
+
 /* ── Tablet: 2 columns ── */
 @media (max-width: 1024px) {
-  .section     { padding: 64px 0 72px; }
+  .section       { padding: 64px 0 72px; }
+  .innerContainer { padding-left: 24px; padding-right: 24px; }
   .headingWrap { margin-bottom: 44px; }
   .heading     { font-size: 28px; }
   .grid        { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
@@ -258,7 +270,8 @@
 
 /* ── Mobile: 1 column ── */
 @media (max-width: 640px) {
-  .section     { padding: 48px 0 56px; }
+  .section       { padding: 48px 0 56px; }
+  .innerContainer { padding-left: 16px; padding-right: 16px; }
   .headingWrap { margin-bottom: 32px; }
   .heading     { font-size: 22px; }
   .grid        { grid-template-columns: 1fr; gap: 18px; }

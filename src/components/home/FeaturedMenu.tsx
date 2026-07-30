@@ -201,7 +201,7 @@ export default function FeaturedMenu() {
 
   return (
     <section className={styles.section}>
-      <div className="container-custom">
+      <div className={`container-custom ${styles.innerContainer}`}> 
 
         {/* ── Heading ── */}
         <div className={`text-center ${styles.headingWrap}`}>
