@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -20,12 +20,6 @@ export default function CustomerRegister() {
   const [submitting, setSubmitting]   = useState(false)
   const [error, setError]             = useState('')
   const [success, setSuccess]         = useState('')
-
-  // Lock body scroll while on this page
-  useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = '' }
-  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); setError(''); setSuccess('')
@@ -67,38 +61,36 @@ export default function CustomerRegister() {
   }
 
   return (
-    /* h-screen + overflow-hidden — no page scroll */
-    <div className="relative h-screen w-full overflow-hidden bg-[#FFF7ED]">
+    <div className="relative min-h-screen w-full bg-[#FFF7ED]">
 
-      {/* Full-screen background */}
+      {/* Full-screen background — fixed so it persists on mobile scroll */}
       <img
         src="/images/auth/customer-auth-bg.png"
         alt="Big Bean Café Register"
-        className="absolute inset-0 h-full w-full object-cover object-right"
+        className="fixed inset-0 h-full w-full object-cover object-right"
       />
 
       {/* Soft left overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#FFF7ED]/96 via-[#FFF7ED]/78 to-transparent" />
+      <div className="fixed inset-0 bg-gradient-to-r from-[#FFF7ED]/96 via-[#FFF7ED]/78 to-transparent" />
 
-      {/* Centred form column — left half */}
-      <div className="relative z-10 flex h-screen items-center px-4 sm:px-6 lg:px-10">
-        <div className="w-full max-w-[500px] lg:ml-[6vw]">
+      {/* Centred form column */}
+      <div className="relative z-10 flex min-h-screen items-center px-4 py-6 sm:px-6 lg:px-10">
+        <div className="w-full max-w-[480px] lg:ml-[6vw]">
 
-          {/* Card — inner scroll on very small screens */}
-          <div className="max-h-[92vh] overflow-y-auto rounded-[28px] border border-[#E6C7A8]/70 bg-white/72 p-5 shadow-[0_24px_70px_rgba(61,31,13,0.16)] backdrop-blur-xl sm:p-6 lg:p-7">
+          {/* Card — no internal scroll */}
+          <div className="rounded-[28px] border border-[#E6C7A8]/70 bg-white/72 p-5 shadow-[0_24px_70px_rgba(61,31,13,0.16)] backdrop-blur-xl sm:p-6">
 
             {/* Badge + Logo */}
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-3 flex items-center justify-between">
               <span className="rounded-full border border-[#E6C7A8] bg-[#FFF7ED] px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#6B3520]">
                 Big Bean Café Customer
               </span>
               <Image
                 src="/logo/big-bean-cafe-logo-transparent.png"
                 alt="Big Bean Café"
-                width={105}
-                height={48}
-                className="w-[90px] md:w-[105px] object-contain"
-                style={{ width: 'auto', height: 'auto' }}
+                width={160}
+                height={72}
+                className="h-auto w-[90px] lg:w-[160px] max-w-[160px] object-contain"
                 priority
               />
             </div>
@@ -120,7 +112,7 @@ export default function CustomerRegister() {
             )}
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+            <form onSubmit={handleSubmit} className="mt-3 space-y-2.5">
 
               {/* Full Name — full width */}
               <div>
@@ -176,14 +168,14 @@ export default function CustomerRegister() {
 
               {/* Submit */}
               <button type="submit" disabled={submitting}
-                className="w-full rounded-full bg-[#3D1F0D] py-3 text-sm font-black tracking-wide text-[#FFF7ED] transition hover:bg-[#C9943A] hover:text-[#120905] disabled:opacity-60">
+                className="w-full rounded-full bg-[#3D1F0D] py-2.5 text-sm font-black tracking-wide text-[#FFF7ED] transition hover:bg-[#C9943A] hover:text-[#120905] disabled:opacity-60">
                 {submitting ? 'Creating Account…' : 'Create Account'}
               </button>
             </form>
 
             {/* Trust + links */}
-            <p className="mt-4 text-center text-[11px] text-[#A98A74]">🔒 Secure customer registration for Big Bean Café.</p>
-            <p className="mt-2.5 text-center text-sm text-[#7A5A48]">
+            <p className="mt-3 text-center text-[11px] text-[#A98A74]">🔒 Secure customer registration for Big Bean Café.</p>
+            <p className="mt-2 text-center text-sm text-[#7A5A48]">
               Already have an account?{' '}
               <Link href="/login" className="font-black text-[#3D1F0D] hover:underline">Login</Link>
             </p>
