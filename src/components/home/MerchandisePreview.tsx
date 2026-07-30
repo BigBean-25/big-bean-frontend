@@ -95,7 +95,7 @@ export default function MerchandisePreview() {
       <style dangerouslySetInnerHTML={{ __html: FLOAT_CSS }} />
       <DecorativeBackground />
 
-      <div className="relative z-10 container-custom py-16 md:py-24">
+      <div className="relative z-10 container-custom px-4 sm:px-6 lg:px-10 py-16 md:py-24">
         <Header />
 
         {loading ? (
