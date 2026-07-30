@@ -10,7 +10,7 @@ import { saveCustomerSession } from '@/lib/customerAuth'
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 
 const inputCls =
-  'w-full rounded-2xl border border-[#E6C7A8] bg-[#FFF7ED]/90 px-4 py-3 text-sm font-semibold text-[#3D1F0D] outline-none transition placeholder:text-[#A98A74] focus:border-[#C9943A] focus:ring-4 focus:ring-[#C9943A]/10'
+  'w-full rounded-2xl border border-[#E6C7A8] bg-[#FFF7ED]/90 px-4 text-sm font-semibold text-[#3D1F0D] outline-none transition placeholder:text-[#A98A74] focus:border-[#C9943A] focus:ring-4 focus:ring-[#C9943A]/10'
 
 export default function CustomerRegister() {
   const router = useRouter()
@@ -23,10 +23,10 @@ export default function CustomerRegister() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); setError(''); setSuccess('')
-    if (!form.full_name.trim())                      { setError('Full name is required'); return }
-    if (!form.email && !form.phone)                  { setError('Email or mobile number is required'); return }
-    if (form.password.length < 6)                    { setError('Password must be at least 6 characters'); return }
-    if (form.password !== form.confirm_password)     { setError('Passwords do not match'); return }
+    if (!form.full_name.trim())                  { setError('Full name is required'); return }
+    if (!form.email && !form.phone)              { setError('Email or mobile number is required'); return }
+    if (form.password.length < 6)                { setError('Password must be at least 6 characters'); return }
+    if (form.password !== form.confirm_password) { setError('Passwords do not match'); return }
 
     setSubmitting(true)
     try {
@@ -61,99 +61,100 @@ export default function CustomerRegister() {
   }
 
   return (
-    /* Root — exact 100vh, no overflow, two-column grid on 900px+ */
+    /* Root: position fixed + inset 0 = guaranteed exact viewport */
     <div
-      className="w-full bg-[#FFF7ED] min-[900px]:grid min-[900px]:grid-cols-[46%_54%] min-[1180px]:grid-cols-[42%_58%]"
-      style={{ height: '100vh', overflow: 'hidden' }}
+      className="bg-[#FFF7ED] min-[900px]:grid min-[900px]:grid-cols-[50%_50%] min-[1180px]:grid-cols-[42%_58%]"
+      style={{ position: 'fixed', inset: 0, overflow: 'hidden' }}
     >
 
       {/* ── Left panel ── */}
       <div
-        className="relative flex h-full items-center justify-center overflow-hidden"
-        style={{ padding: '18px 22px' }}
+        style={{
+          height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '18px 22px', overflow: 'hidden', position: 'relative',
+        }}
       >
-        {/* Background image — single-column view only (< 900px) */}
-        <img
-          src="/images/auth/customer-auth-bg.png"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover object-right min-[900px]:hidden"
-        />
+        {/* Mobile background */}
+        <img src="/images/auth/customer-auth-bg.png" alt="" aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover object-right min-[900px]:hidden" />
         <div className="absolute inset-0 bg-[#FFF7ED]/93 min-[900px]:hidden" />
 
-        {/* Form card */}
+        {/* Card */}
         <div
-          className="relative z-10 w-full max-w-[520px] rounded-[22px] border border-[#E6C7A8]/70 bg-white/92 shadow-[0_20px_60px_rgba(61,31,13,0.13)] backdrop-blur-xl"
-          style={{ maxHeight: 'calc(100vh - 36px)', overflow: 'hidden', padding: 'clamp(16px, 1.8vw, 26px)', boxSizing: 'border-box' }}
+          className="relative z-10 w-full max-w-[520px] rounded-[20px] border border-[#E6C7A8]/70 bg-white/93 shadow-[0_16px_50px_rgba(61,31,13,0.12)] backdrop-blur-xl"
+          style={{
+            maxHeight: 'calc(100vh - 36px)', overflow: 'hidden',
+            padding: 'clamp(14px, 1.6vw, 22px)', boxSizing: 'border-box',
+          }}
         >
 
           {/* Badge + Logo */}
-          <div className="mb-2 flex items-center justify-between">
-            <span className="rounded-full border border-[#E6C7A8] bg-[#FFF7ED] px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.14em] text-[#6B3520]">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <span className="rounded-full border border-[#E6C7A8] bg-[#FFF7ED] px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.13em] text-[#6B3520]">
               Big Bean Café Customer
             </span>
             <Image
-              src="/logo/big-bean-cafe-logo-transparent.png"
-              alt="Big Bean Café"
-              width={140}
-              height={64}
+              src="/logo/big-bean-cafe-logo-transparent.png" alt="Big Bean Café"
+              width={120} height={54} priority
               className="object-contain"
-              style={{ width: 'clamp(78px, 8vw, 120px)', height: 'auto', maxWidth: '120px' }}
-              priority
+              style={{ width: 'clamp(76px, 7.5vw, 120px)', height: 'auto', maxWidth: 120 }}
             />
           </div>
 
-          {/* Title + subtitle */}
-          <h1 className="font-heading text-xl font-black leading-tight text-[#2A120B] sm:text-2xl">
+          {/* Title */}
+          <h1 className="font-heading font-black leading-tight text-[#2A120B]"
+            style={{ fontSize: 'clamp(18px, 1.6vw, 22px)', marginBottom: 4 }}>
             Create Your Account
           </h1>
-          <p className="mt-0.5 text-[11px] leading-snug text-[#7A5A48]">
-            Join Big Bean Café and manage your orders, rewards and profile.
+          <p style={{ fontSize: 11, color: '#7A5A48', marginBottom: 8, lineHeight: 1.4 }}>
+            Join Big Bean Café — manage orders, rewards and your profile.
           </p>
 
           {/* Messages */}
           {error && (
-            <div className="mt-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700">{error}</div>
+            <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-bold text-red-700"
+              style={{ marginBottom: 6 }}>{error}</div>
           )}
           {success && (
-            <div className="mt-2 rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-xs font-bold text-green-700">{success}</div>
+            <div className="rounded-xl border border-green-200 bg-green-50 px-3 py-1.5 text-xs font-bold text-green-700"
+              style={{ marginBottom: 6 }}>{success}</div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="mt-2 space-y-2">
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
 
             {/* Full Name */}
             <div>
-              <label className="mb-0.5 block text-xs font-black text-[#3D1F0D]">Full Name *</label>
-              <input type="text" value={form.full_name}
+              <label className="block text-xs font-black text-[#3D1F0D]" style={{ marginBottom: 3 }}>Full Name *</label>
+              <input type="text" value={form.full_name} required
                 onChange={e => setForm(p => ({ ...p, full_name: e.target.value }))}
-                placeholder="Your full name" required className={inputCls} />
+                placeholder="Your full name" className={inputCls} style={{ height: 44 }} />
             </div>
 
             {/* Email + Phone — 2 columns */}
-            <div className="grid gap-2 grid-cols-2">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               <div>
-                <label className="mb-0.5 block text-xs font-black text-[#3D1F0D]">Email</label>
+                <label className="block text-xs font-black text-[#3D1F0D]" style={{ marginBottom: 3 }}>Email</label>
                 <input type="email" value={form.email}
                   onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-                  placeholder="your@email.com" className={inputCls} />
+                  placeholder="your@email.com" className={inputCls} style={{ height: 44 }} />
               </div>
               <div>
-                <label className="mb-0.5 block text-xs font-black text-[#3D1F0D]">Mobile</label>
+                <label className="block text-xs font-black text-[#3D1F0D]" style={{ marginBottom: 3 }}>Mobile</label>
                 <input type="tel" value={form.phone}
                   onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
-                  placeholder="9999999999" className={inputCls} />
+                  placeholder="9999999999" className={inputCls} style={{ height: 44 }} />
               </div>
             </div>
 
             {/* Password + Confirm — 2 columns */}
-            <div className="grid gap-2 grid-cols-2">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               <div>
-                <label className="mb-0.5 block text-xs font-black text-[#3D1F0D]">Password *</label>
+                <label className="block text-xs font-black text-[#3D1F0D]" style={{ marginBottom: 3 }}>Password *</label>
                 <div className="relative">
-                  <input type={showPw ? 'text' : 'password'} value={form.password}
+                  <input type={showPw ? 'text' : 'password'} value={form.password} required
                     onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
-                    placeholder="Min 6 chars" required className={inputCls + ' pr-10'} />
+                    placeholder="Min 6 chars" className={inputCls + ' pr-10'} style={{ height: 44 }} />
                   <button type="button" onClick={() => setShowPw(v => !v)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A98A74] hover:text-[#3D1F0D]">
                     {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -161,11 +162,11 @@ export default function CustomerRegister() {
                 </div>
               </div>
               <div>
-                <label className="mb-0.5 block text-xs font-black text-[#3D1F0D]">Confirm *</label>
+                <label className="block text-xs font-black text-[#3D1F0D]" style={{ marginBottom: 3 }}>Confirm *</label>
                 <div className="relative">
-                  <input type={showConfirm ? 'text' : 'password'} value={form.confirm_password}
+                  <input type={showConfirm ? 'text' : 'password'} value={form.confirm_password} required
                     onChange={e => setForm(p => ({ ...p, confirm_password: e.target.value }))}
-                    placeholder="Re-enter" required className={inputCls + ' pr-10'} />
+                    placeholder="Re-enter" className={inputCls + ' pr-10'} style={{ height: 44 }} />
                   <button type="button" onClick={() => setShowConfirm(v => !v)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A98A74] hover:text-[#3D1F0D]">
                     {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -176,20 +177,20 @@ export default function CustomerRegister() {
 
             {/* Submit */}
             <button type="submit" disabled={submitting}
-              className="w-full rounded-full bg-[#3D1F0D] py-3 text-sm font-black tracking-wide text-[#FFF7ED] transition hover:bg-[#C9943A] hover:text-[#120905] disabled:opacity-60">
+              className="w-full rounded-full bg-[#3D1F0D] text-sm font-black tracking-wide text-[#FFF7ED] transition hover:bg-[#C9943A] hover:text-[#120905] disabled:opacity-60"
+              style={{ height: 46 }}>
               {submitting ? 'Creating Account…' : 'Create Account'}
             </button>
           </form>
 
-          {/* Footer */}
-          <div className="mt-2 flex items-center justify-between">
-            <p className="text-[10px] text-[#A98A74]">🔒 Secure registration.</p>
-            <p className="text-xs text-[#7A5A48]">
+          <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 10, color: '#A98A74' }}>🔒 Secure registration.</span>
+            <span style={{ fontSize: 12, color: '#7A5A48' }}>
               Have an account?{' '}
               <Link href="/login" className="font-black text-[#3D1F0D] hover:underline">Login</Link>
-            </p>
+            </span>
           </div>
-          <div className="mt-1 text-center">
+          <div style={{ marginTop: 4, textAlign: 'center' }}>
             <Link href="/" className="text-[10px] font-semibold text-[#A98A74] hover:text-[#3D1F0D] hover:underline">
               ← Back to Big Bean Café
             </Link>
@@ -198,16 +199,14 @@ export default function CustomerRegister() {
         </div>
       </div>
 
-      {/* ── Right panel — image, desktop only ── */}
-      <div
-        className="relative hidden h-full overflow-hidden min-[900px]:block"
-      >
+      {/* ── Right panel — desktop only ── */}
+      <div style={{ height: '100vh', overflow: 'hidden', position: 'relative', display: 'none' }}
+        className="min-[900px]:block">
         <img
-          src="/images/auth/customer-auth-bg.png"
-          alt="Big Bean Café"
-          className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: '60% center' }}
+          src="/images/auth/customer-auth-bg.png" alt="Big Bean Café"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: '65% center' }}
         />
-        <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#FFF7ED]/25" />
+        <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[#FFF7ED]/20" />
       </div>
 
     </div>
