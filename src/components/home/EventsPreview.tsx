@@ -87,9 +87,8 @@ const mapApiEvents = (apiEvents: any[]): EventItem[] => {
   })
 }
 
-const CARD_W = 300
 const CARD_GAP = 24
-const VISIBLE = 3
+const VISIBLE = 3   // keep for mapApiEvents slice
 
 export default function EventsPreview() {
   const [events, setEvents] = useState<EventItem[]>([])
@@ -97,6 +96,34 @@ export default function EventsPreview() {
   const [error, setError] = useState(false)
   const [active, setActive] = useState(0)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  // Responsive card width: fills container exactly — no right gap, no left clip
+  const [cardW, setCardW] = useState(300)
+  const [visibleCount, setVisibleCount] = useState(3)
+
+  useEffect(() => {
+    const update = () => {
+      const vw = window.innerWidth
+      // containerW = inner width of the 1200px-capped, 1.5rem-padded container
+      const containerW = Math.min(vw, 1200) - 48
+      if (vw < 640) {
+        setCardW(Math.min(280, vw - 40))
+        setVisibleCount(1)
+      } else if (vw < 1024) {
+        setCardW(Math.floor((containerW - CARD_GAP) / 2))
+        setVisibleCount(2)
+      } else {
+        setCardW(Math.floor((containerW - 2 * CARD_GAP) / 3))
+        setVisibleCount(3)
+      }
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
+  // Reset carousel position when breakpoint changes
+  useEffect(() => { setActive(0) }, [visibleCount])
 
   useEffect(() => {
     fetch(`${API_URL}/events/active`)
@@ -116,29 +143,29 @@ export default function EventsPreview() {
   }, [])
 
   const display = events
-  const maxIdx = Math.max(0, display.length - VISIBLE)
+  const maxIdx = Math.max(0, display.length - visibleCount)
 
   const go = (dir: number) => setActive(p => Math.max(0, Math.min(maxIdx, p + dir)))
 
   useEffect(() => {
-    if (display.length <= VISIBLE) return
+    if (display.length <= visibleCount) return
     intervalRef.current = setInterval(() => setActive(p => (p >= maxIdx ? 0 : p + 1)), 4500)
     return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  }, [display.length, maxIdx])
+  }, [display.length, maxIdx, visibleCount])
 
   const pause = () => { if (intervalRef.current) clearInterval(intervalRef.current) }
   const resume = () => {
-    if (display.length <= VISIBLE) return
+    if (display.length <= visibleCount) return
     intervalRef.current = setInterval(() => setActive(p => (p >= maxIdx ? 0 : p + 1)), 4500)
   }
 
   if (!loading && (error || events.length === 0)) return null
 
   return (
-    <section style={{ background: 'linear-gradient(180deg,#100704 0%,#1A0D07 55%,#0E0704 100%)', padding: '5.5rem 0 6rem', position: 'relative', overflow: 'hidden' }}>
+    <section className="ep-section" style={{ background: 'linear-gradient(180deg, #FFF7ED 0%, #F6E6D1 100%)', position: 'relative', overflow: 'hidden' }}>
 
-      {/* Subtle dot-grid overlay */}
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(201,148,58,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
+      {/* Warm dot-grid overlay */}
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(201,148,58,0.13) 1px, transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem', position: 'relative' }}>
 
@@ -148,17 +175,17 @@ export default function EventsPreview() {
             <p style={{ fontSize: '0.62rem', fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#C9943A', marginBottom: '0.75rem' }}>
               What&apos;s On
             </p>
-            <h2 className="font-heading" style={{ fontSize: 'clamp(2rem, 3.8vw, 3rem)', fontWeight: 800, color: '#FFF7ED', lineHeight: 1.15, marginBottom: '0.75rem' }}>
+            <h2 className="font-heading" style={{ fontSize: 'clamp(2rem, 3.8vw, 3rem)', fontWeight: 800, color: '#3D1F0D', lineHeight: 1.15, marginBottom: '0.75rem' }}>
               Upcoming Events
             </h2>
-            <p style={{ fontSize: '1rem', color: 'rgba(255,247,237,0.58)', maxWidth: '500px', lineHeight: 1.72 }}>
+            <p style={{ fontSize: '1rem', color: '#6B3520', maxWidth: '500px', lineHeight: 1.72 }}>
               Join our café experiences, workshops and community events.
             </p>
           </div>
           <a href="/events"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', background: 'transparent', color: '#C9943A', border: '1.5px solid #C9943A', borderRadius: '100px', padding: '0.7rem 1.8rem', fontSize: '0.8rem', fontWeight: 800, textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase', transition: 'all 0.22s', whiteSpace: 'nowrap' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#C9943A'; (e.currentTarget as HTMLElement).style.color = '#0E0704' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#C9943A' }}>
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', background: '#3D1F0D', color: '#FFF7ED', border: '1.5px solid #3D1F0D', borderRadius: '100px', padding: '0.7rem 1.8rem', fontSize: '0.8rem', fontWeight: 800, textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase', transition: 'all 0.22s', whiteSpace: 'nowrap' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#3D1F0D' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#3D1F0D'; (e.currentTarget as HTMLElement).style.color = '#FFF7ED' }}>
             View All <ArrowRight style={{ width: 14, height: 14 }} />
           </a>
         </div>
@@ -167,7 +194,7 @@ export default function EventsPreview() {
         {loading ? (
           <div style={{ display: 'flex', gap: `${CARD_GAP}px` }}>
             {[1, 2, 3].map(i => (
-              <div key={i} style={{ flex: '0 0 300px', height: '400px', borderRadius: '22px', background: 'rgba(255,247,237,0.05)', border: '1px solid rgba(201,148,58,0.12)' }} />
+              <div key={i} style={{ flex: `0 0 ${cardW}px`, height: '400px', borderRadius: '22px', background: 'rgba(61,31,13,0.07)', border: '1px solid rgba(201,148,58,0.18)' }} />
             ))}
           </div>
         ) : (
@@ -177,7 +204,7 @@ export default function EventsPreview() {
               <div style={{
                 display: 'flex',
                 gap: `${CARD_GAP}px`,
-                transform: `translateX(-${active * (CARD_W + CARD_GAP)}px)`,
+                transform: `translateX(-${active * (cardW + CARD_GAP)}px)`,
                 transition: 'transform 0.55s cubic-bezier(0.4,0,0.2,1)',
               }}>
                 {display.map((ev, i) => {
@@ -187,14 +214,16 @@ export default function EventsPreview() {
                   const loc = ev.outlet_name || ev.location || 'Big Bean Café'
                   return (
                     <div key={ev.id}
-                      style={{ flex: `0 0 ${CARD_W}px`, height: '420px', borderRadius: '22px', overflow: 'hidden', position: 'relative', background: '#1A0D07', boxShadow: '0 24px 64px rgba(0,0,0,0.55)', border: '1px solid rgba(201,148,58,0.15)', cursor: 'pointer', transition: 'transform 0.28s ease, box-shadow 0.28s ease', animationDelay: `${i * 0.08}s` }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-10px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 40px 90px rgba(0,0,0,0.7)' }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 24px 64px rgba(0,0,0,0.55)' }}>
+                      style={{ flex: `0 0 ${cardW}px`, height: '420px', borderRadius: '22px', overflow: 'hidden', position: 'relative', background: '#1A0D07', boxShadow: '0 24px 64px rgba(0,0,0,0.28)', border: '1px solid rgba(201,148,58,0.15)', cursor: 'pointer', transition: 'transform 0.28s ease, box-shadow 0.28s ease' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-10px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 40px 90px rgba(0,0,0,0.40)' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 24px 64px rgba(0,0,0,0.28)' }}>
 
-                      {/* Full poster bg */}
+                      {/* Event poster — object-contain keeps all poster text visible.
+                          Upload posters with safe padding around text for best display. */}
                       {imgUrl ? (
-                        <img src={imgUrl} alt={ev.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
-                          onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.06)')}
+                        <img src={imgUrl} alt={ev.title}
+                          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center', transition: 'transform 0.5s ease' }}
+                          onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.04)')}
                           onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} />
                       ) : (
                         <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(160deg, #2A120B ${i * 12}%, #6B3520, #C9943A)` }}>
@@ -251,27 +280,27 @@ export default function EventsPreview() {
               </div>
             </div>
 
-            {/* Controls */}
-            {display.length > VISIBLE && (
+            {/* Controls — visible on cream background */}
+            {maxIdx > 0 && (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1.2rem', marginTop: '2.5rem' }}>
                 <button onClick={() => go(-1)} disabled={active === 0}
-                  style={{ width: 42, height: 42, borderRadius: '50%', border: '1.5px solid rgba(201,148,58,0.4)', background: active === 0 ? 'rgba(201,148,58,0.05)' : 'rgba(201,148,58,0.12)', color: active === 0 ? 'rgba(201,148,58,0.3)' : '#C9943A', cursor: active === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { if (active > 0) (e.currentTarget as HTMLElement).style.background = '#C9943A'; if (active > 0) (e.currentTarget as HTMLElement).style.color = '#0E0704' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = active === 0 ? 'rgba(201,148,58,0.05)' : 'rgba(201,148,58,0.12)'; (e.currentTarget as HTMLElement).style.color = active === 0 ? 'rgba(201,148,58,0.3)' : '#C9943A' }}>
+                  style={{ width: 42, height: 42, borderRadius: '50%', border: `1.5px solid ${active === 0 ? 'rgba(61,31,13,0.18)' : 'rgba(61,31,13,0.45)'}`, background: active === 0 ? 'rgba(61,31,13,0.04)' : 'rgba(61,31,13,0.09)', color: active === 0 ? 'rgba(61,31,13,0.25)' : '#3D1F0D', cursor: active === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { if (active > 0) { (e.currentTarget as HTMLElement).style.background = '#3D1F0D'; (e.currentTarget as HTMLElement).style.color = '#FFF7ED' } }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = active === 0 ? 'rgba(61,31,13,0.04)' : 'rgba(61,31,13,0.09)'; (e.currentTarget as HTMLElement).style.color = active === 0 ? 'rgba(61,31,13,0.25)' : '#3D1F0D' }}>
                   <ChevronLeft style={{ width: 18, height: 18 }} />
                 </button>
 
                 <div style={{ display: 'flex', gap: '8px' }}>
                   {Array.from({ length: maxIdx + 1 }).map((_, i) => (
                     <button key={i} onClick={() => setActive(i)}
-                      style={{ width: i === active ? 24 : 8, height: 8, borderRadius: '100px', background: i === active ? '#C9943A' : 'rgba(201,148,58,0.28)', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s ease' }} />
+                      style={{ width: i === active ? 24 : 8, height: 8, borderRadius: '100px', background: i === active ? '#C9943A' : 'rgba(61,31,13,0.22)', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s ease' }} />
                   ))}
                 </div>
 
                 <button onClick={() => go(1)} disabled={active === maxIdx}
-                  style={{ width: 42, height: 42, borderRadius: '50%', border: '1.5px solid rgba(201,148,58,0.4)', background: active === maxIdx ? 'rgba(201,148,58,0.05)' : 'rgba(201,148,58,0.12)', color: active === maxIdx ? 'rgba(201,148,58,0.3)' : '#C9943A', cursor: active === maxIdx ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { if (active < maxIdx) (e.currentTarget as HTMLElement).style.background = '#C9943A'; if (active < maxIdx) (e.currentTarget as HTMLElement).style.color = '#0E0704' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = active === maxIdx ? 'rgba(201,148,58,0.05)' : 'rgba(201,148,58,0.12)'; (e.currentTarget as HTMLElement).style.color = active === maxIdx ? 'rgba(201,148,58,0.3)' : '#C9943A' }}>
+                  style={{ width: 42, height: 42, borderRadius: '50%', border: `1.5px solid ${active === maxIdx ? 'rgba(61,31,13,0.18)' : 'rgba(61,31,13,0.45)'}`, background: active === maxIdx ? 'rgba(61,31,13,0.04)' : 'rgba(61,31,13,0.09)', color: active === maxIdx ? 'rgba(61,31,13,0.25)' : '#3D1F0D', cursor: active === maxIdx ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { if (active < maxIdx) { (e.currentTarget as HTMLElement).style.background = '#3D1F0D'; (e.currentTarget as HTMLElement).style.color = '#FFF7ED' } }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = active === maxIdx ? 'rgba(61,31,13,0.04)' : 'rgba(61,31,13,0.09)'; (e.currentTarget as HTMLElement).style.color = active === maxIdx ? 'rgba(61,31,13,0.25)' : '#3D1F0D' }}>
                   <ChevronRight style={{ width: 18, height: 18 }} />
                 </button>
               </div>
@@ -280,6 +309,13 @@ export default function EventsPreview() {
         )}
 
       </div>
+
+      {/* Responsive section padding */}
+      <style>{`
+        .ep-section { padding: 5.5rem 0 6rem; }
+        @media (max-width: 1023px) { .ep-section { padding: 4rem 0 4.5rem; } }
+        @media (max-width: 767px)  { .ep-section { padding: 3rem 0 3.5rem; } }
+      `}</style>
     </section>
   )
 }
