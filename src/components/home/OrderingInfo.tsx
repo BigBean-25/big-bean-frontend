@@ -55,7 +55,7 @@ export default function OrderingInfo() {
 
   return (
     <section className={styles.section} ref={sectionRef}>
-      <div className="container-custom">
+      <div className={`container-custom ${styles.inner}`}>
         <div className={styles.layout}>
 
           {/* ── Left: content ── */}
