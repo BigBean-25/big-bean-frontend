@@ -85,9 +85,8 @@ export default function AppPromo() {
         style={{ background: 'linear-gradient(90deg,rgba(20,8,2,0.76),rgba(61,31,13,0.55),rgba(255,247,237,0.18))' }}
       />
 
-      {/* Decorative radial glows */}
-      <div className="glow-circle pointer-events-none absolute -right-24 -top-28 h-[460px] w-[460px] rounded-full bg-[radial-gradient(circle,rgba(201,148,58,0.28)_0%,transparent_70%)] blur-3xl" />
-      <div className="glow-circle pointer-events-none absolute -bottom-28 -left-24 h-[400px] w-[400px] rounded-full bg-[radial-gradient(circle,rgba(169,37,23,0.20)_0%,transparent_70%)] blur-3xl" />
+      {/* Subtle left glow only — keeps right/phone side clean */}
+      <div className="glow-circle pointer-events-none absolute -bottom-28 -left-24 h-[400px] w-[400px] rounded-full bg-[radial-gradient(circle,rgba(169,37,23,0.16)_0%,transparent_70%)] blur-3xl" />
 
       <div className="container-custom relative z-10 mx-auto w-full max-w-[1240px] px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-5 lg:grid-cols-[0.95fr_1.05fr] lg:gap-8">
@@ -204,48 +203,66 @@ export default function AppPromo() {
             </div>
           </div>
 
-          {/* RIGHT: phone mockup */}
-          <div className="relative order-2 flex items-center justify-center">
+          {/* RIGHT: realistic phone mockup */}
+          <div className="relative order-2 flex items-center justify-center py-6 lg:py-2">
+            {/* Dark phone shell */}
             <div
-              className="phone-card relative w-full max-w-[380px] rounded-[44px] border border-white/25 p-5 shadow-2xl sm:max-w-[400px] sm:p-5 lg:max-w-[440px] lg:p-6"
-              style={{ background: 'linear-gradient(160deg,#3D1F0D,#8B4A2F,#C9943A)' }}
+              className="phone-card relative"
+              style={{
+                background: '#111111',
+                borderRadius: '44px',
+                padding: '9px',
+                width: 'clamp(250px, 60vw, 350px)',
+                boxShadow: '0 32px 80px rgba(0,0,0,0.55), 0 4px 16px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.07)',
+              }}
             >
-              {/* Inner glow */}
-              <div className="pointer-events-none absolute inset-0 rounded-[44px] bg-[radial-gradient(circle_at_35%_20%,rgba(255,247,237,0.20),transparent_55%)]" />
+              {/* Side buttons — purely decorative */}
+              <div style={{ position: 'absolute', left: -3, top: 90, width: 3, height: 28, background: '#2a2a2a', borderRadius: '2px 0 0 2px' }} />
+              <div style={{ position: 'absolute', left: -3, top: 130, width: 3, height: 44, background: '#2a2a2a', borderRadius: '2px 0 0 2px' }} />
+              <div style={{ position: 'absolute', right: -3, top: 110, width: 3, height: 52, background: '#2a2a2a', borderRadius: '0 2px 2px 0' }} />
 
-              {/* Phone screen — overflow-hidden clips image bg/edges to rounded frame.
-                  For cleanest look, upload a transparent-background PNG mockup. */}
-              <div
-                className="relative w-full overflow-hidden rounded-[32px] bg-black/20"
-                style={{ height: 'clamp(220px, 52vw, 420px)' }}
-              >
-                {mockupUrl ? (
-                  <img
-                    src={mockupUrl}
-                    alt="Big Bean Café App"
-                    className="h-full w-full object-cover object-top"
-                  />
-                ) : (
-                  <div className="flex h-full w-full flex-col items-center justify-center gap-4 border border-white/10 bg-white/5">
-                    <Smartphone className="h-14 w-14 text-[#FFF7ED]/40" />
-                    <span className="text-center text-xs font-bold uppercase tracking-widest text-[#FFF7ED]/50">
-                      Big Bean Café App
-                    </span>
-                  </div>
-                )}
+              {/* Screen */}
+              <div style={{ borderRadius: '36px', overflow: 'hidden', background: '#ffffff' }}>
+                {/* Notch bar */}
+                <div style={{ height: 28, background: '#111111', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: 78, height: 13, background: '#000000', borderRadius: 999 }} />
+                </div>
+
+                {/* Screenshot — object-contain keeps full image visible without cropping */}
+                <div style={{ height: 'clamp(380px, 44vh, 490px)', background: '#ffffff', overflow: 'hidden' }}>
+                  {mockupUrl ? (
+                    <img
+                      src={mockupUrl}
+                      alt="Big Bean Café App"
+                      style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'top center', display: 'block' }}
+                    />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, background: '#F8F4F0' }}>
+                      <Smartphone style={{ width: 48, height: 48, color: '#C9943A', opacity: 0.55 }} />
+                      <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#9B8B80' }}>
+                        Big Bean Café App
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Home indicator */}
+                <div style={{ height: 24, background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: 120, height: 4, background: 'rgba(17,17,17,0.15)', borderRadius: 999 }} />
+                </div>
               </div>
 
-              {/* Floating badges */}
+              {/* Floating feature badges — desktop only */}
               <div className="hidden lg:block">
-                <div className="badge-float absolute -left-5 top-16 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/95 px-3 py-2 shadow-lg shadow-black/10 backdrop-blur-sm">
+                <div className="badge-float absolute -left-[72px] top-14 inline-flex items-center gap-2 rounded-full border border-[#E6D4C0] bg-white px-3 py-2 shadow-md">
                   <Star className="h-4 w-4 text-[#C9943A]" />
                   <span className="text-xs font-black text-[#3D1F0D]">Big Coins</span>
                 </div>
-                <div className="badge-float-2 absolute -right-4 top-28 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/95 px-3 py-2 shadow-lg shadow-black/10 backdrop-blur-sm">
+                <div className="badge-float-2 absolute -right-[70px] top-28 inline-flex items-center gap-2 rounded-full border border-[#E6D4C0] bg-white px-3 py-2 shadow-md">
                   <Zap className="h-4 w-4 text-[#A92517]" />
                   <span className="text-xs font-black text-[#3D1F0D]">Fast Orders</span>
                 </div>
-                <div className="badge-float-3 absolute -left-3 bottom-16 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/95 px-3 py-2 shadow-lg shadow-black/10 backdrop-blur-sm">
+                <div className="badge-float-3 absolute -left-[70px] bottom-14 inline-flex items-center gap-2 rounded-full border border-[#E6D4C0] bg-white px-3 py-2 shadow-md">
                   <Gift className="h-4 w-4 text-[#167E68]" />
                   <span className="text-xs font-black text-[#3D1F0D]">QR Ordering</span>
                 </div>
