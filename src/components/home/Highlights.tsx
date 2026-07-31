@@ -111,7 +111,7 @@ export default function Highlights() {
         observer.observe(el)
       }}
     >
-      <div className="container-custom">
+      <div className={`container-custom ${styles.inner}`}>
         {/* Heading */}
         <div className="text-center mb-12">
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em]" style={{ color: '#C9943A' }}>
@@ -146,7 +146,7 @@ export default function Highlights() {
         </div>
       </div>
 
-      <div className="container-custom">
+      <div className={`container-custom ${styles.inner}`}>
         {/* Cards */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {highlights.map((item, index) => (

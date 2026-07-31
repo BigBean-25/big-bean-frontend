@@ -1,9 +1,21 @@
 /* ── Section ── */
 .section {
   background: linear-gradient(180deg, #FFF7ED 0%, #FBF4EC 45%, #F5E6D3 100%);
-  padding: 80px 0 88px;
+  padding: 88px 0 96px;
   position: relative;
   overflow: hidden;
+}
+
+/* ── Inner container: responsive side padding ── */
+.inner {
+  padding-left: 1rem;    /* 16px mobile */
+  padding-right: 1rem;
+}
+@media (min-width: 640px) {
+  .inner { padding-left: 1.5rem; padding-right: 1.5rem; }
+}
+@media (min-width: 1024px) {
+  .inner { padding-left: 2rem; padding-right: 2rem; }
 }
 
 /* Subtle radial glow behind heading */
@@ -240,21 +252,22 @@
   color: #8B5A3C;
 }
 
-/* ── Tablet ── */
-@media (max-width: 1024px) {
+/* ── Tablet (768px – 1023px) ── */
+@media (max-width: 1023px) {
+  .section { padding: 64px 0 72px; }
   .imgCard { width: 260px; height: 175px; }
   .imgCardPlaceholder { width: 260px; height: 175px; }
   .marqueeTrack { gap: 22px; }
 }
 
-/* ── Mobile ── */
-@media (max-width: 768px) {
-  .section { padding: 64px 0 72px; }
+/* ── Mobile (≤ 767px) ── */
+@media (max-width: 767px) {
+  .section { padding: 48px 0 52px; }
   .card { padding: 1.75rem 1.25rem; border-radius: 20px; }
   .imgCard { width: 210px; height: 140px; border-radius: 18px; }
   .imgCardPlaceholder { width: 210px; height: 140px; border-radius: 18px; }
   .marqueeTrack { gap: 18px; animation-duration: 28s; }
-  .marqueeOuter { margin-bottom: 44px; }
+  .marqueeOuter { margin-bottom: 36px; }
 }
 
 /* ── Reduced motion ── */
