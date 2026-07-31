@@ -62,7 +62,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-cream-50 via-white to-cream-100">
       <Header />
       <main className="animate-fade-in">
-        {!loading && <HeroBanner banners={heroBanners} />}
+        <HeroBanner banners={heroBanners} loading={loading} />
         <div className="animate-slide-up">
           <Highlights />
         </div>

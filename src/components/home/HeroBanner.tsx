@@ -35,21 +35,22 @@ interface HeroBanner {
 
 interface HeroBannerProps {
   banners: HeroBanner[]
+  loading?: boolean
 }
 
-export default function HeroBanner({ banners }: HeroBannerProps) {
+export default function HeroBanner({ banners, loading = false }: HeroBannerProps) {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isPlaying, setIsPlaying] = useState(true)
-  const [isMobile, setIsMobile] = useState(false)
+  // Initialize with real value on first client render to avoid a second render + double image fetch on mobile
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  )
 
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)
     }
-    
-    checkMobile()
     window.addEventListener('resize', checkMobile)
-    
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
@@ -75,16 +76,18 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
     setCurrentSlide((prev) => (prev - 1 + banners.length) % banners.length)
   }
 
-  if (!banners || banners.length === 0) {
+  // Show static fallback immediately during API fetch OR when no banners exist.
+  // This fills min-h-screen so sections below never shift — prevents CLS.
+  if (loading || !banners || banners.length === 0) {
     return (
-      <div className="relative h-screen flex items-center justify-center bg-gradient-to-r from-coffee-800 to-coffee-900">
-        <div className="text-center text-white">
-          <h1 className="text-4xl md:text-6xl font-bold font-heading mb-4">
+      <div className="relative min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1A0D07 0%, #3D1F0D 50%, #2A120B 100%)' }}>
+        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 30% 50%, rgba(201,148,58,0.12) 0%, transparent 60%), radial-gradient(circle at 70% 50%, rgba(107,53,32,0.10) 0%, transparent 60%)', pointerEvents: 'none' }} />
+        <div className="relative text-center px-6">
+          <p className="mb-4 text-xs font-bold uppercase tracking-[0.28em]" style={{ color: 'rgba(245,230,211,0.7)' }}>Coffee Roasters · Bengaluru</p>
+          <h1 className="font-heading font-bold text-white" style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)', lineHeight: 1.05 }}>
             Big Bean Café
           </h1>
-          <p className="text-xl md:text-2xl text-coffee-200">
-            Premium Coffee Roasters
-          </p>
+          <p className="mt-4 text-lg" style={{ color: 'rgba(245,230,211,0.65)' }}>Premium Coffee &amp; Café Experiences</p>
         </div>
       </div>
     )
@@ -128,6 +131,7 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
             src={mediaUrl}
             alt={currentBanner.title || 'Big Bean Café Hero Banner'}
             className="absolute inset-0 h-full w-full object-cover"
+            loading="eager"
           />
         )}
       </div>
