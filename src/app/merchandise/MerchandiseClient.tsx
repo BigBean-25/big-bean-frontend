@@ -211,7 +211,7 @@ export default function MerchandisePage() {
   const bestDeals = useMemo(() => {
     return filteredProducts
       .filter((product) => product.mrp && Number(product.mrp) > Number(product.price))
-      .slice(0, 4)
+      .slice(0, 3)
   }, [filteredProducts])
 
   const recommendedProducts = useMemo(() => {
@@ -274,8 +274,8 @@ export default function MerchandisePage() {
     const categoryName = product.category_name || product.category || 'Merchandise'
 
     return (
-      <div className="group overflow-hidden rounded-[22px] border border-[#E6C7A8] bg-white shadow-[0_10px_30px_rgba(61,31,13,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(61,31,13,0.14)]">
-        <div className="relative h-[215px] overflow-hidden bg-[#FFF7ED]">
+      <div className="merch-product-card group overflow-hidden rounded-[22px] border border-[#E6C7A8] bg-white shadow-[0_10px_30px_rgba(61,31,13,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(61,31,13,0.14)]">
+        <div className="merch-product-image relative overflow-hidden bg-[#FFF7ED]">
           <Link href={`/merchandise/${product.slug}`} className="block h-full w-full">
             {imageUrl ? (
               <img
@@ -319,13 +319,13 @@ export default function MerchandisePage() {
           )}
         </div>
 
-        <div className="p-4">
-          <p className="mb-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#C9943A]">
+        <div className="merch-product-content">
+          <p className="merch-label mb-1 uppercase tracking-[0.16em] text-[#C9943A]">
             {categoryName}
           </p>
 
           <Link href={`/merchandise/${product.slug}`} className="block">
-            <h3 className="min-h-[44px] text-[15px] font-black leading-snug text-[#3D1F0D]">
+            <h3 className="merch-card-title font-heading min-h-[48px]">
               {product.name}
             </h3>
           </Link>
@@ -408,7 +408,62 @@ export default function MerchandisePage() {
   }, [products, recentSlugs])
 
   return (
-    <div className="min-h-screen bg-[#F7EFE7]">
+    <div className="merchandise-page min-h-screen bg-[#F7EFE7]">
+      <style>{`
+        .merchandise-page{width:100%;overflow-x:clip;}
+        .merchandise-page,.merchandise-page *{box-sizing:border-box;}
+        .merch-hero-eyebrow{font-size:0.72rem;line-height:1;}
+        .merch-hero-title{margin:1.25rem 0 0;max-width:720px;color:#3D1F0D;font-size:clamp(2.5rem,3.8vw,4.25rem);font-weight:900;line-height:0.98;letter-spacing:-0.025em;text-wrap:balance;}
+        .merch-hero-subtitle{max-width:650px;margin-top:1.25rem;color:#6B3520;font-size:clamp(0.92rem,1.1vw,1.05rem);font-weight:600;line-height:1.75;}
+        .merch-hero-action{min-height:46px;font-size:0.78rem;}
+        .merch-section-title{margin:0;color:#3D1F0D;font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:900;line-height:1.1;letter-spacing:-0.015em;text-wrap:balance;}
+        .merch-section-subtitle{margin-top:0.4rem;color:#9B6B50;font-size:0.88rem;font-weight:600;line-height:1.6;}
+        .merch-subsection-title{color:#3D1F0D;font-size:clamp(1.25rem,2vw,1.55rem);font-weight:900;line-height:1.2;}
+        .merch-card-title{color:#3D1F0D;font-size:1.05rem;font-weight:900;line-height:1.35;}
+        .merch-label{font-size:0.72rem;font-weight:900;line-height:1.3;}
+        .merch-product-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:1.4rem;}
+        .merch-product-card{width:100%;min-width:0;height:100%;}
+        .merch-product-image{height:250px;}
+        .merch-product-content{padding:1.25rem;}
+        .merch-main{width:100%;}
+        .merch-layout{display:grid;gap:1.5rem;width:100%;min-width:0;}
+        .merch-left-sidebar,.merch-right-sidebar,.merch-center-scroll{min-width:0;}
+        .merch-sidebar-surface,.merch-right-sidebar-stack{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;}
+        .merch-sidebar-surface::-webkit-scrollbar,.merch-right-sidebar-stack::-webkit-scrollbar{display:none;}
+        @media(min-width:640px){.merch-product-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+        @media(min-width:1024px){.merch-layout{grid-template-columns:240px minmax(0,1fr);}}
+        @media(min-width:1280px){
+          .merch-product-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem;}
+          .merchandise-page{height:100dvh;overflow:hidden;}
+          .merch-main{height:100dvh;max-width:1700px;margin:0 auto;padding:1.25rem 1.5rem;overflow:hidden;}
+          .merch-layout{height:100%;grid-template-columns:240px minmax(0,1fr) 300px;overflow:hidden;}
+          .merch-left-sidebar,.merch-right-sidebar{height:100%;overflow:hidden;}
+          .merch-sidebar-surface,.merch-right-sidebar-stack{height:100%;max-height:100%;}
+          .merch-center-scroll{height:100%;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scroll-behavior:smooth;padding-right:0.35rem;scrollbar-width:thin;scrollbar-color:rgba(201,148,58,0.5) transparent;}
+          .merch-center-scroll::-webkit-scrollbar{width:7px;}
+          .merch-center-scroll::-webkit-scrollbar-track{background:transparent;}
+          .merch-center-scroll::-webkit-scrollbar-thumb{border-radius:999px;background:rgba(201,148,58,0.42);}
+          .merch-center-scroll::-webkit-scrollbar-thumb:hover{background:rgba(201,148,58,0.65);}
+        }
+        @media(max-width:1279px){.merchandise-page,.merch-main,.merch-layout,.merch-center-scroll{height:auto;overflow:visible;}}
+        @media(max-width:1199px){.merch-hero-title{font-size:clamp(2.5rem,5vw,3.75rem);}}
+        @media(max-width:899px){.merch-hero-grid{grid-template-columns:minmax(0,1fr);}}
+        @media(max-width:640px){
+          .merch-hero-eyebrow{font-size:0.65rem;}
+          .merch-hero-title{max-width:100%;font-size:clamp(2.15rem,11vw,3rem);line-height:1;letter-spacing:-0.02em;}
+          .merch-hero-subtitle{max-width:100%;font-size:0.9rem;line-height:1.7;}
+          .merch-section-title{font-size:clamp(1.7rem,8vw,2.15rem);}
+          .merch-product-image{height:215px;}
+          .merch-product-content{padding:1rem;}
+        }
+        @media(max-width:374px){.merch-hero-title{font-size:2rem;}}
+        @media(min-width:1280px) and (max-height:820px){
+          .merch-sidebar-surface{padding:1rem !important;}
+          .merch-sidebar-surface nav{gap:0.25rem !important;}
+          .merch-sidebar-surface nav a{padding-top:0.55rem !important;padding-bottom:0.55rem !important;}
+          .merch-right-sidebar-stack{gap:1rem !important;}
+        }
+      `}</style>
       {/* Mobile shop tools bar */}
       <div className="flex items-center justify-between border-b border-[#E6C7A8] bg-[#FBF4EC] px-4 py-3 lg:hidden">
         <div className="flex items-center gap-3">
@@ -474,11 +529,11 @@ export default function MerchandisePage() {
         </div>
       )}
 
-      <main className="mx-auto max-w-[1500px] px-4 py-4 lg:px-6 lg:py-6">
-        <div className="grid gap-6 lg:grid-cols-[220px_1fr] xl:grid-cols-[220px_1fr_300px]">
+      <main className="merch-main px-4 py-4 lg:px-6 lg:py-6">
+        <div className="merch-layout">
           {/* Left Sidebar */}
-          <aside className="hidden lg:block">
-            <div className="sticky top-[110px] overflow-hidden rounded-[30px] border border-[#E6C7A8] bg-white p-5 shadow-[0_16px_45px_rgba(61,31,13,0.08)]">
+          <aside className="merch-left-sidebar hidden lg:block">
+            <div className="merch-sidebar-surface overflow-hidden rounded-[30px] border border-[#E6C7A8] bg-white p-5 shadow-[0_16px_45px_rgba(61,31,13,0.08)]">
               <div className="mb-6 flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#3D1F0D] text-white">
                   <ShoppingBag className="h-5 w-5" />
@@ -578,7 +633,7 @@ export default function MerchandisePage() {
           </aside>
 
           {/* Main Content */}
-          <section>
+          <section className="merch-center-scroll">
             {/* Top Search Bar */}
             <div className="mb-4 rounded-[28px] border border-[#E6C7A8] bg-white p-3 shadow-[0_14px_40px_rgba(61,31,13,0.07)]">
               <form onSubmit={handleSearchSubmit}>
@@ -641,26 +696,26 @@ export default function MerchandisePage() {
 
             {/* Hero Banner */}
             <div className="mb-6 overflow-hidden rounded-[34px] border border-[#E6C7A8] bg-gradient-to-br from-[#FFF7ED] via-[#F4DDC6] to-[#DDB77F] shadow-[0_20px_60px_rgba(61,31,13,0.12)]">
-              <div className="grid min-h-[300px] items-center lg:grid-cols-[1.05fr_0.95fr]">
+              <div className="merch-hero-grid grid min-h-[300px] items-center lg:grid-cols-[1.05fr_0.95fr]">
                 <div className="p-7 md:p-10 lg:p-12">
-                  <span className="inline-flex rounded-full border border-white/60 bg-white/55 px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-[#6B3520]">
+                  <span className="merch-hero-eyebrow inline-flex rounded-full border border-white/60 bg-white/55 px-4 py-2 font-black uppercase tracking-[0.18em] text-[#6B3520]">
                     {banner?.eyebrow || 'New Collection'}
                   </span>
 
-                  <h1 className="mt-5 max-w-[560px] text-4xl font-black leading-[1.05] text-[#3D1F0D] md:text-5xl">
+                  <h1 className="merch-hero-title font-heading">
                     {banner?.title && banner.title.trim().length > 3
                       ? banner.title
                       : 'Take the Big Bean Café Experience Home'}
                   </h1>
 
-                  <p className="mt-4 max-w-[520px] text-base font-semibold leading-8 text-[#6B3520]">
+                  <p className="merch-hero-subtitle">
                     {banner?.subtitle ||
                       'Shop coffee beans, mugs, brewing tools, apparel, and exclusive café merchandise.'}
                   </p>
 
                   <Link
                     href={banner?.button_url || '/merchandise'}
-                    className="mt-7 inline-flex items-center gap-3 rounded-full bg-white px-7 py-4 text-sm font-black uppercase tracking-wider text-[#3D1F0D] shadow-lg transition hover:-translate-y-0.5 hover:bg-[#3D1F0D] hover:text-white"
+                    className="merch-hero-action mt-7 inline-flex items-center gap-3 rounded-full bg-white px-7 py-4 font-black uppercase tracking-wider text-[#3D1F0D] shadow-lg transition hover:-translate-y-0.5 hover:bg-[#3D1F0D] hover:text-white"
                   >
                     {banner?.button_text || 'Shop Now'}
                     <ArrowRight className="h-4 w-4" />
@@ -689,7 +744,7 @@ export default function MerchandisePage() {
             </div>
 
             {/* Category Icons Row */}
-            <h2 className="mb-3 text-xl font-black text-[#3D1F0D]">Shop by Category</h2>
+            <h2 className="merch-subsection-title font-heading mb-3">Shop by Category</h2>
             <div className="mb-6 rounded-[28px] border border-[#E6C7A8] bg-white p-4 shadow-[0_14px_40px_rgba(61,31,13,0.07)]">
               <div className="flex gap-4 overflow-x-auto pb-1">
                 <button
@@ -767,7 +822,7 @@ export default function MerchandisePage() {
 
             {/* Products */}
             {loading ? (
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="merch-product-grid">
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
                   <div key={item} className="h-[410px] animate-pulse rounded-[22px] border border-[#E6C7A8] bg-white/70" />
                 ))}
@@ -777,7 +832,7 @@ export default function MerchandisePage() {
                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#FFF7ED]">
                   <ShoppingBag className="h-9 w-9 text-[#C9943A]" />
                 </div>
-                <h2 className="mt-6 text-2xl font-black text-[#3D1F0D]">Merchandise collection is brewing</h2>
+                <h2 className="merch-subsection-title font-heading mt-6">Merchandise collection is brewing</h2>
                 <p className="mt-2 text-sm font-semibold text-[#9B6B50]">
                   New Big Bean Café products will be available soon.
                 </p>
@@ -788,11 +843,11 @@ export default function MerchandisePage() {
                   <section className="mb-9">
                     <div className="mb-4 flex items-end justify-between">
                       <div>
-                        <h2 className="text-2xl font-black text-[#3D1F0D]">Best Deals for You</h2>
-                        <p className="mt-1 text-sm font-semibold text-[#9B6B50]">Fresh picks with special pricing</p>
+                        <h2 className="merch-section-title font-heading">Our Best Sellers</h2>
+                        <p className="merch-section-subtitle">Fresh picks with special pricing</p>
                       </div>
                     </div>
-                    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <div className="merch-product-grid">
                       {bestDeals.map((product) => (
                         <ProductCard key={product.id} product={product} />
                       ))}
@@ -803,15 +858,15 @@ export default function MerchandisePage() {
                 <section>
                   <div className="mb-4 flex items-end justify-between">
                     <div>
-                      <h2 className="text-2xl font-black text-[#3D1F0D]">
+                      <h2 className="merch-section-title font-heading">
                         {bestDeals.length > 0 ? 'Recommended for You' : 'Best Picks for You'}
                       </h2>
-                      <p className="mt-1 text-sm font-semibold text-[#9B6B50]">
+                      <p className="merch-section-subtitle">
                         {filteredProducts.length} products available
                       </p>
                     </div>
                   </div>
-                  <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  <div className="merch-product-grid">
                     {recommendedProducts.map((product) => (
                       <ProductCard key={product.id} product={product} />
                     ))}
@@ -854,8 +909,8 @@ export default function MerchandisePage() {
           </section>
 
           {/* Right Side Panel */}
-          <aside className="hidden xl:block">
-            <div className="sticky top-[110px] space-y-6">
+          <aside className="merch-right-sidebar hidden xl:block">
+            <div className="merch-right-sidebar-stack space-y-6">
               {/* You might also like */}
               <div className="rounded-[30px] border border-[#E6C7A8] bg-white p-5 shadow-[0_16px_45px_rgba(61,31,13,0.08)]">
                 <h3 className="mb-4 text-sm font-black text-[#3D1F0D]">You might also like</h3>
