@@ -34,9 +34,9 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 1720px;
   margin: 0 auto;
-  padding: 4.75rem clamp(3rem, 5vw, 6rem) 1.5rem;
+  padding-top: 4.75rem;
+  padding-bottom: 1.5rem;
   box-sizing: border-box;
 }
 
@@ -364,23 +364,18 @@
 /* ─── Responsive container padding ───────────────────── */
 @media (max-width: 1279px) {
   .footerInner {
-    padding: 4rem 1.75rem 1.5rem;
+    padding-top: 4rem;
+    padding-bottom: 1.5rem;
   }
 }
 
 @media (max-width: 1023px) {
   .footerInner {
-    padding: 3.5rem 1.5rem 1.4rem;
+    padding-top: 3.5rem;
+    padding-bottom: 1.4rem;
   }
 }
 
-/* ─── Tablet and small laptop side padding ────────────── */
-@media (min-width: 768px) and (max-width: 1279px) {
-  .footerInner {
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
-}
 
 /* ─── Laptop / iPad Pro landscape — 1024–1279 ─────────── */
 @media (min-width: 1024px) and (max-width: 1279px) {
@@ -420,8 +415,6 @@
 /* ─── Mobile — below 768 ─────────────────────────────── */
 @media (max-width: 767px) {
   .footerInner {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
     padding-top: 3rem;
     padding-bottom: 1.5rem;
   }
@@ -551,11 +544,6 @@
 
 /* ─── Tiny — below 360 ───────────────────────────────── */
 @media (max-width: 359px) {
-  .footerInner {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
   .footerLinks {
     max-width: 270px;
     gap: 0.6rem 0.75rem;
