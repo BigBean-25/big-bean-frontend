@@ -468,29 +468,130 @@ export default function Menu() {
 
       <main>
         {/* ── HERO ──────────────────────────────────────────────── */}
-        <section style={{ position: 'relative', minHeight: 420, display: 'flex', alignItems: 'center', background: 'linear-gradient(135deg,#120905 0%,#2A120B 50%,#5C2E12 100%)', overflow: 'hidden', padding: '4.5rem 0' }}>
+        <style>{`
+          /* ── MENU HERO LAYOUT & TYPOGRAPHY ── */
+          .menu-hero { min-height: 620px; }
+
+          .menu-hero-inner {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 4rem clamp(1.5rem, 5vw, 6rem) 3.25rem;
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+            gap: 3rem;
+            align-items: center;
+          }
+
+          .menu-hero-copy {
+            width: 100%;
+            max-width: 900px;
+            min-width: 0;
+          }
+
+          .menu-hero-eyebrow {
+            font-size: 0.72rem;
+            line-height: 1;
+          }
+
+          .menu-hero-title {
+            margin: 0 0 1.1rem;
+            color: #FFF7ED;
+            font-size: clamp(2.5rem, 3.8vw, 4.25rem);
+            font-weight: 900;
+            line-height: 0.98;
+            letter-spacing: -0.025em;
+            text-wrap: balance;
+          }
+
+          .menu-hero-highlight {
+            display: block;
+            margin-top: 0.15em;
+            font-size: clamp(2.25rem, 3.15vw, 3.55rem);
+            line-height: 1.05;
+            letter-spacing: -0.025em;
+            background: linear-gradient(90deg, #F6D58D, #C9943A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+
+          .menu-hero-subtitle {
+            max-width: 650px;
+            margin-bottom: 1.8rem;
+            font-size: clamp(0.92rem, 1.1vw, 1.05rem);
+            line-height: 1.75;
+            color: #C7A489;
+          }
+
+          .menu-hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+          }
+
+          .menu-hero-actions a { font-size: 0.78rem !important; }
+
+          @media (max-width: 1199px) {
+            .menu-hero { min-height: 560px; }
+            .menu-hero-inner { padding: 3.5rem clamp(1.5rem, 4vw, 3rem) 3rem; grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr); gap: 2.5rem; }
+            .menu-hero-copy { max-width: 720px; }
+            .menu-hero-title { font-size: clamp(2.5rem, 5vw, 3.75rem); }
+            .menu-hero-highlight { font-size: clamp(2.15rem, 4.25vw, 3.15rem); }
+          }
+
+          @media (max-width: 899px) {
+            .menu-hero { min-height: auto; }
+            .menu-hero-inner { grid-template-columns: minmax(0, 1fr); padding-top: 4rem; padding-bottom: 3rem; }
+            .menu-hero-copy { max-width: 680px; }
+            .menu-hero-visual { max-width: 520px; width: 100%; margin: 0 auto; }
+          }
+
+          @media (max-width: 640px) {
+            .menu-hero { min-height: auto; align-items: flex-start !important; padding: 0 !important; }
+            .menu-hero-inner { grid-template-columns: minmax(0, 1fr); padding: 3rem 1.25rem 2.5rem; gap: 2rem; }
+            .menu-hero-copy { max-width: 100%; }
+            .menu-hero-eyebrow { font-size: 0.65rem; }
+            .menu-hero-title { font-size: clamp(2.15rem, 11vw, 3rem); line-height: 1; letter-spacing: -0.02em; }
+            .menu-hero-highlight { margin-top: 0.22em; font-size: clamp(1.9rem, 9.5vw, 2.65rem); line-height: 1.06; white-space: normal; }
+            .menu-hero-subtitle { max-width: 100%; margin-bottom: 1.5rem; font-size: 0.9rem; line-height: 1.7; }
+            .menu-hero-actions { width: 100%; gap: 0.65rem; }
+            .menu-hero-actions a { width: 100%; min-height: 46px; justify-content: center; }
+            .menu-hero-visual { max-width: 100%; }
+          }
+
+          @media (max-width: 374px) {
+            .menu-hero-inner { padding-left: 1rem; padding-right: 1rem; }
+            .menu-hero-title { font-size: 2rem; }
+            .menu-hero-highlight { font-size: 1.75rem; }
+          }
+        `}</style>
+        {/* ── HERO ────────────────────────────────────────────────── */}
+        <section className="menu-hero" style={{ position: 'relative', display: 'flex', alignItems: 'center', background: 'linear-gradient(135deg,#120905 0%,#2A120B 50%,#5C2E12 100%)', overflow: 'hidden' }}>
           {/* Background image from admin */}
           {menuHero?.image && (() => { const img = getImg(menuHero.image); return img ? <img src={img} alt="" aria-hidden style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', opacity: 0.22, zIndex: 0 }} /> : null })()}
           <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle,rgba(201,148,58,0.08) 1px,transparent 1px)', backgroundSize: '36px 36px', pointerEvents: 'none', zIndex: 1 }} />
           <div style={{ position: 'absolute', top: -80, right: -80, width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle,rgba(201,148,58,0.12),transparent 70%)', pointerEvents: 'none', zIndex: 1 }} />
-          <div style={{ position: 'relative', zIndex: 2, maxWidth: 1400, margin: '0 auto', padding: '0 2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: '3rem', alignItems: 'center' }}>
+          <div className="menu-hero-inner">
             {/* Left */}
-            <div>
+            <div className="menu-hero-copy">
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(201,148,58,0.15)', border: '1px solid rgba(201,148,58,0.35)', borderRadius: 100, padding: '0.38rem 1rem', marginBottom: '1.4rem' }}>
                 <Coffee style={{ width: 13, height: 13, color: '#C9943A' }} />
-                <span style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.22em', color: '#F3D59B', textTransform: 'uppercase' }}>{menuHero?.eyebrow || 'Big Bean Café Menu'}</span>
+                <span className="menu-hero-eyebrow" style={{ fontWeight: 900, letterSpacing: '0.22em', color: '#F3D59B', textTransform: 'uppercase' }}>{menuHero?.eyebrow || 'Big Bean Café Menu'}</span>
               </div>
-              <h1 className="font-heading" style={{ fontSize: 'clamp(2rem,4vw,3.2rem)', fontWeight: 900, color: '#FFF7ED', lineHeight: 1.08, marginBottom: '1.1rem' }}>
+              <h1 className="font-heading menu-hero-title">
                 {menuHero?.title || 'Crafted Coffee, Fresh Food'}
                 {(menuHero?.highlight_text) && (
-                  <span style={{ display: 'block', background: 'linear-gradient(90deg,#F6D58D,#C9943A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{menuHero.highlight_text}</span>
+                  <span className="menu-hero-highlight">{menuHero.highlight_text}</span>
                 )}
-                {!menuHero && <span style={{ display: 'block', background: 'linear-gradient(90deg,#F6D58D,#C9943A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>&amp; Café Favourites</span>}
+                {!menuHero && <span className="menu-hero-highlight">&amp; Café Favourites</span>}
               </h1>
-              <p style={{ fontSize: '0.95rem', color: '#C7A489', lineHeight: 1.75, maxWidth: 480, marginBottom: '1.8rem' }}>
+              <p className="menu-hero-subtitle">
                 {menuHero?.subtitle || 'Explore our live menu with handcrafted beverages, fresh bites, desserts and signature Big Bean Café favourites.'}
               </p>
-              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <div className="menu-hero-actions">
                 <a href={menuHero?.button_primary_url || ORDER_URL} target="_blank" rel="noopener noreferrer"
                   style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#C9943A', color: '#120905', borderRadius: 100, padding: '0.78rem 1.65rem', fontSize: '0.74rem', fontWeight: 900, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.08em', boxShadow: '0 10px 28px rgba(201,148,58,0.32)', transition: 'all 0.22s' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#F6D58D'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)' }}
@@ -506,7 +607,7 @@ export default function Menu() {
               </div>
             </div>
             {/* Right — hero image or gradient card */}
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div className="menu-hero-visual" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               {menuHero?.image && getImg(menuHero.image) ? (
                 <div style={{ width: '100%', maxWidth: 360, aspectRatio: '4/3', borderRadius: 28, overflow: 'hidden', boxShadow: '0 32px 80px rgba(18,9,5,0.45)', border: '1px solid rgba(201,148,58,0.22)' }}>
                   <img src={getImg(menuHero.image)!} alt={menuHero.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
