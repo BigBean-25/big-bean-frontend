@@ -40,8 +40,8 @@
 
 .footerGrid {
   display: grid;
-  grid-template-columns: 1.3fr 0.8fr 0.8fr 0.8fr 1.2fr;
-  gap: 34px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2.5rem;
 }
 
 .brandCol {
@@ -117,9 +117,9 @@
 }
 
 .footerLinks {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1.25rem;
 }
 
 .footerLink {
@@ -333,16 +333,35 @@
   color: #D9A441;
 }
 
-/* Responsive */
+/* ─── Desktop: footerLinks → single-column flex ─────── */
+@media (min-width: 768px) {
+  .footerLinks {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+/* ─── Responsive ─────────────────────────────────────── */
 @media (max-width: 1024px) {
+  .footer {
+    padding: 4rem 0 2rem;
+  }
+}
+
+@media (max-width: 900px) {
   .footerGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    text-align: center;
   }
 
-  .brandCol {
-    grid-column: span 2;
+  .brandCol,
+  .businessCol,
+  .contactCol {
+    width: 100%;
+    max-width: 100%;
     align-items: center;
-    text-align: center;
   }
 
   .footerDescription {
@@ -353,28 +372,29 @@
   .socialRow {
     justify-content: center;
   }
+}
 
-  .businessCol {
-    grid-column: span 2;
-  }
-
-  .contactCol {
-    grid-column: span 2;
-    max-width: 480px;
-    margin: 0 auto;
+@media (max-width: 767px) {
+  .footerLinks {
     width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+    justify-items: center;
+    text-align: center;
   }
 }
 
 @media (max-width: 640px) {
   .footer {
-    padding: 40px 0 22px;
+    padding: 3rem 0 1.75rem;
+  }
+
+  .footerInner {
+    padding: 0 1.25rem;
   }
 
   .footerGrid {
-    grid-template-columns: 1fr;
-    gap: 26px;
-    text-align: center;
+    gap: 1.75rem;
   }
 
   .brandCol {
@@ -390,19 +410,6 @@
     margin: 0 auto;
   }
 
-  .footerLinks {
-    align-items: center;
-    gap: 10px;
-  }
-
-  .businessCol {
-    grid-column: span 1;
-  }
-
-  .contactCol {
-    grid-column: span 1;
-  }
-
   .contactItem {
     justify-content: center;
   }
@@ -413,8 +420,34 @@
 
   .footerBottom {
     flex-direction: column;
+    align-items: center;
     text-align: center;
-    gap: 0.75rem;
+    gap: 0.9rem;
+  }
+
+  .legalLinks {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 360px) {
+  .footer {
+    padding: 3rem 0 1.5rem;
+  }
+
+  .footerInner {
+    padding: 0 1rem;
+  }
+
+  .newsletterForm {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .newsletterInput,
+  .newsletterBtn {
+    width: 100%;
   }
 }
 
