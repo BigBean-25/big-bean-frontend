@@ -173,7 +173,56 @@ export default function Franchise() {
       <main>
 
         {/* ── HERO ── */}
-        <section className="relative overflow-hidden min-h-[78vh] md:min-h-[82vh] flex items-center" style={{ background: '#120905' }}>
+        <style>{`
+          .franchise-hero{min-height:620px;}
+          .franchise-hero-inner{position:relative;z-index:10;width:100%;max-width:1600px;margin:0 auto;padding:4rem clamp(1.5rem,5vw,6rem) 3.25rem;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(340px,0.88fr);gap:3.5rem;align-items:center;}
+          .franchise-hero-copy{width:100%;max-width:900px;min-width:0;}
+          .franchise-hero-eyebrow{font-size:0.72rem;line-height:1;}
+          .franchise-hero-title{margin:0 0 1rem;color:#FFF7ED;font-family:var(--font-heading);font-size:clamp(2.5rem,3.8vw,4.25rem);font-weight:900;line-height:0.98;letter-spacing:-0.025em;text-wrap:balance;}
+          .franchise-hero-highlight{display:block;margin-top:0.15em;font-size:clamp(2.25rem,3.15vw,3.55rem);line-height:1.05;background:linear-gradient(90deg,#F6D58D,#C9943A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+          .franchise-hero-subtitle{max-width:650px;margin-bottom:1.75rem;color:#F5D7BF;font-size:clamp(0.92rem,1.1vw,1.05rem);line-height:1.75;}
+          .franchise-hero-actions{display:flex;flex-wrap:wrap;gap:0.75rem;}
+          .franchise-hero-actions a{min-height:46px;font-size:0.78rem;}
+          .franchise-opportunity-panel{padding:1.6rem;border:1px solid rgba(201,148,58,0.42);border-radius:28px;background:rgba(18,9,5,0.70);backdrop-filter:blur(20px);box-shadow:0 24px 70px rgba(18,9,5,0.38),inset 0 1px 0 rgba(255,255,255,0.08);}
+          .franchise-opportunity-title{margin-bottom:0.9rem;color:#F6D58D;font-size:0.95rem;font-weight:900;line-height:1.3;}
+          .franchise-opportunity-item{display:flex;align-items:center;gap:0.75rem;min-height:46px;padding:0.7rem 0;border-bottom:1px solid rgba(201,148,58,0.18);color:#FFF7ED;font-size:0.88rem;font-weight:700;line-height:1.5;}
+          .franchise-opportunity-item:last-child{border-bottom:0;}
+          .franchise-opportunity-item svg{width:18px;height:18px;color:#D9A63D;flex-shrink:0;filter:drop-shadow(0 3px 8px rgba(201,148,58,0.35));}
+          .franchise-hero-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.75rem;}
+          .franchise-hero-stat{min-width:0;padding:0.9rem 0.55rem;border:1px solid rgba(201,148,58,0.32);border-radius:18px;background:rgba(18,9,5,0.62);backdrop-filter:blur(14px);text-align:center;}
+          .franchise-hero-stat-value{color:#F6D58D;font-size:1.2rem;font-weight:900;}
+          .franchise-hero-stat-label{margin-top:0.25rem;color:#F5D7BF;font-size:0.58rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;}
+          @media(max-width:1199px){
+            .franchise-hero{min-height:560px;}
+            .franchise-hero-inner{padding:3.5rem clamp(1.5rem,4vw,3rem) 3rem;}
+            .franchise-hero-title{font-size:clamp(2.5rem,5vw,3.75rem);}
+            .franchise-hero-highlight{font-size:clamp(2.15rem,4.25vw,3.15rem);}
+          }
+          @media(max-width:899px){
+            .franchise-hero{min-height:auto;}
+            .franchise-hero-inner{grid-template-columns:minmax(0,1fr);padding-top:4rem;padding-bottom:3rem;}
+            .franchise-opportunity-panel{margin-top:0.75rem;}
+          }
+          @media(max-width:640px){
+            .franchise-hero-inner{padding:3rem 1.25rem 2.5rem;}
+            .franchise-hero-eyebrow{font-size:0.65rem;}
+            .franchise-hero-title{font-size:clamp(2.15rem,11vw,3rem);line-height:1;}
+            .franchise-hero-highlight{margin-top:0.22em;font-size:clamp(1.9rem,9.5vw,2.65rem);line-height:1.06;}
+            .franchise-hero-subtitle{max-width:100%;font-size:0.9rem;line-height:1.7;}
+            .franchise-hero-actions{flex-direction:column;align-items:stretch;gap:0.65rem;}
+            .franchise-hero-actions a{width:100%;justify-content:center;}
+            .franchise-opportunity-panel{padding:1.25rem;border-radius:22px;}
+            .franchise-opportunity-item{min-height:42px;font-size:0.82rem;}
+            .franchise-hero-stat-value{font-size:1.05rem;}
+            .franchise-hero-stat-label{font-size:0.52rem;}
+          }
+          @media(max-width:374px){
+            .franchise-hero-inner{padding-left:1rem;padding-right:1rem;}
+            .franchise-hero-title{font-size:2rem;}
+            .franchise-hero-highlight{font-size:1.75rem;}
+          }
+        `}</style>
+        <section className="franchise-hero relative overflow-hidden flex items-center" style={{ background: '#120905' }}>
           {heroImageUrl && (
             <div className="absolute inset-0 overflow-hidden">
               <img src={heroImageUrl} alt="Franchise hero" className="w-full h-full object-cover" style={{ filter: 'brightness(0.82) contrast(1.08) saturate(1.02)' }} />
@@ -181,52 +230,52 @@ export default function Franchise() {
           )}
           <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, rgba(24,10,4,0.72) 0%, rgba(24,10,4,0.58) 35%, rgba(24,10,4,0.38) 65%, rgba(24,10,4,0.22) 100%)' }} />
 
-          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-20 lg:py-24 grid lg:grid-cols-2 gap-12 items-center">
-            <div className="animate-fade-up">
-              <p className="text-xs font-bold tracking-[0.25em] mb-4" style={{ color: '#C9943A' }}>{h.eyebrow}</p>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4" style={{ color: '#FFF7ED', fontFamily: 'var(--font-heading)' }}>
+          <div className="franchise-hero-inner">
+            <div className="franchise-hero-copy animate-fade-up">
+              <p className="franchise-hero-eyebrow font-bold tracking-[0.25em] mb-4" style={{ color: '#C9943A' }}>{h.eyebrow}</p>
+              <h1 className="franchise-hero-title">
                 {h.title}
-                {h.highlight_text && <><br /><span style={{ color: '#C9943A' }}>{h.highlight_text}</span></>}
+                {h.highlight_text && <span className="franchise-hero-highlight">{h.highlight_text}</span>}
               </h1>
-              {h.subtitle && <p className="text-base md:text-lg mb-8 max-w-xl leading-relaxed" style={{ color: '#E6C7A8' }}>{h.subtitle}</p>}
-              <div className="flex flex-wrap gap-4">
+              {h.subtitle && <p className="franchise-hero-subtitle">{h.subtitle}</p>}
+              <div className="franchise-hero-actions">
                 <a href={h.button_primary_url}
-                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-bold text-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-0.5"
-                  style={{ background: 'linear-gradient(to right,#C9943A,#8B4A2F)' }}>
+                  className="inline-flex items-center gap-2 rounded-full font-black uppercase tracking-[0.08em] text-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-0.5"
+                  style={{ background: 'linear-gradient(to right,#C9943A,#8B4A2F)', padding: '0.78rem 1.65rem' }}>
                   {h.button_primary_text} <ChevronRight className="w-4 h-4" />
                 </a>
                 <a href={h.button_secondary_url}
-                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-bold border-2 transition-all hover:-translate-y-0.5"
-                  style={{ borderColor: '#C9943A', color: '#C9943A' }}>
+                  className="inline-flex items-center gap-2 rounded-full border-2 transition-all hover:-translate-y-0.5"
+                  style={{ borderColor: '#C9943A', color: '#C9943A', padding: '0.78rem 1.65rem' }}>
                   {h.button_secondary_text}
                 </a>
               </div>
             </div>
 
             <div className="hidden lg:flex flex-col gap-4 animate-fade-up-delay">
-              <div className="rounded-3xl p-6 animate-float-soft" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(212,160,74,0.28)', backdropFilter: 'blur(10px)' }}>
-                <p className="text-sm font-bold mb-4" style={{ color: '#C9943A' }}>Franchise Opportunity</p>
+              <div className="franchise-opportunity-panel animate-float-soft">
+                <p className="franchise-opportunity-title">Franchise Opportunity</p>
                 {[
                   'Full brand & identity support',
                   'SOP-based training programs',
                   'Operations guidance',
                   'Marketing & launch support',
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3 py-2.5 border-b last:border-0" style={{ borderColor: 'rgba(201,148,58,0.15)' }}>
-                    <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: '#C9943A' }} />
-                    <span className="text-sm" style={{ color: '#F5E6D3' }}>{item}</span>
+                  <div key={i} className="franchise-opportunity-item">
+                    <CheckCircle />
+                    <span>{item}</span>
                   </div>
                 ))}
               </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="franchise-hero-stats">
                 {[
                   [h.stat_1_value, h.stat_1_label],
                   [h.stat_2_value, h.stat_2_label],
                   [h.stat_3_value, h.stat_3_label],
                 ].map(([val, lbl], i) => (
-                  <div key={i} className="rounded-2xl p-4 text-center" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(212,160,74,0.25)' }}>
-                    <p className="text-2xl font-bold" style={{ color: '#C9943A' }}>{val}</p>
-                    <p className="text-xs mt-1" style={{ color: '#E6C7A8' }}>{lbl}</p>
+                  <div key={i} className="franchise-hero-stat">
+                    <p className="franchise-hero-stat-value font-heading">{val}</p>
+                    <p className="franchise-hero-stat-label">{lbl}</p>
                   </div>
                 ))}
               </div>

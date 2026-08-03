@@ -308,7 +308,56 @@ export default function CorporateOrders() {
       <main>
 
         {/* ── HERO ── */}
-        <section className="relative flex h-[480px] overflow-hidden md:h-[520px] lg:h-[560px] xl:h-[600px]" style={{ background: '#0A0503' }}>
+        <style>{`
+          .corporate-hero{min-height:620px;}
+          .corporate-hero-inner{position:relative;z-index:10;width:100%;max-width:1600px;margin:0 auto;padding:4rem clamp(1.5rem,5vw,6rem) 3.25rem;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(340px,0.88fr);gap:3.5rem;align-items:center;}
+          .corporate-hero-copy{width:100%;max-width:900px;min-width:0;}
+          .corporate-hero-eyebrow{font-size:0.72rem;line-height:1;}
+          .corporate-hero-title{margin:0 0 1rem;color:#FFF7ED;font-family:var(--font-heading);font-size:clamp(2.5rem,3.8vw,4.25rem);font-weight:900;line-height:0.98;letter-spacing:-0.025em;text-wrap:balance;}
+          .corporate-hero-highlight{display:block;margin-top:0.15em;font-size:clamp(2.25rem,3.15vw,3.55rem);line-height:1.05;background:linear-gradient(90deg,#F6D58D,#C9943A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+          .corporate-hero-subtitle{max-width:650px;margin-bottom:1.75rem;color:#F5D7BF;font-size:clamp(0.92rem,1.1vw,1.05rem);line-height:1.75;}
+          .corporate-hero-actions{display:flex;flex-wrap:wrap;gap:0.75rem;}
+          .corporate-hero-actions a{min-height:46px;font-size:0.78rem;}
+          .corporate-coffee-panel{padding:1.6rem;border:1px solid rgba(201,148,58,0.42);border-radius:28px;background:rgba(18,9,5,0.74);backdrop-filter:blur(20px);box-shadow:0 24px 70px rgba(18,9,5,0.42),inset 0 1px 0 rgba(255,255,255,0.08);}
+          .corporate-coffee-panel-title{margin-bottom:0.9rem;color:#F6D58D;font-size:0.95rem;font-weight:900;letter-spacing:0.08em;line-height:1.3;}
+          .corporate-coffee-panel-item{display:flex;align-items:center;gap:0.75rem;min-height:46px;padding:0.7rem 0;border-bottom:1px solid rgba(201,148,58,0.18);color:#FFF7ED;font-size:0.88rem;font-weight:700;line-height:1.5;text-shadow:0 2px 8px rgba(18,9,5,0.45);}
+          .corporate-coffee-panel-item:last-child{border-bottom:0;}
+          .corporate-coffee-panel-item svg{width:18px;height:18px;color:#D9A63D;flex-shrink:0;filter:drop-shadow(0 3px 8px rgba(201,148,58,0.4));}
+          .corporate-hero-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.75rem;}
+          .corporate-hero-stat{min-width:0;padding:0.9rem 0.55rem;border:1px solid rgba(201,148,58,0.32);border-radius:18px;background:rgba(18,9,5,0.62);backdrop-filter:blur(14px);text-align:center;}
+          .corporate-hero-stat-value{color:#F6D58D;font-size:1.2rem;font-weight:900;}
+          .corporate-hero-stat-label{margin-top:0.25rem;color:#F5D7BF;font-size:0.58rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;}
+          @media(max-width:1199px){
+            .corporate-hero{min-height:560px;}
+            .corporate-hero-inner{padding:3.5rem clamp(1.5rem,4vw,3rem) 3rem;}
+            .corporate-hero-title{font-size:clamp(2.5rem,5vw,3.75rem);}
+            .corporate-hero-highlight{font-size:clamp(2.15rem,4.25vw,3.15rem);}
+          }
+          @media(max-width:899px){
+            .corporate-hero{min-height:auto;}
+            .corporate-hero-inner{grid-template-columns:minmax(0,1fr);padding-top:4rem;padding-bottom:3rem;}
+            .corporate-coffee-panel{margin-top:0.75rem;}
+          }
+          @media(max-width:640px){
+            .corporate-hero-inner{padding:3rem 1.25rem 2.5rem;}
+            .corporate-hero-eyebrow{font-size:0.65rem;}
+            .corporate-hero-title{font-size:clamp(2.15rem,11vw,3rem);line-height:1;}
+            .corporate-hero-highlight{margin-top:0.22em;font-size:clamp(1.9rem,9.5vw,2.65rem);line-height:1.06;}
+            .corporate-hero-subtitle{max-width:100%;font-size:0.9rem;line-height:1.7;}
+            .corporate-hero-actions{flex-direction:column;align-items:stretch;gap:0.65rem;}
+            .corporate-hero-actions a{width:100%;justify-content:center;}
+            .corporate-coffee-panel{padding:1.25rem;border-radius:22px;}
+            .corporate-coffee-panel-item{min-height:42px;font-size:0.82rem;}
+            .corporate-hero-stat-value{font-size:1.05rem;}
+            .corporate-hero-stat-label{font-size:0.52rem;}
+          }
+          @media(max-width:374px){
+            .corporate-hero-inner{padding-left:1rem;padding-right:1rem;}
+            .corporate-hero-title{font-size:2rem;}
+            .corporate-hero-highlight{font-size:1.75rem;}
+          }
+        `}</style>
+        <section className="corporate-hero relative flex items-center overflow-hidden" style={{ background: '#0A0503' }}>
           {heroImageUrl && (
             <div className="absolute inset-0 overflow-hidden">
               <img
@@ -325,50 +374,48 @@ export default function CorporateOrders() {
           <div className="pointer-events-none absolute -left-20 bottom-0 h-[420px] w-[420px] rounded-full bg-[#8B4A2F]/14 blur-[120px]" />
           <div className="pointer-events-none absolute inset-0 opacity-[0.035]" style={{ backgroundImage: 'radial-gradient(circle, #C9943A 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
 
-          <div className="relative z-10 mx-auto flex h-full w-full max-w-7xl items-center px-5 sm:px-6 lg:px-8">
-            <div className="grid w-full items-center gap-8 lg:grid-cols-2">
-              <div className="animate-fade-up">
-                <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#C9943A]/25 bg-[#C9943A]/10 px-3.5 py-1.5">
-                  <Briefcase className="h-3.5 w-3.5 text-[#C9943A]" />
-                  <span className="text-[0.65rem] font-black uppercase tracking-[0.22em] text-[#F6D58D]">{h.eyebrow}</span>
-                </div>
-                <h1 className="font-heading text-[38px] font-black leading-[0.95] text-[#FFF7ED] mb-5 md:text-[52px] lg:text-[60px]">
-                  {h.title}
-                  {h.highlight_text && <span className="block text-[#C9943A]">{h.highlight_text}</span>}
-                </h1>
-                {h.subtitle && <p className="mb-4 max-w-[600px] text-sm leading-relaxed text-[#F5D7BF] md:text-base">{h.subtitle}</p>}
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <a href={h.button_primary_url}
-                    className="inline-flex items-center gap-2 rounded-full font-black uppercase tracking-[0.08em] text-[0.8rem] text-[#120905] shadow-xl transition-all hover:-translate-y-0.5 hover:shadow-2xl"
-                    style={{ background: 'linear-gradient(to right,#C9943A,#8B4A2F)', padding: '0.85rem 1.75rem' }}>
-                    {h.button_primary_text} <ChevronRight className="h-4 w-4" />
-                  </a>
-                  <a href={h.button_secondary_url}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/25 font-black uppercase tracking-[0.08em] text-[0.8rem] text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
-                    style={{ padding: '0.85rem 1.75rem' }}>
-                    {h.button_secondary_text} <ArrowRight className="h-4 w-4" />
-                  </a>
-                </div>
+          <div className="corporate-hero-inner">
+            <div className="corporate-hero-copy animate-fade-up">
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#C9943A]/25 bg-[#C9943A]/10 px-3.5 py-1.5">
+                <Briefcase className="h-3.5 w-3.5 text-[#C9943A]" />
+                <span className="corporate-hero-eyebrow font-black uppercase tracking-[0.22em] text-[#F6D58D]">{h.eyebrow}</span>
               </div>
+              <h1 className="corporate-hero-title font-heading">
+                {h.title}
+                {h.highlight_text && <span className="corporate-hero-highlight">{h.highlight_text}</span>}
+              </h1>
+              {h.subtitle && <p className="corporate-hero-subtitle">{h.subtitle}</p>}
+              <div className="corporate-hero-actions">
+                <a href={h.button_primary_url}
+                  className="inline-flex items-center gap-2 rounded-full font-black uppercase tracking-[0.08em] text-[#120905] shadow-xl transition-all hover:-translate-y-0.5 hover:shadow-2xl"
+                  style={{ background: 'linear-gradient(to right,#C9943A,#8B4A2F)', padding: '0.78rem 1.65rem' }}>
+                  {h.button_primary_text} <ChevronRight className="h-4 w-4" />
+                </a>
+                <a href={h.button_secondary_url}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/25 font-black uppercase tracking-[0.08em] text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
+                  style={{ padding: '0.78rem 1.65rem' }}>
+                  {h.button_secondary_text} <ArrowRight className="h-4 w-4" />
+                </a>
+              </div>
+            </div>
 
-              <div className="hidden animate-fade-up-delay lg:flex lg:flex-col lg:gap-3">
-                <div className="animate-float-soft rounded-[24px] border border-[#C9943A]/20 bg-white/[0.06] p-5 shadow-2xl backdrop-blur-xl">
-                  <p className="mb-3 text-xs font-black uppercase tracking-[0.15em] text-[#C9943A]">Corporate Coffee Desk</p>
-                  {['Office coffee supplies', 'Bulk beverage orders', 'Event catering', 'Custom menu planning'].map((item, i) => (
-                    <div key={i} className="flex items-center gap-2 border-b py-2 last:border-0" style={{ borderColor: 'rgba(201,148,58,0.12)' }}>
-                      <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 text-[#C9943A]" />
-                      <span className="text-xs text-[#F5E6D3]">{item}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  {[[h.stat_1_value, h.stat_1_label], [h.stat_2_value, h.stat_2_label], [h.stat_3_value, h.stat_3_label]].map(([val, lbl], i) => (
-                    <div key={i} className="h-auto min-h-0 rounded-xl border border-[#C9943A]/20 bg-white/[0.05] py-3 px-2 text-center backdrop-blur-md">
-                      <p className="text-lg font-black text-[#C9943A]">{val}</p>
-                      <p className="mt-1 text-[0.55rem] font-bold uppercase tracking-[0.08em] text-[#E6C7A8]">{lbl}</p>
-                    </div>
-                  ))}
-                </div>
+            <div className="hidden animate-fade-up-delay lg:flex lg:flex-col lg:gap-3">
+              <div className="corporate-coffee-panel animate-float-soft">
+                <p className="corporate-coffee-panel-title">Corporate Coffee Desk</p>
+                {['Office coffee supplies', 'Bulk beverage orders', 'Event catering', 'Custom menu planning'].map((item, i) => (
+                  <div key={i} className="corporate-coffee-panel-item">
+                    <CheckCircle />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="corporate-hero-stats">
+                {[[h.stat_1_value, h.stat_1_label], [h.stat_2_value, h.stat_2_label], [h.stat_3_value, h.stat_3_label]].map(([val, lbl], i) => (
+                  <div key={i} className="corporate-hero-stat">
+                    <p className="corporate-hero-stat-value font-heading font-black">{val}</p>
+                    <p className="corporate-hero-stat-label">{lbl}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
