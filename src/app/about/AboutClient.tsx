@@ -548,26 +548,26 @@ export default function AboutPage() {
         </section>
 
         {/* MORE THAN A CAFE */}
-        <section style={{ background: 'linear-gradient(135deg, #2A1811 0%, #3D2419 50%, #4B2E20 100%)', padding: '5rem 0', position: 'relative', overflow: 'hidden' }}>
+        <section style={{ background: 'linear-gradient(135deg, #FFF7ED 0%, #F6E6D1 100%)', padding: '5rem 0', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: -80, left: '50%', transform: 'translateX(-50%)', width: 700, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(201,148,58,0.18), transparent 70%)', pointerEvents: 'none' }} />
           <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem' }}>
             <div style={{ textAlign: 'center', marginBottom: '2.8rem' }}>
-              <h2 className="font-heading" style={{ fontSize: 'clamp(1.8rem,3vw,2.55rem)', fontWeight: 900, color: '#fff', lineHeight: 1.1 }}>
+              <h2 className="font-heading" style={{ fontSize: 'clamp(1.8rem,3vw,2.55rem)', fontWeight: 900, color: '#3D1F0D', lineHeight: 1.1 }}>
                 We&apos;re More Than Just a Café
               </h2>
-              <p style={{ color: '#D7B296', marginTop: '1rem', fontSize: '0.92rem' }}>Discover what makes Big Bean Café a complete experience</p>
+              <p style={{ color: '#6B3520', marginTop: '1rem', fontSize: '0.92rem' }}>Discover what makes Big Bean Café a complete experience</p>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: '1.5rem' }}>
               {EXPERIENCE.map(({ icon: Icon, title, text }) => (
                 <div key={title}
-                  style={{ background: 'rgba(18,9,5,0.48)', border: '1px solid rgba(201,148,58,0.28)', borderRadius: 24, padding: '2rem', backdropFilter: 'blur(10px)', transition: 'all 0.3s', cursor: 'default' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-6px)'; (e.currentTarget as HTMLElement).style.background = 'rgba(201,148,58,0.12)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(201,148,58,0.4)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.background = 'rgba(18,9,5,0.48)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(201,148,58,0.28)' }}>
+                  style={{ background: '#fff', border: '1px solid #E6C7A8', boxShadow: '0 4px 24px rgba(61,31,13,0.06)', borderRadius: 24, padding: '2rem', transition: 'all 0.3s', cursor: 'default' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-6px)'; (e.currentTarget as HTMLElement).style.background = '#fff'; (e.currentTarget as HTMLElement).style.borderColor = '#C9943A'; (e.currentTarget as HTMLElement).style.boxShadow = '0 16px 48px rgba(61,31,13,0.12)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.background = '#fff'; (e.currentTarget as HTMLElement).style.borderColor = '#E6C7A8'; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 24px rgba(61,31,13,0.06)' }}>
                   <div style={{ width: 52, height: 52, borderRadius: 16, background: 'rgba(201,148,58,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.2rem' }}>
                     <Icon style={{ width: 24, height: 24, color: '#C9943A' }} />
                   </div>
-                  <h3 className="font-heading" style={{ fontSize: '1rem', fontWeight: 800, color: '#fff', marginBottom: '0.6rem' }}>{title}</h3>
-                  <p style={{ fontSize: '0.84rem', color: '#C9A58B', lineHeight: 1.7 }}>{text}</p>
+                  <h3 className="font-heading" style={{ fontSize: '1rem', fontWeight: 800, color: '#3D1F0D', marginBottom: '0.6rem' }}>{title}</h3>
+                  <p style={{ fontSize: '0.84rem', color: '#6B3520', lineHeight: 1.7 }}>{text}</p>
                 </div>
               ))}
             </div>
