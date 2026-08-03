@@ -1,11 +1,25 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import Image from 'next/image'
 import Header from '@/components/common/Header'
 import Footer from '@/components/common/Footer'
 import { Coffee, Store, Users, Heart, Sparkles, MapPin, Award, Leaf, ArrowRight, Star, Smartphone, QrCode, Check, Plus, Minus, HelpCircle } from 'lucide-react'
+import type { MapOutlet } from '@/components/about/AboutOutletsMap'
+
+const AboutOutletsMap = dynamic(
+  () => import('@/components/about/AboutOutletsMap'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="about-outlets-map about-map-skeleton">
+        <div className="about-map-skeleton-content">Loading outlet map…</div>
+      </div>
+    ),
+  }
+)
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 const API_BASE = API_URL.replace(/\/api$/, '')
@@ -195,7 +209,9 @@ const FAQS = [
 
 export default function AboutPage() {
   const [hero, setHero] = useState<HeroType>(DEFAULT_HERO)
-  const [outlets, setOutlets] = useState<any[]>([])
+  const [outlets, setOutlets] = useState<MapOutlet[]>([])
+  const [outletsLoading, setOutletsLoading] = useState(true)
+  const [activeOutletId, setActiveOutletId] = useState<number | string | null>(null)
   const [heroImg, setHeroImg] = useState<string | null>(null)
   const [appPromo, setAppPromo] = useState<AppPromoData>(APP_FALLBACK)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
@@ -213,8 +229,13 @@ export default function AboutPage() {
 
     fetch(`${API_URL}/outlets/active`)
       .then(r => r.json())
-      .then(d => setOutlets((d.data || d.outlets || []).slice(0, 8)))
-      .catch(() => {})
+      .then(d => {
+        const next: MapOutlet[] = (d.data || d.outlets || []).slice(0, 7)
+        setOutlets(next)
+        if (next.length > 0) setActiveOutletId(next[0].id)
+      })
+      .catch(() => { setOutlets([]) })
+      .finally(() => { setOutletsLoading(false) })
 
     fetch(`${API_URL}/app-promos/active`)
       .then(r => r.json())
@@ -228,6 +249,28 @@ export default function AboutPage() {
         .about-hero { min-height: 520px; }
         @media (max-width: 1024px) { .about-hero { min-height: 420px; } }
         @media (max-width: 640px) { .about-hero { min-height: 360px; } }
+        .about-outlets-map {
+          width: 100%; height: 360px; margin-top: 1.75rem; overflow: hidden;
+          border: 1px solid #E6C7A8; border-radius: 24px; background: #F3E7DA;
+          box-shadow: 0 8px 30px rgba(61,31,13,0.08);
+        }
+        @media (max-width: 1024px) { .about-outlets-map { height: 320px; } }
+        @media (max-width: 640px) {
+          .about-outlets-map { height: 280px; margin-top: 1.4rem; border-radius: 20px; }
+        }
+        @media (max-width: 374px) { .about-outlets-map { height: 250px; } }
+        .about-map-skeleton {
+          position: relative; display: flex; align-items: center; justify-content: center;
+          background: linear-gradient(110deg,#F3E7DA 8%,#FFF7ED 18%,#F3E7DA 33%);
+          background-size: 200% 100%;
+          animation: aboutMapShimmer 1.4s linear infinite;
+        }
+        @keyframes aboutMapShimmer { to { background-position-x: -200%; } }
+        .about-map-skeleton-content { color: #8A6650; font-size: 0.8rem; font-weight: 700; }
+        .about-outlet-card-focus:focus-visible {
+          outline: 2px solid #C9943A; outline-offset: 2px;
+        }
+        .leaflet-container { font-family: inherit; }
       `}</style>
       <Header />
       <main>
@@ -577,14 +620,15 @@ export default function AboutPage() {
         {/* OUTLETS */}
         <section style={{ background: '#FBF4EC', padding: '5rem 0' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: '4rem', alignItems: 'flex-start' }}>
-              <div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(0,1fr))', gap: '4rem', alignItems: 'flex-start' }}>
+              {/* LEFT — heading, description, button, map */}
+              <div style={{ minWidth: 0 }}>
                 <p style={{ fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.22em', color: '#C9943A', textTransform: 'uppercase', marginBottom: '0.75rem' }}>OUR OUTLETS</p>
                 <h2 className="font-heading" style={{ fontSize: 'clamp(1.8rem,3vw,2.55rem)', fontWeight: 900, color: '#3D1F0D', lineHeight: 1.1, marginBottom: '1.5rem' }}>
                   Our Cafe Outlets,<br />Across Bengaluru.
                 </h2>
                 <p style={{ fontSize: '0.93rem', color: '#6B3520', lineHeight: 1.75, marginBottom: '2rem' }}>
-                  Visit Big Bean Cafe across Bengaluru, including Koramangala, RR Nagar, HSR Layout, Indiranagar, Electronic City, Jayanagar and Kammanahalli. Every outlet offers the same premium coffee, handcrafted food, warm hospitality and welcoming atmosphere. Fr
+                  Visit Big Bean Cafe across Bengaluru, including Koramangala, RR Nagar, HSR Layout, Indiranagar, Electronic City, Jayanagar and Kammanahalli. Every outlet offers the same premium coffee, handcrafted food, warm hospitality and welcoming atmosphere. From your morning coffee to evening catch-ups, we&apos;re always nearby.
                 </p>
                 <a href="/outlets"
                   style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#3D1F0D', color: '#FFF7ED', borderRadius: 100, padding: '0.9rem 2rem', fontSize: '0.74rem', fontWeight: 900, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.1em', transition: 'all 0.25s' }}
@@ -592,19 +636,70 @@ export default function AboutPage() {
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.background = '#3D1F0D' }}>
                   Explore All Outlets <ArrowRight style={{ width: 14, height: 14 }} />
                 </a>
+                <AboutOutletsMap
+                  outlets={outlets}
+                  activeOutletId={activeOutletId}
+                  loading={outletsLoading}
+                  onOutletSelect={(outlet) => {
+                    setActiveOutletId(outlet.id)
+                  }}
+                />
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {outlets.length === 0 ? (
+              {/* RIGHT — outlet cards */}
+              <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {outletsLoading ? (
                   [1,2,3,4].map(i => (
                     <div key={i} style={{ height: 80, borderRadius: 20, background: '#E6C7A8', opacity: 0.4 }} />
                   ))
-                ) : outlets.map((outlet: any) => {
-                  const img = getImg(outlet.image)
+                ) : outlets.length === 0 ? (
+                  <div style={{ padding: '2rem', textAlign: 'center', borderRadius: 20, background: '#fff', border: '1px solid #E6C7A8', color: '#9B6B50', fontSize: '0.88rem' }}>
+                    No outlets are available right now.
+                  </div>
+                ) : outlets.map((outlet) => {
+                  const img = getImg((outlet as any).image)
+                  const isActive = String(activeOutletId) === String(outlet.id)
+                  const hasCoords = typeof outlet.latitude !== 'undefined' && typeof outlet.longitude !== 'undefined' &&
+                    outlet.latitude !== null && outlet.longitude !== null
                   return (
-                    <div key={outlet.id}
-                      style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', background: '#fff', borderRadius: 20, padding: '1rem 1.25rem', border: '1px solid #E6C7A8', boxShadow: '0 4px 20px rgba(61,31,13,0.06)', transition: 'all 0.3s', cursor: 'default' }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateX(6px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 10px 40px rgba(61,31,13,0.12)' }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateX(0)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(61,31,13,0.06)' }}>
+                    <div
+                      key={outlet.id}
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={isActive}
+                      className="about-outlet-card-focus"
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '1.25rem',
+                        background: isActive ? '#FFF9F1' : '#fff',
+                        borderRadius: 20, padding: '1rem 1.25rem',
+                        border: isActive ? '1px solid #C9943A' : '1px solid #E6C7A8',
+                        boxShadow: isActive ? '0 10px 34px rgba(61,31,13,0.14)' : '0 4px 20px rgba(61,31,13,0.06)',
+                        transition: 'transform 0.3s ease, border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => setActiveOutletId(outlet.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault()
+                          setActiveOutletId(outlet.id)
+                        }
+                      }}
+                      onMouseEnter={e => {
+                        const el = e.currentTarget as HTMLElement
+                        el.style.transform = 'translateX(6px)'
+                        el.style.boxShadow = isActive
+                          ? '0 14px 44px rgba(61,31,13,0.18)'
+                          : '0 10px 40px rgba(61,31,13,0.12)'
+                      }}
+                      onMouseLeave={e => {
+                        const el = e.currentTarget as HTMLElement
+                        const still = String(activeOutletId) === String(outlet.id)
+                        el.style.transform = 'translateX(0)'
+                        el.style.background = still ? '#FFF9F1' : '#fff'
+                        el.style.borderColor = still ? '#C9943A' : '#E6C7A8'
+                        el.style.boxShadow = still
+                          ? '0 10px 34px rgba(61,31,13,0.14)'
+                          : '0 4px 20px rgba(61,31,13,0.06)'
+                      }}>
                       <div style={{ width: 56, height: 56, borderRadius: 14, overflow: 'hidden', flexShrink: 0 }}>
                         {img ? (
                           <img src={img} alt={outlet.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -616,9 +711,12 @@ export default function AboutPage() {
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div className="font-heading" style={{ fontWeight: 800, color: '#3D1F0D', fontSize: '0.9rem', marginBottom: '0.2rem' }}>{outlet.name}</div>
-                        {outlet.address && <div style={{ fontSize: '0.72rem', color: '#9B6B50', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{outlet.address}</div>}
+                        {(outlet as any).address && <div style={{ fontSize: '0.72rem', color: '#9B6B50', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{(outlet as any).address}</div>}
+                        {!hasCoords && (
+                          <div style={{ fontSize: '0.65rem', color: '#C9943A', marginTop: '0.15rem' }}>Map location unavailable</div>
+                        )}
                       </div>
-                      <MapPin style={{ width: 16, height: 16, color: '#C9943A', flexShrink: 0 }} />
+                      <MapPin style={{ width: 16, height: 16, color: isActive ? '#C9943A' : '#9B6B50', flexShrink: 0 }} />
                     </div>
                   )
                 })}
