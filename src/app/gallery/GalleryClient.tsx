@@ -168,7 +168,60 @@ export default function Gallery() {
 
       <main>
         {/* ── Hero ── */}
-        <section className="relative min-h-[520px] flex items-center pt-[5.5rem] pb-16 overflow-hidden">
+        <style>{`
+          .gallery-hero{min-height:620px;}
+          .gallery-hero-inner{position:relative;z-index:10;width:100%;max-width:1600px;margin:0 auto;padding:4rem clamp(1.5rem,5vw,6rem) 3.25rem;}
+          .gallery-hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,0.85fr);gap:3.5rem;align-items:center;}
+          .gallery-hero-copy{width:100%;max-width:900px;min-width:0;}
+          .gallery-hero-eyebrow{font-size:0.72rem;line-height:1;}
+          .gallery-hero-title{margin:0 0 1rem;color:#FFF7ED;font-size:clamp(2.5rem,3.8vw,4.25rem);font-weight:900;line-height:0.98;letter-spacing:-0.025em;text-wrap:balance;}
+          .gallery-hero-highlight{display:block;margin-top:0.15em;font-size:clamp(2.25rem,3.15vw,3.55rem);line-height:1.05;letter-spacing:-0.025em;background:linear-gradient(90deg,#F6D58D,#C9943A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+          .gallery-hero-subtitle{max-width:650px;margin-bottom:0;color:#F5E6D3;font-size:clamp(0.92rem,1.1vw,1.05rem);line-height:1.75;}
+          .gallery-hero-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;width:100%;}
+          .gallery-hero-stat{min-width:0;padding:1.25rem;}
+          .gallery-hero-stat-value{font-size:1.2rem;line-height:1.15;}
+          .gallery-hero-stat-label{font-size:0.82rem;line-height:1.45;}
+          .gallery-hero-actions{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:0.85rem;width:100%;margin-top:2rem;}
+          .gallery-hero-actions a{min-height:46px;font-size:0.78rem;}
+          @media(max-width:1199px){
+            .gallery-hero{min-height:560px;}
+            .gallery-hero-inner{padding:3.5rem clamp(1.5rem,4vw,3rem) 3rem;}
+            .gallery-hero-grid{grid-template-columns:minmax(0,1.1fr) minmax(280px,0.9fr);gap:2.5rem;}
+            .gallery-hero-title{font-size:clamp(2.5rem,5vw,3.75rem);}
+            .gallery-hero-highlight{font-size:clamp(2.15rem,4.25vw,3.15rem);}
+          }
+          @media(max-width:899px){
+            .gallery-hero{min-height:auto;}
+            .gallery-hero-grid{grid-template-columns:minmax(0,1fr);gap:2.25rem;}
+            .gallery-hero-copy{max-width:680px;}
+            .gallery-hero-stats{max-width:680px;}
+            .gallery-hero-actions{justify-content:flex-start;}
+          }
+          @media(max-width:640px){
+            .gallery-hero{min-height:auto;align-items:flex-start;}
+            .gallery-hero-inner{padding:3rem 1.25rem 2.5rem;}
+            .gallery-hero-grid{gap:1.75rem;}
+            .gallery-hero-eyebrow{font-size:0.65rem;}
+            .gallery-hero-title{font-size:clamp(2.15rem,11vw,3rem);line-height:1;letter-spacing:-0.02em;}
+            .gallery-hero-highlight{margin-top:0.22em;font-size:clamp(1.9rem,9.5vw,2.65rem);line-height:1.06;white-space:normal;}
+            .gallery-hero-subtitle{max-width:100%;font-size:0.9rem;line-height:1.7;}
+            .gallery-hero-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:0.55rem;}
+            .gallery-hero-stat{padding:0.85rem 0.5rem;border-radius:18px !important;}
+            .gallery-hero-stat-value{font-size:1.05rem;}
+            .gallery-hero-stat-label{font-size:0.68rem;}
+            .gallery-hero-actions{flex-direction:column;align-items:stretch;gap:0.65rem;margin-top:1.5rem;}
+            .gallery-hero-actions a{width:100%;min-height:46px;justify-content:center;padding-left:1.25rem !important;padding-right:1.25rem !important;}
+          }
+          @media(max-width:374px){
+            .gallery-hero-inner{padding-left:1rem;padding-right:1rem;}
+            .gallery-hero-title{font-size:2rem;}
+            .gallery-hero-highlight{font-size:1.75rem;}
+            .gallery-hero-stats{gap:0.4rem;}
+            .gallery-hero-stat{padding:0.75rem 0.35rem;}
+            .gallery-hero-stat-label{font-size:0.62rem;}
+          }
+        `}</style>
+        <section className="gallery-hero relative flex items-center overflow-hidden">
           {heroImageUrl ? (
             <>
               <img src={heroImageUrl} alt={hero?.title || 'Gallery Hero'}
@@ -181,47 +234,51 @@ export default function Gallery() {
           )}
           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #C9943A 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
 
-          <div className="container-custom relative z-10">
-            <div className="grid md:grid-cols-2 gap-10 items-center">
-              <div>
-                <p className="text-sm font-bold tracking-[0.22em] uppercase mb-4" style={{ color: '#C9943A' }}>
+          <div className="gallery-hero-inner">
+            <div className="gallery-hero-grid">
+              <div className="gallery-hero-copy">
+                <p className="gallery-hero-eyebrow font-black tracking-[0.22em] uppercase mb-4" style={{ color: '#C9943A' }}>
                   {hero?.eyebrow || 'BIG BEAN CAFÉ GALLERY'}
                 </p>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-heading mb-4" style={{ color: '#FFF7ED', lineHeight: 1.1 }}>
-                  {hero?.title || 'Moments Brewed'}{' '}
-                  <span style={{ color: '#C9943A' }}>{hero?.highlight_text || 'at Big Bean Café'}</span>
+                <h1 className="gallery-hero-title font-heading">
+                  {hero?.title || 'Moments Brewed'}
+                  <span className="gallery-hero-highlight">
+                    {hero?.highlight_text || 'at Big Bean Café'}
+                  </span>
                 </h1>
-                <p className="text-lg mb-8" style={{ color: '#F5E6D3', maxWidth: '500px' }}>
+                <p className="gallery-hero-subtitle">
                   {hero?.subtitle || 'Explore our café stories, Instagram reels, outlet moments, events, coffee creations and community memories.'}
                 </p>
-                <div className="flex flex-wrap gap-4">
-                  <a href={hero?.button_primary_url || '#gallery-list'}
-                    className="inline-flex items-center gap-2 px-8 py-3 rounded-full font-semibold text-white transition-all hover:opacity-90"
-                    style={{ background: 'linear-gradient(to right, #C9943A, #8B4A2F)' }}>
-                    {hero?.button_primary_text || 'Explore Gallery'}
-                  </a>
-                  <a href={hero?.button_secondary_url || 'https://www.instagram.com/bigbeancafe.in/'}
-                    target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-8 py-3 rounded-full font-semibold border-2 transition-all hover:bg-white/10"
-                    style={{ borderColor: '#C9943A', color: '#FFF7ED' }}>
-                    <Instagram className="w-4 h-4" />
-                    {hero?.button_secondary_text || 'Follow Instagram'}
-                  </a>
-                </div>
               </div>
 
-              <div className="hidden md:flex flex-wrap gap-4">
+              <div className="gallery-hero-stats">
                 {[
                   { value: hero?.stat_1_value || 'Reels', label: hero?.stat_1_label || 'Café Moments' },
                   { value: hero?.stat_2_value || 'Events', label: hero?.stat_2_label || 'Workshops' },
                   { value: hero?.stat_3_value || 'Outlets', label: hero?.stat_3_label || 'Good Vibes' },
                 ].map((s, i) => (
-                  <div key={i} className="flex-1 min-w-[120px] bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
-                    <p className="text-2xl font-bold font-heading" style={{ color: '#C9943A' }}>{s.value}</p>
-                    <p className="text-sm" style={{ color: '#F5E6D3' }}>{s.label}</p>
+                  <div key={i} className="gallery-hero-stat bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
+                    <p className="gallery-hero-stat-value font-heading font-black" style={{ color: '#C9943A' }}>{s.value}</p>
+                    <p className="gallery-hero-stat-label" style={{ color: '#F5E6D3' }}>{s.label}</p>
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className="gallery-hero-actions">
+              <a href={hero?.button_primary_url || '#gallery-list'}
+                className="inline-flex items-center gap-2 rounded-full font-black uppercase tracking-[0.08em] no-underline transition-all hover:opacity-90"
+                style={{ background: 'linear-gradient(to right, #C9943A, #8B4A2F)', color: '#fff', padding: '0.78rem 1.65rem' }}>
+                <Search size={14} aria-hidden="true" />
+                {hero?.button_primary_text || 'Explore Gallery'}
+              </a>
+              <a href={hero?.button_secondary_url || 'https://www.instagram.com/bigbeancafe.in/'}
+                target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full font-black uppercase tracking-[0.08em] no-underline transition-all hover:bg-white/10 border-2"
+                style={{ borderColor: '#C9943A', color: '#FFF7ED', padding: '0.78rem 1.65rem' }}>
+                <Instagram size={14} aria-hidden="true" />
+                {hero?.button_secondary_text || 'Follow Instagram'}
+              </a>
             </div>
           </div>
         </section>
