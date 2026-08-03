@@ -352,6 +352,17 @@ export default function AboutPage() {
             animation: none !important; transition-duration: 0.01ms !important; transform: none !important;
           }
         }
+
+        /* ── APP CTA SUB-LINKS ── */
+        .app-cta-sub-links a { white-space: nowrap; }
+        @media (max-width: 420px) {
+          .app-cta-sub-links { gap: 0.7rem !important; }
+          .app-cta-sub-links a { font-size: 0.7rem !important; letter-spacing: 0.04em !important; }
+        }
+        @media (max-width: 360px) {
+          .app-cta-sub-links { align-items: flex-start !important; flex-direction: column; gap: 0.75rem !important; }
+          .app-cta-sub-links-divider { display: none; }
+        }
       `}</style>
       <Header />
       <main>
@@ -966,16 +977,33 @@ export default function AboutPage() {
                       </a>
 
                       {/* Sub-links */}
-                      <div style={{ display: 'flex', gap: '1.2rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
-                        <a href="/menu" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 800, color: '#F3D59B', textDecoration: 'none', letterSpacing: '0.06em', textTransform: 'uppercase', opacity: 0.85, transition: 'opacity 0.2s' }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.85' }}>
-                          Explore Menu <ArrowRight size={11} />
+                      <div
+                        className="app-cta-sub-links"
+                        style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}
+                      >
+                        <a
+                          href="/menu"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 800, color: '#F3D59B', textDecoration: 'none', letterSpacing: '0.06em', textTransform: 'uppercase', opacity: 0.85, transition: 'opacity 0.2s ease, transform 0.2s ease' }}
+                          onMouseEnter={e => { const l = e.currentTarget as HTMLElement; l.style.opacity = '1'; l.style.transform = 'translateY(-1px)' }}
+                          onMouseLeave={e => { const l = e.currentTarget as HTMLElement; l.style.opacity = '0.85'; l.style.transform = 'translateY(0)' }}
+                        >
+                          <Coffee size={13} aria-hidden="true" />
+                          <span>Explore Menu</span>
+                          <ArrowRight size={11} aria-hidden="true" />
                         </a>
-                        <a href="/outlets" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 800, color: '#F3D59B', textDecoration: 'none', letterSpacing: '0.06em', textTransform: 'uppercase', opacity: 0.85, transition: 'opacity 0.2s' }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.85' }}>
-                          <MapPin size={11} /> Find Us
+                        <span
+                          className="app-cta-sub-links-divider"
+                          aria-hidden="true"
+                          style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(243,213,155,0.4)', flexShrink: 0 }}
+                        />
+                        <a
+                          href="/outlets"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 800, color: '#F3D59B', textDecoration: 'none', letterSpacing: '0.06em', textTransform: 'uppercase', opacity: 0.85, transition: 'opacity 0.2s ease, transform 0.2s ease' }}
+                          onMouseEnter={e => { const l = e.currentTarget as HTMLElement; l.style.opacity = '1'; l.style.transform = 'translateY(-1px)' }}
+                          onMouseLeave={e => { const l = e.currentTarget as HTMLElement; l.style.opacity = '0.85'; l.style.transform = 'translateY(0)' }}
+                        >
+                          <MapPin size={13} aria-hidden="true" />
+                          <span>Find Us</span>
                         </a>
                       </div>
                     </div>
