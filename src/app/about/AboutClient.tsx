@@ -262,9 +262,110 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen" style={{ background: '#FBF4EC' }}>
       <style>{`
-        .about-hero { min-height: 520px; }
-        @media (max-width: 1024px) { .about-hero { min-height: 420px; } }
-        @media (max-width: 640px) { .about-hero { min-height: 360px; } }
+        /* ── HERO LAYOUT & TYPOGRAPHY ── */
+        .about-hero { min-height: 620px; }
+
+        .about-hero-inner {
+          position: relative;
+          z-index: 2;
+          width: 100%;
+          max-width: 1600px;
+          margin: 0 auto;
+          padding: 4rem clamp(1.5rem, 5vw, 6rem) 3.25rem;
+        }
+
+        .about-hero-copy {
+          width: 100%;
+          max-width: 900px;
+        }
+
+        .about-hero-eyebrow-text {
+          font-size: 0.72rem;
+          line-height: 1;
+        }
+
+        .about-hero-title {
+          margin: 0;
+          color: #ffffff;
+          font-size: clamp(2.5rem, 3.8vw, 4.25rem);
+          font-weight: 900;
+          line-height: 0.98;
+          letter-spacing: -0.025em;
+          text-wrap: balance;
+        }
+
+        .about-hero-highlight {
+          display: block;
+          margin-top: 0.15em;
+          font-size: clamp(2.25rem, 3.15vw, 3.55rem);
+          line-height: 1.05;
+          letter-spacing: -0.025em;
+          background: linear-gradient(90deg, #F6D58D, #C9943A);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .about-hero-subtitle {
+          max-width: 650px;
+          margin-top: 1.4rem;
+          font-size: clamp(0.92rem, 1.1vw, 1.05rem);
+          line-height: 1.75;
+          color: #E8C7A8;
+        }
+
+        .about-hero-actions {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.75rem;
+          margin-top: 1.8rem;
+        }
+
+        .about-hero-stats {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.75rem;
+          margin-top: 1.6rem;
+        }
+
+        @media (min-width: 1440px) {
+          .about-hero-highlight { white-space: nowrap; }
+        }
+
+        @media (max-width: 1199px) {
+          .about-hero { min-height: 580px; }
+          .about-hero-inner { padding: 3.5rem clamp(1.5rem, 4vw, 3rem) 3rem; }
+          .about-hero-copy { max-width: 720px; }
+          .about-hero-title { font-size: clamp(2.5rem, 5vw, 3.75rem); }
+          .about-hero-highlight { font-size: clamp(2.15rem, 4.25vw, 3.15rem); }
+        }
+
+        @media (max-width: 899px) {
+          .about-hero { min-height: auto; }
+          .about-hero-inner { padding-top: 4rem; padding-bottom: 3rem; }
+          .about-hero-copy { max-width: 680px; }
+        }
+
+        @media (max-width: 640px) {
+          .about-hero { min-height: auto; align-items: flex-start !important; }
+          .about-hero-inner { padding: 3rem 1.25rem 2.5rem; }
+          .about-hero-copy { max-width: 100%; }
+          .about-hero-eyebrow-text { font-size: 0.65rem; }
+          .about-hero-title { font-size: clamp(2.15rem, 11vw, 3rem); line-height: 1; letter-spacing: -0.02em; }
+          .about-hero-highlight { margin-top: 0.22em; font-size: clamp(1.9rem, 9.5vw, 2.65rem); line-height: 1.06; white-space: normal; }
+          .about-hero-subtitle { max-width: 100%; margin-top: 1.15rem; font-size: 0.9rem; line-height: 1.7; }
+          .about-hero-actions { gap: 0.65rem; margin-top: 1.5rem; }
+          .about-hero-actions a { width: 100%; min-height: 46px; justify-content: center; }
+          .about-hero-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; gap: 0.5rem; margin-top: 1.25rem; }
+          .about-hero-stat { min-width: 0 !important; padding: 0.7rem 0.35rem !important; text-align: center; }
+        }
+
+        @media (max-width: 374px) {
+          .about-hero-inner { padding-left: 1rem; padding-right: 1rem; }
+          .about-hero-title { font-size: 2rem; }
+          .about-hero-highlight { font-size: 1.75rem; }
+          .about-hero-stats { gap: 0.4rem; }
+        }
 
         /* ── OUTLETS SECTION GRID ── */
         .outlets-section { scroll-margin-top: 110px; }
@@ -382,21 +483,21 @@ export default function AboutPage() {
           {/* Subtle gold glow top-left */}
           <div style={{ position: 'absolute', top: -100, left: -100, width: 460, height: 460, borderRadius: '50%', background: 'radial-gradient(circle,rgba(201,148,58,0.14),transparent 70%)', zIndex: 1, pointerEvents: 'none' }} />
 
-          {/* Left content — full width, max 620px */}
-          <div style={{ position: 'relative', zIndex: 2, maxWidth: 1320, margin: '0 auto', padding: '3rem 2rem 2.5rem', width: '100%' }}>
-            <div style={{ maxWidth: 560 }}>
+          {/* Left content */}
+          <div className="about-hero-inner">
+            <div className="about-hero-copy">
 
               {/* Eyebrow */}
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(201,148,58,0.15)', border: '1px solid rgba(201,148,58,0.35)', borderRadius: 100, padding: '0.38rem 0.95rem', marginBottom: '1.4rem' }}>
                 <Sparkles style={{ width: 14, height: 14, color: '#C9943A' }} />
-                <span style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.22em', color: '#F3D59B', textTransform: 'uppercase' }}>{hero.eyebrow}</span>
+                <span className="about-hero-eyebrow-text" style={{ fontWeight: 900, letterSpacing: '0.22em', color: '#F3D59B', textTransform: 'uppercase' }}>{hero.eyebrow}</span>
               </div>
 
               {/* Title */}
-              <h1 className="font-heading" style={{ fontSize: 'clamp(2.2rem,4vw,3.9rem)', fontWeight: 900, color: '#fff', lineHeight: 1, margin: 0 }}>
+              <h1 className="font-heading about-hero-title">
                 {hero.title}
                 {hero.highlight_text && (
-                  <span style={{ display: 'block', background: 'linear-gradient(90deg,#F6D58D,#C9943A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  <span className="about-hero-highlight">
                     {hero.highlight_text}
                   </span>
                 )}
@@ -404,13 +505,13 @@ export default function AboutPage() {
 
               {/* Subtitle */}
               {hero.subtitle && (
-                <p style={{ marginTop: '1.4rem', fontSize: '0.92rem', color: '#E8C7A8', lineHeight: 1.7, maxWidth: 520 }}>
+                <p className="about-hero-subtitle">
                   {hero.subtitle}
                 </p>
               )}
 
               {/* CTA buttons */}
-              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.8rem', flexWrap: 'wrap' }}>
+              <div className="about-hero-actions">
                 <a href={hero.button_primary_url}
                   style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#C9943A', color: '#120905', borderRadius: 100, padding: '0.82rem 1.65rem', fontSize: '0.7rem', fontWeight: 900, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.1em', boxShadow: '0 10px 28px rgba(201,148,58,0.32)', transition: 'all 0.25s' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)'; (e.currentTarget as HTMLElement).style.background = '#F6D58D' }}
@@ -426,13 +527,13 @@ export default function AboutPage() {
               </div>
 
               {/* Stats glass strip */}
-              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.6rem', flexWrap: 'wrap' }}>
+              <div className="about-hero-stats">
                 {[
                   { v: hero.stat_1_value, l: hero.stat_1_label },
                   { v: hero.stat_2_value, l: hero.stat_2_label },
                   { v: hero.stat_3_value, l: hero.stat_3_label },
                 ].map(s => (
-                  <div key={s.l} style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.16)', borderRadius: 14, padding: '0.75rem 1rem', backdropFilter: 'blur(12px)', minWidth: 88 }}>
+                  <div key={s.l} className="about-hero-stat" style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.16)', borderRadius: 14, padding: '0.75rem 1rem', backdropFilter: 'blur(12px)', minWidth: 88 }}>
                     <div className="font-heading" style={{ fontSize: '1.2rem', fontWeight: 900, color: '#F6D58D', lineHeight: 1 }}>{s.v}</div>
                     <div style={{ fontSize: '0.55rem', fontWeight: 700, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: 3 }}>{s.l}</div>
                   </div>

@@ -19,6 +19,16 @@
   --font-heading: 'Fraunces', serif;
   --font-body: 'Manrope', sans-serif;
   --font-nav: 'Sora', sans-serif;
+
+  /* Typography scale */
+  --text-eyebrow: 0.72rem;
+  --text-button: 0.78rem;
+  --text-small: 0.82rem;
+  --text-body: 1rem;
+  --text-card-title: 1.1rem;
+  --text-section-title: clamp(1.9rem, 3vw, 2.65rem);
+  --text-hero-title: clamp(2.5rem, 3.8vw, 4.25rem);
+  --text-hero-highlight: clamp(2.25rem, 3.15vw, 3.55rem);
 }
 
 @layer base {
