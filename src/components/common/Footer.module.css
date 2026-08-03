@@ -406,12 +406,15 @@
 /* ─── Mobile — below 768 ─────────────────────────────── */
 @media (max-width: 767px) {
   .footerInner {
-    padding: 2.75rem 1.25rem 1.25rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    padding-top: 3rem;
+    padding-bottom: 1.5rem;
   }
 
   .footerGrid {
     grid-template-columns: minmax(0, 1fr);
-    gap: 1.65rem;
+    gap: 1.75rem;
     text-align: center;
   }
 
@@ -419,9 +422,10 @@
   .businessCol,
   .contactCol {
     width: 100%;
-    min-width: 0;
     max-width: 100%;
+    min-width: 0;
     align-items: center;
+    text-align: center;
   }
 
   .footerDescription {
@@ -429,8 +433,8 @@
     margin-right: auto;
   }
 
-  .socialRow {
-    justify-content: center;
+  .footerLogo {
+    width: 115px;
   }
 
   .footerGrid h3 {
@@ -438,29 +442,37 @@
     margin-bottom: 0.85rem;
   }
 
+  .socialRow {
+    justify-content: center;
+  }
+
+  .brandFlipButton {
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+    flex-wrap: nowrap;
+  }
+
   .footerLinks {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.65rem 1.25rem;
     width: 100%;
     max-width: 290px;
     margin: 0 auto;
+    gap: 0.65rem 1rem;
     justify-items: center;
     align-items: center;
   }
 
   .footerLink {
     display: inline-flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    width: auto;
     min-width: 0;
-    padding: 0.15rem 0;
+    padding: 0.1rem 0;
     text-align: center;
     line-height: 1.35;
-  }
-
-  .footerLogo {
-    width: 115px;
   }
 
   .contactItem {
@@ -478,13 +490,30 @@
     margin-right: auto;
     padding: 1rem;
     text-align: left;
+    box-sizing: border-box;
+  }
+
+  .newsletterForm {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.6rem;
+    width: 100%;
+  }
+
+  .newsletterInput {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .newsletterBtn {
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 
   .footerBottom {
-    display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     gap: 0.8rem;
     margin-top: 1.5rem;
     padding-top: 1.25rem;
@@ -497,31 +526,33 @@
   }
 
   .legalLinks {
-    display: flex;
     justify-content: center;
-    align-items: center;
     flex-wrap: wrap;
-    gap: 0.75rem 1.25rem;
-  }
-}
-
-/* ─── Very small — below 374 ─────────────────────────── */
-@media (max-width: 374px) {
-  .footerInner {
-    padding-left: 1rem;
-    padding-right: 1rem;
   }
 }
 
 /* ─── Tiny — below 360 ───────────────────────────────── */
 @media (max-width: 359px) {
-  .footerLinks {
-    max-width: 270px;
-    gap: 0.6rem 0.8rem;
+  .footerInner {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 
-  .footerLink {
-    font-size: 0.78rem;
+  .footerLinks {
+    max-width: 270px;
+    gap: 0.6rem 0.75rem;
+  }
+
+  .brandFlipButton {
+    gap: 0.22rem !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .brandFlipItem {
+    width: 1.85rem !important;
+    height: 1.85rem !important;
+    flex: 0 0 1.85rem;
   }
 
   .newsletterForm {
