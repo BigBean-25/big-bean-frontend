@@ -978,32 +978,29 @@ export default function AboutPage() {
 
                       {/* Sub-links */}
                       <div
-                        className="app-cta-sub-links"
                         style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}
                       >
                         <a
                           href="/menu"
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 800, color: '#F3D59B', textDecoration: 'none', letterSpacing: '0.06em', textTransform: 'uppercase', opacity: 0.85, transition: 'opacity 0.2s ease, transform 0.2s ease' }}
-                          onMouseEnter={e => { const l = e.currentTarget as HTMLElement; l.style.opacity = '1'; l.style.transform = 'translateY(-1px)' }}
-                          onMouseLeave={e => { const l = e.currentTarget as HTMLElement; l.style.opacity = '0.85'; l.style.transform = 'translateY(0)' }}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 800, color: '#F3D59B', textDecoration: 'none', letterSpacing: '0.06em', textTransform: 'uppercase', opacity: 0.85, transition: 'opacity 0.2s' }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.85' }}
                         >
                           <Coffee size={13} aria-hidden="true" />
-                          <span>Explore Menu</span>
-                          <ArrowRight size={11} aria-hidden="true" />
+                          Explore Menu
                         </a>
                         <span
-                          className="app-cta-sub-links-divider"
                           aria-hidden="true"
-                          style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(243,213,155,0.4)', flexShrink: 0 }}
-                        />
+                          style={{ fontSize: '0.78rem', color: 'rgba(243,213,155,0.4)', fontWeight: 400, flexShrink: 0 }}
+                        >|</span>
                         <a
                           href="/outlets"
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 800, color: '#F3D59B', textDecoration: 'none', letterSpacing: '0.06em', textTransform: 'uppercase', opacity: 0.85, transition: 'opacity 0.2s ease, transform 0.2s ease' }}
-                          onMouseEnter={e => { const l = e.currentTarget as HTMLElement; l.style.opacity = '1'; l.style.transform = 'translateY(-1px)' }}
-                          onMouseLeave={e => { const l = e.currentTarget as HTMLElement; l.style.opacity = '0.85'; l.style.transform = 'translateY(0)' }}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 800, color: '#F3D59B', textDecoration: 'none', letterSpacing: '0.06em', textTransform: 'uppercase', opacity: 0.85, transition: 'opacity 0.2s' }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.85' }}
                         >
                           <MapPin size={13} aria-hidden="true" />
-                          <span>Find Us</span>
+                          Find Us
                         </a>
                       </div>
                     </div>
