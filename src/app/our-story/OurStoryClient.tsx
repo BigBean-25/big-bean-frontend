@@ -50,29 +50,59 @@ const DEFAULT_HERO: PageHero = {
 const TIMELINE = [
   {
     year: 'June 2024',
-    title: 'The Beginning',
-    text: 'Big Bean Café started its journey with the first outlet at RR Nagar, creating a warm and welcoming café space for coffee lovers.',
+    outlet: 'RR Nagar',
+    title: 'Where the Journey Began',
+    text:
+      'Big Bean Café opened its first outlet at RR Nagar, creating a warm neighbourhood café built around quality coffee, fresh food and welcoming hospitality.',
     startDate: '2024-06-01',
   },
   {
     year: 'April 2025',
-    title: 'Crafting Better Coffee',
-    text: 'The journey expanded with M5 and Koramangala outlets, strengthening our focus on quality coffee, fresh ingredients, and a consistent café experience.',
+    outlet: 'M5',
+    title: 'A New Café Destination',
+    text:
+      'The M5 outlet opened in April 2025, bringing the Big Bean Café experience to a new and growing community.',
     startDate: '2025-04-01',
   },
   {
-    year: 'Aug – Oct 2025',
-    title: 'Growing Across Bengaluru',
-    text: 'Big Bean Café grew further across Bengaluru with HSR Layout and Jayanagar outlets, bringing the same taste, ambience, and service standards to more guests.',
-    startDate: '2025-08-01',
-    endDate: '2025-10-31',
+    year: 'April 2025',
+    outlet: 'Koramangala',
+    title: 'Entering the Heart of Bengaluru',
+    text:
+      "Koramangala became part of the Big Bean journey in April 2025, strengthening our presence in one of Bengaluru's most vibrant neighborhoods.",
+    startDate: '2025-04-01',
   },
   {
-    year: 'Nov 2025 – Mar 2026',
-    title: 'Building a Café Community',
-    text: 'With Indiranagar and Kammanahalli outlets, Big Bean Café continued building a community for friends, families, professionals, and coffee lovers through today.',
+    year: 'August 2025',
+    outlet: 'HSR Layout',
+    title: 'Growing with the Community',
+    text:
+      'The HSR Layout outlet opened in August 2025, offering a comfortable space for coffee, conversations, work meetings and everyday café moments.',
+    startDate: '2025-08-01',
+  },
+  {
+    year: 'October 2025',
+    outlet: 'Jayanagar',
+    title: 'Bringing Big Bean to South Bengaluru',
+    text:
+      'Jayanagar joined the Big Bean Café family in October 2025, continuing our commitment to consistent quality, service and café culture.',
+    startDate: '2025-10-01',
+  },
+  {
+    year: 'November 2025',
+    outlet: 'Indiranagar',
+    title: 'Expanding into a Café Landmark',
+    text:
+      "The Indiranagar outlet opened in November 2025, bringing premium coffee and handcrafted food to one of Bengaluru's most energetic destinations.",
     startDate: '2025-11-01',
-    endDate: '2026-03-31',
+  },
+  {
+    year: 'March 2026',
+    outlet: 'Kammanahalli',
+    title: 'Seven Outlets and Still Growing',
+    text:
+      "Kammanahalli opened in March 2026, marking another important milestone in Big Bean Café's growing Bengaluru journey.",
+    startDate: '2026-03-01',
   },
 ]
 
@@ -87,12 +117,12 @@ const STORY_FAQS = [
   {
     question: 'When was Big Bean Cafe founded?',
     answer:
-      'Big Bean Cafe started with a single outlet and has grown into a coffee community across Bengaluru.',
+      'Big Bean Cafe began its journey with the RR Nagar outlet in June 2024 and has since grown across Bengaluru.',
   },
   {
     question: 'How many Big Bean Cafe outlets are there?',
     answer:
-      'Big Bean Cafe has 3+ outlets across Bengaluru, with more opening soon.',
+      'Big Bean Cafe has seven outlets across Bengaluru: RR Nagar, M5, Koramangala, HSR Layout, Jayanagar, Indiranagar and Kammanahalli.',
   },
   {
     question: 'What makes Big Bean Cafe different?',
@@ -205,7 +235,7 @@ export default function OurStoryClient() {
   const ctaRef = useReveal()
 
   return (
-    <div className="min-h-screen overflow-x-hidden" style={{ background: '#FBF4EC' }}>
+    <div className={styles.page}>
       <Header />
 
       <main>
@@ -236,32 +266,27 @@ export default function OurStoryClient() {
 
           <div
             ref={heroRef as React.RefObject<HTMLDivElement>}
-            className={`relative z-10 container-custom px-5 text-center lg:px-8 ${styles.fadeUp}`}
+            className={`${styles.heroContent} ${styles.fadeUp}`}
           >
-            <span className="mb-4 inline-block rounded-full border border-[#C9943A]/40 bg-[#C9943A]/15 px-4 py-1.5 text-[0.65rem] font-black uppercase tracking-[0.22em] text-[#F6D58D]">
+            <span className={styles.heroLabel}>
               {hero.label || DEFAULT_HERO.label}
             </span>
-            <h1
-              className="font-heading mx-auto mb-5 max-w-4xl text-[clamp(2.4rem,6vw,4.8rem)] font-black leading-[0.98] text-white"
-            >
+            <h1 className={styles.heroTitle}>
               {hero.title || DEFAULT_HERO.title}
             </h1>
-            <p
-              className="mx-auto mb-8 max-w-2xl text-[0.95rem] leading-relaxed md:text-[1.05rem]"
-              style={{ color: '#F5D7BF' }}
-            >
+            <p className={styles.heroSubtitle}>
               {hero.subtitle || DEFAULT_HERO.subtitle}
             </p>
-            <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div className={styles.heroActions}>
               <Link
                 href={hero.primary_button_url || '/menu'}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#C9943A] px-7 py-3.5 text-xs font-black uppercase tracking-[0.08em] text-[#120905] shadow-[0_10px_28px_rgba(201,148,58,0.32)] transition-all hover:-translate-y-0.5 hover:bg-[#F6D58D] sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#C9943A] px-7 py-3.5 font-black uppercase tracking-[0.08em] text-[#120905] shadow-[0_10px_28px_rgba(201,148,58,0.32)] transition-all hover:-translate-y-0.5 hover:bg-[#F6D58D]"
               >
                 {hero.primary_button_text || 'Explore Our Menu'} <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href={hero.secondary_button_url || '/outlets'}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/30 px-7 py-3.5 text-xs font-black uppercase tracking-[0.08em] text-white transition-all hover:-translate-y-0.5 hover:bg-white/10 sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-7 py-3.5 font-black uppercase tracking-[0.08em] text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
               >
                 {hero.secondary_button_text || 'Visit Our Outlets'} <MapPin className="h-4 w-4" />
               </Link>
@@ -270,19 +295,17 @@ export default function OurStoryClient() {
         </section>
 
         {/* INTRO */}
-        <section className="section-padding">
+        <section className={`${styles.section} ${styles.introSection}`}>
           <div
             ref={introRef as React.RefObject<HTMLDivElement>}
-            className={`container-custom grid grid-cols-1 items-center gap-10 lg:grid-cols-2 ${styles.fadeUp}`}
+            className={`${styles.container} ${styles.introGrid} ${styles.fadeUp}`}
           >
             <div>
-              <p className="mb-3 text-[0.65rem] font-black uppercase tracking-[0.22em] text-[#C9943A]">
-                Who We Are
-              </p>
-              <h2 className="font-heading mb-5 text-[clamp(1.8rem,4vw,2.8rem)] font-black leading-tight text-[#3D1F0D]">
+              <p className={styles.sectionEyebrow}>Who We Are</p>
+              <h2 className={styles.sectionTitle}>
                 From a Passion for Coffee to a Café Experience
               </h2>
-              <p className="mb-6 text-[0.95rem] leading-[1.8] text-[#6B3520]">
+              <p className={`${styles.bodyText} mb-6 mt-5`}>
                 Big Bean Café was built with a simple idea — to create a warm café space where people can enjoy quality coffee, fresh food, and meaningful moments. From our first outlet to becoming a loved café brand across Bengaluru, our journey has always been driven by passion, people, and consistency.
               </p>
               <div className="flex flex-wrap gap-4">
@@ -291,8 +314,8 @@ export default function OurStoryClient() {
                     <Sparkles className="h-5 w-5 text-[#C9943A]" />
                   </div>
                   <div>
-                    <p className="text-xs font-black text-[#3D1F0D]">Premium Quality</p>
-                    <p className="text-[11px] text-[#6B3520]">In every cup</p>
+                    <p className="text-[0.8rem] font-black text-[#3D1F0D]">Premium Quality</p>
+                    <p className={styles.supportingText}>In every cup</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 rounded-2xl border border-[#E6C7A8] bg-white px-5 py-3 shadow-sm">
@@ -300,8 +323,8 @@ export default function OurStoryClient() {
                     <Leaf className="h-5 w-5 text-[#C9943A]" />
                   </div>
                   <div>
-                    <p className="text-xs font-black text-[#3D1F0D]">Fresh & Local</p>
-                    <p className="text-[11px] text-[#6B3520]">Sourced responsibly</p>
+                    <p className="text-[0.8rem] font-black text-[#3D1F0D]">Fresh &amp; Local</p>
+                    <p className={styles.supportingText}>Sourced responsibly</p>
                   </div>
                 </div>
               </div>
@@ -310,10 +333,10 @@ export default function OurStoryClient() {
             <div className="relative">
               <div className="rounded-[32px] border border-[#E6C7A8] bg-gradient-to-br from-[#FFF7ED] to-[#F6E6D1] p-8 shadow-[0_24px_70px_rgba(61,31,13,0.10)]">
                 <ShoppingBag className="mb-4 h-10 w-10 text-[#C9943A]" />
-                <p className="font-heading text-xl font-black leading-snug text-[#3D1F0D]">
-                  “We don’t just serve coffee; we serve moments that bring people together.”
+                <p className="font-heading text-[clamp(1.2rem,2.2vw,1.6rem)] font-black leading-snug text-[#3D1F0D]">
+                  &ldquo;We don&apos;t just serve coffee; we serve moments that bring people together.&rdquo;
                 </p>
-                <p className="mt-4 text-sm font-bold text-[#8B4A2F]">— The Big Bean Team</p>
+                <p className="mt-4 text-[0.82rem] font-bold text-[#8B4A2F]">— The Big Bean Team</p>
               </div>
               <div className="absolute -bottom-4 -right-4 -z-10 h-full w-full rounded-[32px] bg-[#C9943A]/20" />
             </div>
@@ -321,11 +344,11 @@ export default function OurStoryClient() {
         </section>
 
         {/* TIMELINE */}
-        <section className="section-padding" style={{ background: '#FFF7ED' }}>
-          <div className="container-custom px-5 lg:px-8">
-            <div className="mb-12 text-center">
-              <p className="mb-3 text-[0.65rem] font-black uppercase tracking-[0.22em] text-[#C9943A]">Journey</p>
-              <h2 className="font-heading text-[clamp(1.8rem,4vw,2.8rem)] font-black text-[#3D1F0D]">Our Journey</h2>
+        <section className={styles.section} style={{ background: '#FFF7ED' }}>
+          <div className={styles.container}>
+            <div className={styles.sectionHeader}>
+              <p className={styles.sectionEyebrow}>Journey</p>
+              <h2 className={styles.sectionTitle}>Our Journey</h2>
             </div>
 
             <div
@@ -334,18 +357,32 @@ export default function OurStoryClient() {
             >
               {TIMELINE.map((item, i) => (
                 <div
-                  key={item.title}
-                  className={`${styles.timelineItem} ${i % 2 === 0 ? styles.left : styles.right}`}
-                  style={{ transitionDelay: `${i * 120}ms` }}
+                  key={`${item.outlet}-${item.year}`}
+                  className={`${styles.timelineItem} ${
+                    i % 2 === 0 ? styles.left : styles.right
+                  }`}
+                  style={{ transitionDelay: `${i * 110}ms` }}
                 >
                   <div className={styles.timelineDot}>
                     <Coffee className="h-4 w-4 text-white" />
                   </div>
-                  <span className="mb-2 inline-block rounded-full bg-[#C9943A] px-3 py-1 text-[0.6rem] font-black uppercase tracking-wider text-white">
+
+                  <div className={styles.timelineDate}>
                     {item.year}
-                  </span>
-                  <h3 className="font-heading mb-2 text-lg font-black text-[#3D1F0D]">{item.title}</h3>
-                  <p className="text-sm leading-relaxed text-[#6B3520]">{item.text}</p>
+                  </div>
+
+                  <div className={styles.timelineOutlet}>
+                    <MapPin aria-hidden="true" />
+                    <span>{item.outlet}</span>
+                  </div>
+
+                  <h3 className={styles.timelineTitle}>
+                    {item.title}
+                  </h3>
+
+                  <p className={styles.timelineText}>
+                    {item.text}
+                  </p>
                 </div>
               ))}
             </div>
@@ -353,29 +390,27 @@ export default function OurStoryClient() {
         </section>
 
         {/* STATS */}
-        <section className="section-padding">
+        <section className={styles.section}>
           <div
             ref={statsRef as React.RefObject<HTMLDivElement>}
-            className={`container-custom ${styles.fadeUp}`}
+            className={`${styles.container} ${styles.statsGrid} ${styles.fadeUp}`}
           >
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {STATS.map((s) => (
-                <StatCard key={s.label} {...s} />
-              ))}
-            </div>
+            {STATS.map((s, i) => (
+              <StatCard key={s.label} {...s} delay={i * 80} />
+            ))}
           </div>
         </section>
 
         {/* VALUES */}
-        <section className="section-padding" style={{ background: '#FFF7ED' }}>
-          <div className="container-custom px-5 lg:px-8">
-            <div className="mb-12 text-center">
-              <p className="mb-3 text-[0.65rem] font-black uppercase tracking-[0.22em] text-[#C9943A]">Principles</p>
-              <h2 className="font-heading text-[clamp(1.8rem,4vw,2.8rem)] font-black text-[#3D1F0D]">What We Stand For</h2>
+        <section className={styles.section} style={{ background: '#FFF7ED' }}>
+          <div className={styles.container}>
+            <div className={styles.sectionHeader}>
+              <p className={styles.sectionEyebrow}>Principles</p>
+              <h2 className={styles.sectionTitle}>What We Stand For</h2>
             </div>
             <div
               ref={valuesRef as React.RefObject<HTMLDivElement>}
-              className={`grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 ${styles.fadeUp}`}
+              className={`${styles.valuesGrid} ${styles.fadeUp}`}
             >
               {VALUES.map((v, i) => {
                 const Icon = v.icon
@@ -388,8 +423,8 @@ export default function OurStoryClient() {
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#C9943A]/15 transition-transform group-hover:scale-110">
                       <Icon className="h-6 w-6 text-[#C9943A]" />
                     </div>
-                    <h3 className="font-heading mb-2 text-lg font-black text-[#3D1F0D]">{v.title}</h3>
-                    <p className="text-sm leading-relaxed text-[#6B3520]">{v.text}</p>
+                    <h3 className={`${styles.cardTitle} mb-2`}>{v.title}</h3>
+                    <p className={styles.bodyText}>{v.text}</p>
                   </div>
                 )
               })}
@@ -398,30 +433,27 @@ export default function OurStoryClient() {
         </section>
 
         {/* FAQ */}
-        <section className="section-padding" style={{ background: '#FFF7ED' }}>
-          <div className="container-custom px-5 lg:px-8">
-            <div className="mx-auto mb-10 max-w-3xl text-center">
-              <p className="mb-3 text-[0.65rem] font-black uppercase tracking-[0.22em] text-[#C9943A]">
-                FAQ
-              </p>
-              <h2 className="font-heading text-[clamp(1.7rem,3vw,2.4rem)] font-black text-[#3D1F0D]">
-                Frequently Asked Questions
-              </h2>
-              <p className="mt-3 text-sm leading-relaxed text-[#6B3520]">
+        <section className={styles.section} style={{ background: '#FFF7ED' }}>
+          <div className={styles.container}>
+            <div className={styles.sectionHeader}>
+              <p className={styles.sectionEyebrow}>FAQ</p>
+              <h2 className={styles.sectionTitle}>Frequently Asked Questions</h2>
+              <p className={styles.sectionSubtitle}>
                 Quick answers about Big Bean Café, our journey, outlets and franchise opportunities.
               </p>
             </div>
-            <div className="mx-auto grid max-w-5xl gap-4 md:grid-cols-2">
-              {STORY_FAQS.map((faq) => (
+            <div className={styles.faqGrid}>
+              {STORY_FAQS.map((faq, i) => (
                 <div
                   key={faq.question}
                   className="rounded-[1.4rem] border border-[#E7CFAF] bg-white/85 p-6 shadow-[0_18px_45px_rgba(61,31,13,0.08)]"
+                  style={{ transitionDelay: `${i * 80}ms` }}
                 >
-                  <h3 className="font-heading mb-3 text-lg font-black text-[#3D1F0D]">
+                  <h3 className={`${styles.cardTitle} mb-3`}>
                     {faq.question}
                   </h3>
                   {faq.question.includes('franchise') ? (
-                    <p className="text-sm leading-relaxed text-[#6B3520]">
+                    <p className={styles.bodyText}>
                       Yes, Big Bean Cafe offers franchise opportunities. Visit the{' '}
                       <Link href="/franchise" className="font-bold text-[#C9943A] underline underline-offset-4">
                         Franchise page
@@ -429,7 +461,7 @@ export default function OurStoryClient() {
                       for more details.
                     </p>
                   ) : (
-                    <p className="text-sm leading-relaxed text-[#6B3520]">{faq.answer}</p>
+                    <p className={styles.bodyText}>{faq.answer}</p>
                   )}
                 </div>
               ))}
@@ -443,26 +475,26 @@ export default function OurStoryClient() {
           className={`relative overflow-hidden rounded-t-[40px] ${styles.experience} ${styles.fadeUp}`}
         >
           <div className={styles.shine} />
-          <div className="container-custom relative z-10 px-5 py-20 text-center lg:px-8">
-            <p className="mb-3 text-[0.65rem] font-black uppercase tracking-[0.22em] text-[#F6D58D]">Visit Big Bean Café</p>
-            <h2 className="font-heading mx-auto mb-5 max-w-3xl text-[clamp(1.8rem,4vw,2.8rem)] font-black text-white">
+          <div className={styles.experienceContent}>
+            <p className={`${styles.sectionEyebrow} mb-3 text-[#F6D58D]`}>Visit Big Bean Café</p>
+            <h2 className={`${styles.sectionTitle} mx-auto mb-5 max-w-3xl text-white`}>
               Experience Big Bean Café Today
             </h2>
-            <p className="mx-auto mb-8 max-w-xl text-[0.95rem] leading-relaxed" style={{ color: '#F5D7BF' }}>
+            <p className={`${styles.bodyText} mx-auto mb-8 max-w-xl`} style={{ color: '#F5D7BF' }}>
               Visit our cafés, explore our menu, or order your favourites online.
             </p>
-            <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div className={styles.heroActions}>
               <a
                 href="https://bigbeancafe.store"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#C9943A] px-8 py-3.5 text-xs font-black uppercase tracking-[0.08em] text-[#120905] shadow-lg transition-all hover:-translate-y-0.5 hover:bg-[#F6D58D] sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#C9943A] px-8 py-3.5 font-black uppercase tracking-[0.08em] text-[#120905] shadow-lg transition-all hover:-translate-y-0.5 hover:bg-[#F6D58D]"
               >
                 Order Now <ArrowRight className="h-4 w-4" />
               </a>
               <Link
                 href="/outlets"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/30 px-8 py-3.5 text-xs font-black uppercase tracking-[0.08em] text-white transition-all hover:-translate-y-0.5 hover:bg-white/10 sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-8 py-3.5 font-black uppercase tracking-[0.08em] text-white transition-all hover:-translate-y-0.5 hover:bg-white/10"
               >
                 Find Outlets <MapPin className="h-4 w-4" />
               </Link>
@@ -476,19 +508,20 @@ export default function OurStoryClient() {
   )
 }
 
-function StatCard({ value, suffix, label }: { value: number; suffix: string; label: string }) {
+function StatCard({ value, suffix, label, delay = 0 }: { value: number; suffix: string; label: string; delay?: number }) {
   const { count, ref } = useCountUp(value, 1800)
   const display = label === 'Freshly Brewed Everyday' ? 'Fresh' : count
   return (
     <div
       ref={ref}
       className="rounded-[28px] border border-[#E6C7A8] bg-white p-6 text-center shadow-[0_14px_40px_rgba(61,31,13,0.08)] transition-all duration-300 hover:-translate-y-1"
+      style={{ transitionDelay: `${delay}ms` }}
     >
-      <div className="font-heading text-[2.6rem] font-black leading-none text-[#3D1F0D]">
+      <div className="font-heading font-black leading-none text-[#3D1F0D]" style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)' }}>
         {display}
         {suffix}
       </div>
-      <p className="mt-2 text-sm font-bold text-[#6B3520]">{label}</p>
+      <p className="mt-2 font-bold text-[#6B3520]" style={{ fontSize: '0.82rem' }}>{label}</p>
     </div>
   )
 }
