@@ -207,12 +207,72 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#FBF4EC' }}>
+    <div className="contact-page min-h-screen" style={{ background: '#FBF4EC' }}>
       <Header />
 
       <main>
         {/* HERO */}
-        <section className="relative flex items-center overflow-hidden min-h-[380px] md:min-h-[460px] lg:min-h-[520px]" style={{ padding: '5.5rem 0 4rem' }}>
+        <style>{`
+          .contact-page{width:100%;overflow-x:clip;}
+          .contact-page,.contact-page *{box-sizing:border-box;}
+          .contact-hero{min-height:620px;}
+          .contact-hero-inner{position:relative;z-index:10;width:100%;max-width:1600px;margin:0 auto;padding:4rem clamp(1.5rem,5vw,6rem) 3.25rem;}
+          .contact-hero-copy{width:100%;max-width:900px;min-width:0;}
+          .contact-hero-eyebrow{font-size:0.72rem;line-height:1;}
+          .contact-hero-title{margin:0 0 1rem;color:#fff;font-size:clamp(2.5rem,3.8vw,4.25rem);font-weight:900;line-height:0.98;letter-spacing:-0.025em;text-wrap:balance;}
+          .contact-hero-highlight{display:block;margin-top:0.15em;font-size:clamp(2.25rem,3.15vw,3.55rem);line-height:1.05;letter-spacing:-0.025em;background:linear-gradient(90deg,#F6D58D,#C9943A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+          .contact-hero-subtitle{max-width:650px;margin-bottom:1.5rem;color:#F5D7BF;font-size:clamp(0.92rem,1.1vw,1.05rem);line-height:1.75;}
+          .contact-hero-actions{display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:2rem;}
+          .contact-hero-actions a{min-height:46px;font-size:0.78rem !important;}
+          .contact-hero-stats{display:inline-flex;max-width:100%;overflow:hidden;}
+          .contact-hero-stat-value{font-size:1.2rem;}
+          .contact-hero-stat-label{font-size:0.58rem;}
+          .contact-section-eyebrow{font-size:0.65rem;font-weight:900;letter-spacing:0.22em;text-transform:uppercase;}
+          .contact-section-title{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:900;line-height:1.1;text-wrap:balance;}
+          .contact-card-title{font-size:1.05rem;line-height:1.3;}
+          .contact-body-text{font-size:0.88rem;line-height:1.7;}
+          .contact-supporting-text{font-size:0.82rem;line-height:1.65;}
+          .contact-form-label{font-size:0.75rem;}
+          .contact-form-control{font-size:0.875rem;}
+          .contact-small-action{font-size:0.72rem;}
+          @media(max-width:1199px){
+            .contact-hero{min-height:560px;}
+            .contact-hero-inner{padding:3.5rem clamp(1.5rem,4vw,3rem) 3rem;}
+            .contact-hero-copy{max-width:720px;}
+            .contact-hero-title{font-size:clamp(2.5rem,5vw,3.75rem);}
+            .contact-hero-highlight{font-size:clamp(2.15rem,4.25vw,3.15rem);}
+          }
+          @media(max-width:899px){
+            .contact-hero{min-height:auto;}
+            .contact-hero-inner{padding-top:4rem;padding-bottom:3rem;}
+            .contact-hero-copy{max-width:680px;}
+            .contact-floating-card{display:none !important;}
+          }
+          @media(max-width:640px){
+            .contact-hero{min-height:auto;align-items:flex-start !important;}
+            .contact-hero-inner{padding:3rem 1.25rem 2.5rem;}
+            .contact-hero-copy{max-width:100%;}
+            .contact-hero-eyebrow{font-size:0.65rem;}
+            .contact-hero-title{font-size:clamp(2.15rem,11vw,3rem);line-height:1;letter-spacing:-0.02em;}
+            .contact-hero-highlight{margin-top:0.22em;font-size:clamp(1.9rem,9.5vw,2.65rem);line-height:1.06;white-space:normal;}
+            .contact-hero-subtitle{max-width:100%;margin-bottom:1.5rem;font-size:0.9rem;line-height:1.7;}
+            .contact-hero-actions{width:100%;gap:0.65rem;margin-bottom:1.5rem;}
+            .contact-hero-actions a{width:100%;min-height:46px;justify-content:center;}
+            .contact-hero-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;}
+            .contact-hero-stat{min-width:0;padding:0.75rem 0.35rem !important;}
+            .contact-hero-stat-value{font-size:1.05rem;}
+            .contact-hero-stat-label{font-size:0.52rem;letter-spacing:0.06em !important;}
+            .contact-section-title{font-size:clamp(1.7rem,8vw,2.15rem);}
+            .contact-card-title{font-size:1rem;}
+            .contact-body-text{font-size:0.86rem;}
+          }
+          @media(max-width:374px){
+            .contact-hero-inner{padding-left:1rem;padding-right:1rem;}
+            .contact-hero-title{font-size:2rem;}
+            .contact-hero-highlight{font-size:1.75rem;}
+          }
+        `}</style>
+        <section className="contact-hero relative flex items-center overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-[#120905] via-[#2A120B] to-[#5C2E12]" />
           {heroImg && (
             <img src={heroImg} alt={h.title} className="absolute inset-0 w-full h-full object-cover"
@@ -228,21 +288,21 @@ export default function ContactPage() {
           <div className="absolute left-0 bottom-0 w-[300px] h-[300px] md:w-[480px] md:h-[480px] rounded-full bg-[#8B4A2F]/20 blur-3xl" />
           <div className="absolute inset-0 opacity-[0.08] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #C9943A 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
 
-          <div className="relative z-10 w-full max-w-[1280px] mx-auto px-8" style={{ paddingLeft: '2rem', paddingRight: '2rem' }}>
-            <div style={{ maxWidth: 620 }}>
+          <div className="contact-hero-inner">
+            <div className="contact-hero-copy">
               <div className="inline-flex items-center gap-2 rounded-full border border-[#C9943A]/35 bg-[#C9943A]/12 px-4 py-1.5 mb-6">
                 <Mail style={{ width: 13, height: 13, color: '#C9943A' }} />
-                <span className="text-[0.6rem] font-black tracking-[0.22em] uppercase" style={{ color: '#F7D891' }}>{h.eyebrow}</span>
+                <span className="contact-hero-eyebrow font-black tracking-[0.22em] uppercase" style={{ color: '#F7D891' }}>{h.eyebrow}</span>
               </div>
 
-              <h1 className="font-heading font-black text-white mb-4" style={{ fontSize: 'clamp(2.4rem, 4.5vw, 4.2rem)', lineHeight: 0.98 }}>
+              <h1 className="font-heading contact-hero-title">
                 {h.title}
-                {h.highlight_text && <span className="block bg-gradient-to-r from-[#F6D58D] to-[#C9943A] bg-clip-text text-transparent">{h.highlight_text}</span>}
+                {h.highlight_text && <span className="contact-hero-highlight">{h.highlight_text}</span>}
               </h1>
 
-              <p className="text-[0.95rem] leading-relaxed mb-6" style={{ color: '#F5D7BF', maxWidth: 620, lineHeight: 1.7 }}>{h.subtitle}</p>
+              <p className="contact-hero-subtitle">{h.subtitle}</p>
 
-              <div className="flex flex-wrap gap-3 mb-8">
+              <div className="contact-hero-actions">
                 <a href={h.button_primary_url} className="inline-flex items-center gap-2 rounded-full font-black uppercase tracking-[0.08em] text-[0.8rem] no-underline transition-all"
                   style={{ background: '#C9943A', color: '#120905', padding: '0.75rem 1.5rem', boxShadow: '0 10px 28px rgba(201,148,58,0.32)' }}>
                   <Send style={{ width: 14, height: 14 }} /> {h.button_primary_text}
@@ -253,21 +313,21 @@ export default function ContactPage() {
                 </a>
               </div>
 
-              <div className="inline-flex rounded-[22px] border border-white/18 backdrop-blur-md overflow-hidden" style={{ background: 'rgba(255,255,255,0.10)' }}>
+              <div className="contact-hero-stats rounded-[22px] border border-white/18 backdrop-blur-md overflow-hidden" style={{ background: 'rgba(255,255,255,0.10)' }}>
                 {[
                   { val: h.stat_1_value, lbl: h.stat_1_label },
                   { val: h.stat_2_value, lbl: h.stat_2_label },
                   { val: h.stat_3_value, lbl: h.stat_3_label },
                 ].map((s, i) => (
-                  <div key={i} className="text-center px-4 py-2.5" style={{ borderRight: i < 2 ? '1px solid rgba(255,255,255,0.12)' : 'none' }}>
-                    <div className="font-heading text-[1.05rem] font-black leading-tight" style={{ color: '#F6D58D' }}>{s.val}</div>
-                    <div className="text-[0.58rem] font-bold uppercase tracking-[0.1em] mt-0.5" style={{ color: '#C7A489' }}>{s.lbl}</div>
+                  <div key={i} className="contact-hero-stat text-center px-4 py-2.5" style={{ borderRight: i < 2 ? '1px solid rgba(255,255,255,0.12)' : 'none' }}>
+                    <div className="font-heading contact-hero-stat-value font-black leading-tight" style={{ color: '#F6D58D' }}>{s.val}</div>
+                    <div className="contact-hero-stat-label font-bold uppercase tracking-[0.1em] mt-0.5" style={{ color: '#C7A489' }}>{s.lbl}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="hidden lg:block absolute right-[5%] bottom-[8%] max-w-[300px]" style={{ background: 'rgba(18,9,5,0.64)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 24, padding: '1.25rem', boxShadow: '0 24px 70px rgba(18,9,5,0.35)' }}>
+            <div className="contact-floating-card hidden xl:block absolute right-[5%] bottom-[8%] max-w-[300px]" style={{ background: 'rgba(18,9,5,0.64)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 24, padding: '1.25rem', boxShadow: '0 24px 70px rgba(18,9,5,0.35)' }}>
               <div className="flex items-start gap-3 mb-2">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(201,148,58,0.18)', border: '1px solid rgba(201,148,58,0.35)' }}>
                   <MessageCircle style={{ width: 18, height: 18, color: '#C9943A' }} />
@@ -287,8 +347,8 @@ export default function ContactPage() {
         {/* QUICK CARDS */}
         <section style={{ maxWidth: 1280, margin: '0 auto', padding: '4rem 2rem' }}>
           <div className="text-center mb-10">
-            <p className="text-[0.65rem] font-black tracking-[0.22em] uppercase mb-3" style={{ color: '#C9943A' }}>Quick Help</p>
-            <h2 className="font-heading font-black text-[clamp(1.8rem,3.5vw,2.6rem)]" style={{ color: '#3D1F0D', lineHeight: 1.1 }}>How Can We Help?</h2>
+            <p className="contact-section-eyebrow font-black tracking-[0.22em] uppercase mb-3" style={{ color: '#C9943A' }}>Quick Help</p>
+            <h2 className="font-heading contact-section-title font-black" style={{ color: '#3D1F0D', lineHeight: 1.1 }}>How Can We Help?</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {contactCards.map((c, i) => {
@@ -302,9 +362,9 @@ export default function ContactPage() {
                   style={{ background: 'rgba(201,148,58,0.12)', border: '1px solid rgba(201,148,58,0.25)' }}>
                   <c.icon style={{ width: 22, height: 22, color: '#C9943A' }} />
                 </div>
-                <h3 className="font-black text-[1.05rem] mb-2" style={{ color: '#3D1F0D' }}>{c.title}</h3>
-                <p className="text-[0.82rem] leading-relaxed mb-4" style={{ color: '#6B3520' }}>{c.text}</p>
-                <span className="inline-flex items-center gap-1 text-[0.7rem] font-black uppercase tracking-[0.08em]" style={{ color: '#C9943A' }}>
+                <h3 className="contact-card-title font-black mb-2" style={{ color: '#3D1F0D' }}>{c.title}</h3>
+                <p className="contact-supporting-text mb-4" style={{ color: '#6B3520' }}>{c.text}</p>
+                <span className="contact-small-action inline-flex items-center gap-1 font-black uppercase tracking-[0.08em]" style={{ color: '#C9943A' }}>
                   {c.btn} <ArrowRight style={{ width: 12, height: 12 }} />
                 </span>
               </a>
@@ -318,8 +378,8 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-stretch">
             <div className="lg:col-span-3 rounded-[32px] p-6 md:p-8" style={{ background: '#FFF7ED', border: '1px solid #E6C7A8', boxShadow: '0 24px 70px rgba(61,31,13,0.08)' }}>
               <div className="mb-6">
-                <p className="text-[0.65rem] font-black tracking-[0.22em] uppercase mb-2" style={{ color: '#C9943A' }}>Send a Message</p>
-                <h2 className="font-heading font-black text-[clamp(1.6rem,3vw,2.2rem)]" style={{ color: '#3D1F0D', lineHeight: 1.1 }}>Get in Touch</h2>
+                <p className="contact-section-eyebrow font-black tracking-[0.22em] uppercase mb-2" style={{ color: '#C9943A' }}>Send a Message</p>
+                <h2 className="font-heading contact-section-title font-black" style={{ color: '#3D1F0D', lineHeight: 1.1 }}>Get in Touch</h2>
               </div>
 
               {submitMsg && (
@@ -331,31 +391,31 @@ export default function ContactPage() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-[0.75rem] font-black uppercase tracking-[0.1em] mb-2" style={{ color: '#3D1F0D' }}>Full Name *</label>
+                    <label className="contact-form-label block font-black uppercase tracking-[0.1em] mb-2" style={{ color: '#3D1F0D' }}>Full Name *</label>
                     <input required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                      className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all bg-white border focus:border-[#C9943A] focus:ring-2 focus:ring-[#C9943A]/20"
+                      className="contact-form-control w-full rounded-xl px-4 py-3 outline-none transition-all bg-white border focus:border-[#C9943A] focus:ring-2 focus:ring-[#C9943A]/20"
                       style={{ borderColor: '#E6C7A8', color: '#3D1F0D' }} placeholder="Your name" />
                   </div>
                   <div>
-                    <label className="block text-[0.75rem] font-black uppercase tracking-[0.1em] mb-2" style={{ color: '#3D1F0D' }}>Phone Number</label>
+                    <label className="contact-form-label block font-black uppercase tracking-[0.1em] mb-2" style={{ color: '#3D1F0D' }}>Phone Number</label>
                     <input value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
-                      className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all bg-white border focus:border-[#C9943A] focus:ring-2 focus:ring-[#C9943A]/20"
+                      className="contact-form-control w-full rounded-xl px-4 py-3 outline-none transition-all bg-white border focus:border-[#C9943A] focus:ring-2 focus:ring-[#C9943A]/20"
                       style={{ borderColor: '#E6C7A8', color: '#3D1F0D' }} placeholder="+91 98765 43210" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[0.75rem] font-black uppercase tracking-[0.1em] mb-2" style={{ color: '#3D1F0D' }}>Email Address *</label>
+                  <label className="contact-form-label block font-black uppercase tracking-[0.1em] mb-2" style={{ color: '#3D1F0D' }}>Email Address *</label>
                   <input type="email" required value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-                    className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all bg-white border focus:border-[#C9943A] focus:ring-2 focus:ring-[#C9943A]/20"
+                    className="contact-form-control w-full rounded-xl px-4 py-3 outline-none transition-all bg-white border focus:border-[#C9943A] focus:ring-2 focus:ring-[#C9943A]/20"
                     style={{ borderColor: '#E6C7A8', color: '#3D1F0D' }} placeholder="your@email.com" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-[0.75rem] font-black uppercase tracking-[0.1em] mb-2" style={{ color: '#3D1F0D' }}>Enquiry Type</label>
+                    <label className="contact-form-label block font-black uppercase tracking-[0.1em] mb-2" style={{ color: '#3D1F0D' }}>Enquiry Type</label>
                     <select value={form.enquiryType} onChange={e => setForm(p => ({ ...p, enquiryType: e.target.value }))}
-                      className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all bg-white border focus:border-[#C9943A] focus:ring-2 focus:ring-[#C9943A]/20"
+                      className="contact-form-control w-full rounded-xl px-4 py-3 outline-none transition-all bg-white border focus:border-[#C9943A] focus:ring-2 focus:ring-[#C9943A]/20"
                       style={{ borderColor: '#E6C7A8', color: '#3D1F0D' }}>
                       <option>General Enquiry</option>
                       <option>Order Support</option>
@@ -366,9 +426,9 @@ export default function ContactPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[0.75rem] font-black uppercase tracking-[0.1em] mb-2" style={{ color: '#3D1F0D' }}>Preferred Outlet</label>
+                    <label className="contact-form-label block font-black uppercase tracking-[0.1em] mb-2" style={{ color: '#3D1F0D' }}>Preferred Outlet</label>
                     <select value={form.preferredOutlet} onChange={e => setForm(p => ({ ...p, preferredOutlet: e.target.value }))}
-                      className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all bg-white border focus:border-[#C9943A] focus:ring-2 focus:ring-[#C9943A]/20"
+                      className="contact-form-control w-full rounded-xl px-4 py-3 outline-none transition-all bg-white border focus:border-[#C9943A] focus:ring-2 focus:ring-[#C9943A]/20"
                       style={{ borderColor: '#E6C7A8', color: '#3D1F0D' }}>
                       <option value="">Any outlet</option>
                       {outlets.map(o => <option key={o.id} value={o.name}>{o.name}</option>)}
@@ -377,9 +437,9 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label className="block text-[0.75rem] font-black uppercase tracking-[0.1em] mb-2" style={{ color: '#3D1F0D' }}>Message *</label>
+                  <label className="contact-form-label block font-black uppercase tracking-[0.1em] mb-2" style={{ color: '#3D1F0D' }}>Message *</label>
                   <textarea required rows={5} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
-                    className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all bg-white border focus:border-[#C9943A] focus:ring-2 focus:ring-[#C9943A]/20 resize-none"
+                    className="contact-form-control w-full rounded-xl px-4 py-3 outline-none transition-all bg-white border focus:border-[#C9943A] focus:ring-2 focus:ring-[#C9943A]/20 resize-none"
                     style={{ borderColor: '#E6C7A8', color: '#3D1F0D' }} placeholder="Tell us more about your enquiry..." />
                 </div>
 
@@ -443,8 +503,8 @@ export default function ContactPage() {
         {/* OUTLETS */}
         <section style={{ maxWidth: 1280, margin: '0 auto', padding: '0 2rem 4rem' }}>
           <div className="text-center mb-10">
-            <p className="text-[0.65rem] font-black tracking-[0.22em] uppercase mb-3" style={{ color: '#C9943A' }}>Locations</p>
-            <h2 className="font-heading font-black text-[clamp(1.8rem,3.5vw,2.6rem)]" style={{ color: '#3D1F0D', lineHeight: 1.1 }}>Reach Us at Your Nearby Outlet</h2>
+            <p className="contact-section-eyebrow font-black tracking-[0.22em] uppercase mb-3" style={{ color: '#C9943A' }}>Locations</p>
+            <h2 className="font-heading contact-section-title font-black" style={{ color: '#3D1F0D', lineHeight: 1.1 }}>Reach Us at Your Nearby Outlet</h2>
           </div>
 
           {loadingOutlets ? (
@@ -468,7 +528,7 @@ export default function ContactPage() {
                     <h3 className="absolute bottom-4 left-4 font-heading font-black text-[1.2rem] text-white">{o.name}</h3>
                   </div>
                   <div className="p-5">
-                    <p className="text-[0.82rem] leading-relaxed mb-3" style={{ color: '#6B3520' }}>{o.address}</p>
+                    <p className="contact-supporting-text mb-3" style={{ color: '#6B3520' }}>{o.address}</p>
                     <div className="space-y-2 mb-4">
                       {o.phone && <div className="flex items-center gap-2 text-[0.78rem]" style={{ color: '#6B3520' }}><Phone style={{ width: 14, height: 14, color: '#C9943A' }} /> {o.phone}</div>}
                       {o.opening_hours && <div className="flex items-center gap-2 text-[0.78rem]" style={{ color: '#6B3520' }}><Clock style={{ width: 14, height: 14, color: '#C9943A' }} /> {o.opening_hours}</div>}
@@ -500,8 +560,8 @@ export default function ContactPage() {
           <div className="absolute left-0 bottom-0 w-[300px] h-[300px] rounded-full bg-[#8B4A2F]/18 blur-3xl" />
           <div className="relative z-10 max-w-[1280px] mx-auto px-6 py-16 md:py-20">
             <div className="text-center mb-12 max-w-2xl mx-auto">
-              <p className="text-[0.65rem] font-black tracking-[0.22em] uppercase mb-3" style={{ color: '#C9943A' }}>Partnerships</p>
-              <h2 className="font-heading font-black text-[clamp(1.8rem,3.5vw,2.6rem)] text-white mb-4" style={{ lineHeight: 1.1 }}>
+              <p className="contact-section-eyebrow font-black tracking-[0.22em] uppercase mb-3" style={{ color: '#C9943A' }}>Partnerships</p>
+              <h2 className="font-heading contact-section-title font-black text-white mb-4" style={{ lineHeight: 1.1 }}>
                 Planning a Franchise, Event or Corporate Order?
               </h2>
               <p className="text-[0.95rem] leading-relaxed" style={{ color: '#C7A489' }}>
@@ -548,8 +608,8 @@ export default function ContactPage() {
         {/* FAQ */}
         <section style={{ maxWidth: 1280, margin: '0 auto', padding: '0 2rem 4rem' }}>
           <div className="text-center mb-10">
-            <p className="text-[0.65rem] font-black tracking-[0.22em] uppercase mb-3" style={{ color: '#C9943A' }}>Support</p>
-            <h2 className="font-heading font-black text-[clamp(1.8rem,3.5vw,2.6rem)]" style={{ color: '#3D1F0D', lineHeight: 1.1 }}>Quick Help</h2>
+            <p className="contact-section-eyebrow font-black tracking-[0.22em] uppercase mb-3" style={{ color: '#C9943A' }}>Support</p>
+            <h2 className="font-heading contact-section-title font-black" style={{ color: '#3D1F0D', lineHeight: 1.1 }}>Quick Help</h2>
           </div>
           <div className="max-w-3xl mx-auto space-y-4">
             {faqs.map((f, i) => (
@@ -574,7 +634,7 @@ export default function ContactPage() {
           <div className="relative overflow-hidden rounded-[36px]" style={{ background: 'linear-gradient(135deg, #3D1F0D 0%, #6B3520 100%)' }}>
             <div className="absolute right-0 top-0 w-[350px] h-[350px] rounded-full bg-[#C9943A]/15 blur-3xl" />
             <div className="relative z-10 px-6 py-14 md:py-16 text-center">
-              <h2 className="font-heading font-black text-[clamp(1.8rem,3.5vw,2.6rem)] text-white mb-4" style={{ lineHeight: 1.1 }}>
+              <h2 className="font-heading contact-section-title font-black text-white mb-4" style={{ lineHeight: 1.1 }}>
                 Coffee, Conversations & Good Vibes Await
               </h2>
               <p className="text-[0.95rem] leading-relaxed mb-8 max-w-xl mx-auto" style={{ color: '#C7A489' }}>
