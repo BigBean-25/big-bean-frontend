@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -212,6 +212,7 @@ export default function AboutPage() {
   const [outlets, setOutlets] = useState<MapOutlet[]>([])
   const [outletsLoading, setOutletsLoading] = useState(true)
   const [activeOutletId, setActiveOutletId] = useState<number | string | null>(null)
+  const outletsMapRef = useRef<HTMLDivElement | null>(null)
   const [heroImg, setHeroImg] = useState<string | null>(null)
   const [appPromo, setAppPromo] = useState<AppPromoData>(APP_FALLBACK)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
@@ -243,34 +244,114 @@ export default function AboutPage() {
       .catch(() => {})
   }, [])
 
+  const handleOutletSelect = (outlet: MapOutlet) => {
+    setActiveOutletId(outlet.id)
+    if (typeof window === 'undefined') return
+    if (!window.matchMedia('(max-width: 899px)').matches) return
+    const el = outletsMapRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const isVisible = rect.top >= 80 && rect.bottom <= window.innerHeight
+    if (!isVisible) {
+      window.setTimeout(() => {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 100)
+    }
+  }
+
   return (
     <div className="min-h-screen" style={{ background: '#FBF4EC' }}>
       <style>{`
         .about-hero { min-height: 520px; }
         @media (max-width: 1024px) { .about-hero { min-height: 420px; } }
         @media (max-width: 640px) { .about-hero { min-height: 360px; } }
+
+        /* ── OUTLETS SECTION GRID ── */
+        .outlets-section { scroll-margin-top: 110px; }
+        .outlets-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 4rem;
+          align-items: flex-start;
+          width: 100%;
+        }
+        .outlets-left-column, .outlets-list-column { width: 100%; min-width: 0; }
+        .outlets-list-column { display: flex; flex-direction: column; gap: 1rem; }
+
+        /* ── OUTLET CARDS ── */
+        .outlet-card {
+          width: 100%; min-width: 0; box-sizing: border-box;
+          background: #fff; border: 1px solid #E6C7A8;
+          box-shadow: 0 4px 20px rgba(61,31,13,0.06);
+          transition: transform 0.35s ease, border-color 0.35s ease,
+            background-color 0.35s ease, box-shadow 0.35s ease;
+        }
+        .outlet-card-active {
+          background: #FFF9F1; border-color: #C9943A;
+          box-shadow: 0 12px 34px rgba(61,31,13,0.14);
+          transform: translateX(5px);
+        }
+        .outlet-card-active-pulse { animation: outletCardPulse 0.8s ease-out; }
+        @keyframes outletCardPulse {
+          0%   { transform: translateX(5px) scale(1); }
+          45%  { transform: translateX(5px) scale(1.015); }
+          100% { transform: translateX(5px) scale(1); }
+        }
+        .outlet-card-content { flex: 1; min-width: 0; }
+        .outlet-card-name { overflow-wrap: anywhere; word-break: normal; }
+        .about-outlet-card-focus:focus-visible { outline: 2px solid #C9943A; outline-offset: 2px; }
+
+        /* ── MAP ── */
         .about-outlets-map {
-          width: 100%; height: 360px; margin-top: 1.75rem; overflow: hidden;
+          width: 100%; max-width: 100%; height: 360px; margin-top: 1.75rem; overflow: hidden;
           border: 1px solid #E6C7A8; border-radius: 24px; background: #F3E7DA;
           box-shadow: 0 8px 30px rgba(61,31,13,0.08);
         }
-        @media (max-width: 1024px) { .about-outlets-map { height: 320px; } }
-        @media (max-width: 640px) {
-          .about-outlets-map { height: 280px; margin-top: 1.4rem; border-radius: 20px; }
-        }
-        @media (max-width: 374px) { .about-outlets-map { height: 250px; } }
         .about-map-skeleton {
           position: relative; display: flex; align-items: center; justify-content: center;
           background: linear-gradient(110deg,#F3E7DA 8%,#FFF7ED 18%,#F3E7DA 33%);
-          background-size: 200% 100%;
-          animation: aboutMapShimmer 1.4s linear infinite;
+          background-size: 200% 100%; animation: aboutMapShimmer 1.4s linear infinite;
         }
         @keyframes aboutMapShimmer { to { background-position-x: -200%; } }
         .about-map-skeleton-content { color: #8A6650; font-size: 0.8rem; font-weight: 700; }
-        .about-outlet-card-focus:focus-visible {
-          outline: 2px solid #C9943A; outline-offset: 2px;
-        }
         .leaflet-container { font-family: inherit; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1024px) {
+          .outlets-grid { gap: 2.75rem; }
+          .about-outlets-map { height: 320px; }
+        }
+        @media (max-width: 899px) {
+          .outlets-grid { grid-template-columns: minmax(0, 1fr); gap: 2.25rem; }
+          .outlets-left-column, .outlets-list-column { grid-column: 1; width: 100%; max-width: 100%; }
+          .outlet-card-active { transform: translateY(-2px); }
+          @keyframes outletCardPulse {
+            0%   { transform: translateY(-2px) scale(1); }
+            45%  { transform: translateY(-2px) scale(1.015); }
+            100% { transform: translateY(-2px) scale(1); }
+          }
+        }
+        @media (max-width: 640px) {
+          .outlets-section { scroll-margin-top: 90px; }
+          .outlets-grid { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+          .outlet-card { padding: 0.9rem 1rem !important; }
+          .outlet-card-name {
+            white-space: normal !important; overflow: visible !important;
+            text-overflow: clip !important; line-height: 1.3;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+          }
+          .about-outlets-map { height: 280px; margin-top: 1.4rem; border-radius: 20px; }
+        }
+        @media (max-width: 374px) {
+          .outlets-grid { gap: 1.75rem; }
+          .outlet-card { padding: 0.8rem 0.85rem !important; }
+          .about-outlets-map { height: 260px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .outlet-card, .outlet-card-active, .outlet-card-active-pulse {
+            animation: none !important; transition-duration: 0.01ms !important; transform: none !important;
+          }
+        }
       `}</style>
       <Header />
       <main>
@@ -618,11 +699,11 @@ export default function AboutPage() {
         </section>
 
         {/* OUTLETS */}
-        <section style={{ background: '#FBF4EC', padding: '5rem 0' }}>
+        <section className="outlets-section" style={{ background: '#FBF4EC', padding: '5rem 0' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(0,1fr))', gap: '4rem', alignItems: 'flex-start' }}>
+            <div className="outlets-grid">
               {/* LEFT — heading, description, button, map */}
-              <div style={{ minWidth: 0 }}>
+              <div className="outlets-left-column">
                 <p style={{ fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.22em', color: '#C9943A', textTransform: 'uppercase', marginBottom: '0.75rem' }}>OUR OUTLETS</p>
                 <h2 className="font-heading" style={{ fontSize: 'clamp(1.8rem,3vw,2.55rem)', fontWeight: 900, color: '#3D1F0D', lineHeight: 1.1, marginBottom: '1.5rem' }}>
                   Our Cafe Outlets,<br />Across Bengaluru.
@@ -636,17 +717,17 @@ export default function AboutPage() {
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.background = '#3D1F0D' }}>
                   Explore All Outlets <ArrowRight style={{ width: 14, height: 14 }} />
                 </a>
-                <AboutOutletsMap
-                  outlets={outlets}
-                  activeOutletId={activeOutletId}
-                  loading={outletsLoading}
-                  onOutletSelect={(outlet) => {
-                    setActiveOutletId(outlet.id)
-                  }}
-                />
+                <div ref={outletsMapRef}>
+                  <AboutOutletsMap
+                    outlets={outlets}
+                    activeOutletId={activeOutletId}
+                    loading={outletsLoading}
+                    onOutletSelect={(outlet) => setActiveOutletId(outlet.id)}
+                  />
+                </div>
               </div>
               {/* RIGHT — outlet cards */}
-              <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div className="outlets-list-column">
                 {outletsLoading ? (
                   [1,2,3,4].map(i => (
                     <div key={i} style={{ height: 80, borderRadius: 20, background: '#E6C7A8', opacity: 0.4 }} />
@@ -658,47 +739,33 @@ export default function AboutPage() {
                 ) : outlets.map((outlet) => {
                   const img = getImg((outlet as any).image)
                   const isActive = String(activeOutletId) === String(outlet.id)
-                  const hasCoords = typeof outlet.latitude !== 'undefined' && typeof outlet.longitude !== 'undefined' &&
-                    outlet.latitude !== null && outlet.longitude !== null
+                  const hasCoords = outlet.latitude !== null && outlet.latitude !== undefined &&
+                    outlet.longitude !== null && outlet.longitude !== undefined
                   return (
                     <div
                       key={outlet.id}
                       role="button"
                       tabIndex={0}
                       aria-pressed={isActive}
-                      className="about-outlet-card-focus"
+                      className={[
+                        'outlet-card about-outlet-card-focus',
+                        isActive ? 'outlet-card-active outlet-card-active-pulse' : '',
+                      ].filter(Boolean).join(' ')}
                       style={{
                         display: 'flex', alignItems: 'center', gap: '1.25rem',
-                        background: isActive ? '#FFF9F1' : '#fff',
-                        borderRadius: 20, padding: '1rem 1.25rem',
-                        border: isActive ? '1px solid #C9943A' : '1px solid #E6C7A8',
-                        boxShadow: isActive ? '0 10px 34px rgba(61,31,13,0.14)' : '0 4px 20px rgba(61,31,13,0.06)',
-                        transition: 'transform 0.3s ease, border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease',
-                        cursor: 'pointer',
+                        borderRadius: 20, padding: '1rem 1.25rem', cursor: 'pointer',
                       }}
-                      onClick={() => setActiveOutletId(outlet.id)}
+                      onClick={() => handleOutletSelect(outlet)}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault()
-                          setActiveOutletId(outlet.id)
-                        }
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleOutletSelect(outlet) }
                       }}
                       onMouseEnter={e => {
                         const el = e.currentTarget as HTMLElement
-                        el.style.transform = 'translateX(6px)'
-                        el.style.boxShadow = isActive
-                          ? '0 14px 44px rgba(61,31,13,0.18)'
-                          : '0 10px 40px rgba(61,31,13,0.12)'
+                        el.style.boxShadow = '0 14px 44px rgba(61,31,13,0.18)'
                       }}
                       onMouseLeave={e => {
                         const el = e.currentTarget as HTMLElement
-                        const still = String(activeOutletId) === String(outlet.id)
-                        el.style.transform = 'translateX(0)'
-                        el.style.background = still ? '#FFF9F1' : '#fff'
-                        el.style.borderColor = still ? '#C9943A' : '#E6C7A8'
-                        el.style.boxShadow = still
-                          ? '0 10px 34px rgba(61,31,13,0.14)'
-                          : '0 4px 20px rgba(61,31,13,0.06)'
+                        el.style.boxShadow = ''
                       }}>
                       <div style={{ width: 56, height: 56, borderRadius: 14, overflow: 'hidden', flexShrink: 0 }}>
                         {img ? (
@@ -709,8 +776,8 @@ export default function AboutPage() {
                           </div>
                         )}
                       </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div className="font-heading" style={{ fontWeight: 800, color: '#3D1F0D', fontSize: '0.9rem', marginBottom: '0.2rem' }}>{outlet.name}</div>
+                      <div className="outlet-card-content">
+                        <div className="font-heading outlet-card-name" style={{ fontWeight: 800, color: '#3D1F0D', fontSize: '0.9rem', marginBottom: '0.2rem' }}>{outlet.name}</div>
                         {(outlet as any).address && <div style={{ fontSize: '0.72rem', color: '#9B6B50', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{(outlet as any).address}</div>}
                         {!hasCoords && (
                           <div style={{ fontSize: '0.65rem', color: '#C9943A', marginTop: '0.15rem' }}>Map location unavailable</div>

@@ -100,8 +100,7 @@ function PanToActive({
     const pos = toLatLng(outlet)
     if (!pos) return
 
-    map.panTo(pos, { animate: true, duration: 0.6 })
-    map.setZoom(15)
+    map.flyTo(pos, 15, { duration: 0.8, easeLinearity: 0.25 })
   }, [activeOutletId, map, outlets])
 
   return null
