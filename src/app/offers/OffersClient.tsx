@@ -500,7 +500,98 @@ export default function Offers() {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
         {/* ── HERO ── */}
-        <section className="relative flex items-center overflow-hidden min-h-auto md:min-h-[460px] lg:min-h-[500px] xl:min-h-[540px]" style={{ padding: '5rem 0 3.5rem' }}>
+        <style>{`
+          /* ── OFFERS HERO LAYOUT & TYPOGRAPHY ── */
+          .offers-hero { min-height: 620px; padding: 0; }
+
+          .offers-hero-inner {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 4rem clamp(1.5rem, 5vw, 6rem) 3.25rem;
+          }
+
+          .offers-hero-copy { width: 100%; max-width: 900px; min-width: 0; }
+
+          .offers-hero-eyebrow { font-size: 0.72rem; line-height: 1; }
+
+          .offers-hero-title {
+            margin: 0 0 1rem;
+            color: #FFFFFF;
+            font-size: clamp(2.5rem, 3.8vw, 4.25rem);
+            font-weight: 900;
+            line-height: 0.98;
+            letter-spacing: -0.025em;
+            text-wrap: balance;
+          }
+
+          .offers-hero-highlight {
+            display: block;
+            margin-top: 0.15em;
+            font-size: clamp(2.25rem, 3.15vw, 3.55rem);
+            line-height: 1.05;
+            letter-spacing: -0.025em;
+            background: linear-gradient(90deg, #F6D58D, #C9943A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+
+          .offers-hero-subtitle {
+            max-width: 650px;
+            margin-bottom: 1.5rem;
+            font-size: clamp(0.92rem, 1.1vw, 1.05rem);
+            line-height: 1.75;
+            color: #F5D7BF;
+          }
+
+          .offers-hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.75rem; }
+          .offers-hero-actions a { min-height: 46px; font-size: 0.78rem !important; }
+
+          .offers-hero-stats { display: inline-flex; max-width: 100%; overflow: hidden; }
+          .offers-hero-stat-value { font-size: 1.2rem; }
+          .offers-hero-stat-label { font-size: 0.58rem; }
+
+          @media (max-width: 1199px) {
+            .offers-hero { min-height: 560px; }
+            .offers-hero-inner { padding: 3.5rem clamp(1.5rem, 4vw, 3rem) 3rem; }
+            .offers-hero-copy { max-width: 720px; }
+            .offers-hero-title { font-size: clamp(2.5rem, 5vw, 3.75rem); }
+            .offers-hero-highlight { font-size: clamp(2.15rem, 4.25vw, 3.15rem); }
+          }
+
+          @media (max-width: 899px) {
+            .offers-hero { min-height: auto; }
+            .offers-hero-inner { padding-top: 4rem; padding-bottom: 3rem; }
+            .offers-hero-copy { max-width: 680px; }
+            .offers-floating-card { display: none !important; }
+          }
+
+          @media (max-width: 640px) {
+            .offers-hero { min-height: auto; align-items: flex-start !important; }
+            .offers-hero-inner { padding: 3rem 1.25rem 2.5rem; }
+            .offers-hero-copy { max-width: 100%; }
+            .offers-hero-eyebrow { font-size: 0.65rem; }
+            .offers-hero-title { font-size: clamp(2.15rem, 11vw, 3rem); line-height: 1; letter-spacing: -0.02em; }
+            .offers-hero-highlight { margin-top: 0.22em; font-size: clamp(1.9rem, 9.5vw, 2.65rem); line-height: 1.06; white-space: normal; }
+            .offers-hero-subtitle { max-width: 100%; margin-bottom: 1.5rem; font-size: 0.9rem; line-height: 1.7; }
+            .offers-hero-actions { width: 100%; gap: 0.65rem; margin-bottom: 1.5rem; }
+            .offers-hero-actions a { width: 100%; min-height: 46px; justify-content: center; }
+            .offers-hero-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
+            .offers-hero-stat { min-width: 0; padding: 0.75rem 0.35rem !important; }
+            .offers-hero-stat-value { font-size: 1.05rem; }
+            .offers-hero-stat-label { font-size: 0.52rem; letter-spacing: 0.06em !important; }
+          }
+
+          @media (max-width: 374px) {
+            .offers-hero-inner { padding-left: 1rem; padding-right: 1rem; }
+            .offers-hero-title { font-size: 2rem; }
+            .offers-hero-highlight { font-size: 1.75rem; }
+          }
+        `}</style>
+        <section className="offers-hero relative flex items-center overflow-hidden">
           {/* Fallback / base gradient */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#120905] via-[#2A120B] to-[#5C2E12]" />
 
@@ -545,33 +636,33 @@ export default function Offers() {
           />
 
           {/* Content */}
-          <div className="relative z-10 w-full max-w-[1280px] mx-auto px-8" style={{ paddingLeft: '2rem', paddingRight: '2rem' }}>
-            <div style={{ maxWidth: 620 }}>
+          <div className="offers-hero-inner">
+            <div className="offers-hero-copy">
               {/* Eyebrow */}
               <div className="inline-flex items-center gap-2 rounded-full border border-[#C9943A]/35 bg-[#C9943A]/12 px-4 py-1.5 mb-6">
                 <Tag style={{ width: 13, height: 13, color: '#C9943A' }} />
-                <span className="text-[0.6rem] font-black tracking-[0.22em] uppercase" style={{ color: '#F7D891' }}>
+                <span className="offers-hero-eyebrow font-black tracking-[0.22em] uppercase" style={{ color: '#F7D891' }}>
                   {hero?.eyebrow || 'Big Bean Café Offers'}
                 </span>
               </div>
 
               {/* Title */}
-              <h1 className="font-heading font-black text-white mb-4" style={{ fontSize: 'clamp(2.4rem, 4.5vw, 4.2rem)', lineHeight: 0.98 }}>
+              <h1 className="font-heading offers-hero-title">
                 {hero?.title || 'Fresh Deals,'}
                 {(hero?.highlight_text || !hero) && (
-                  <span className="block bg-gradient-to-r from-[#F6D58D] to-[#C9943A] bg-clip-text text-transparent">
+                  <span className="offers-hero-highlight">
                     {hero?.highlight_text || 'Bigger Savings.'}
                   </span>
                 )}
               </h1>
 
               {/* Subtitle */}
-              <p className="text-[0.95rem] leading-relaxed mb-6" style={{ color: '#F5D7BF', maxWidth: 620, lineHeight: 1.7 }}>
+              <p className="offers-hero-subtitle">
                 {hero?.subtitle || 'Discover Big Bean Café combos, app-exclusive rewards, dine-in offers and special café deals made for every coffee moment.'}
               </p>
 
               {/* Buttons */}
-              <div className="flex flex-wrap gap-3 mb-7">
+              <div className="offers-hero-actions">
                 <a
                   href={hero?.button_primary_url || '#active-offers'}
                   className="inline-flex items-center gap-2 rounded-full font-black uppercase tracking-[0.08em] text-[0.8rem] no-underline transition-all"
@@ -596,22 +687,22 @@ export default function Offers() {
               </div>
 
               {/* Stats */}
-              <div className="inline-flex rounded-[22px] border border-white/18 backdrop-blur-md overflow-hidden mt-2" style={{ background: 'rgba(255,255,255,0.10)' }}>
+              <div className="offers-hero-stats rounded-[22px] border border-white/18 backdrop-blur-md overflow-hidden mt-2" style={{ background: 'rgba(255,255,255,0.10)' }}>
                 {[
                   { val: hero?.stat_1_value || 'Fresh', lbl: hero?.stat_1_label || 'Daily Deals' },
                   { val: hero?.stat_2_value || 'Big Coins', lbl: hero?.stat_2_label || 'Rewards' },
                   { val: hero?.stat_3_value || 'Combo', lbl: hero?.stat_3_label || 'Savings' },
                 ].map((s, i) => (
-                  <div key={i} className="text-center px-4 py-2.5" style={{ borderRight: i < 2 ? '1px solid rgba(255,255,255,0.12)' : 'none' }}>
-                    <div className="font-heading text-[1.05rem] font-black leading-tight" style={{ color: '#F6D58D' }}>{s.val}</div>
-                    <div className="text-[0.58rem] font-bold uppercase tracking-[0.1em] mt-0.5" style={{ color: '#C7A489' }}>{s.lbl}</div>
+                  <div key={i} className="offers-hero-stat text-center px-4 py-2.5" style={{ borderRight: i < 2 ? '1px solid rgba(255,255,255,0.12)' : 'none' }}>
+                    <div className="font-heading offers-hero-stat-value font-black leading-tight" style={{ color: '#F6D58D' }}>{s.val}</div>
+                    <div className="offers-hero-stat-label font-bold uppercase tracking-[0.1em] mt-0.5" style={{ color: '#C7A489' }}>{s.lbl}</div>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Floating offer card — desktop only */}
-            <div className="hidden lg:block absolute right-[5%] bottom-[7%] max-w-[310px]" style={{ background: 'rgba(18,9,5,0.64)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 22, padding: '1.1rem', boxShadow: '0 24px 70px rgba(18,9,5,0.35)' }}>
+            <div className="offers-floating-card hidden xl:block absolute right-[5%] bottom-[7%] max-w-[310px]" style={{ background: 'rgba(18,9,5,0.64)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 22, padding: '1.1rem', boxShadow: '0 24px 70px rgba(18,9,5,0.35)' }}>
               <div className="flex items-start gap-2.5 mb-2.5">
                 <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(201,148,58,0.18)', border: '1px solid rgba(201,148,58,0.35)' }}>
                   <Tag style={{ width: 16, height: 16, color: '#C9943A' }} />
