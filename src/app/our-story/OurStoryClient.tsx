@@ -232,6 +232,7 @@ export default function OurStoryClient() {
   const timelineRef = useReveal()
   const statsRef = useReveal()
   const valuesRef = useReveal()
+  const faqRef = useReveal()
   const ctaRef = useReveal()
 
   return (
@@ -433,37 +434,56 @@ export default function OurStoryClient() {
         </section>
 
         {/* FAQ */}
-        <section className={styles.section} style={{ background: '#FFF7ED' }}>
+        <section
+          className={`${styles.section} ${styles.faqSection}`}
+          style={{ background: '#FFF7ED' }}
+        >
           <div className={styles.container}>
             <div className={styles.sectionHeader}>
-              <p className={styles.sectionEyebrow}>FAQ</p>
-              <h2 className={styles.sectionTitle}>Frequently Asked Questions</h2>
+              <p className={styles.sectionEyebrow}>
+                FAQ
+              </p>
+
+              <h2 className={styles.sectionTitle}>
+                Frequently Asked Questions
+              </h2>
+
               <p className={styles.sectionSubtitle}>
                 Quick answers about Big Bean Café, our journey, outlets and franchise opportunities.
               </p>
             </div>
-            <div className={styles.faqGrid}>
-              {STORY_FAQS.map((faq, i) => (
-                <div
+
+            <div
+              ref={faqRef as React.RefObject<HTMLDivElement>}
+              className={`${styles.faqGrid} ${styles.fadeUp}`}
+            >
+              {STORY_FAQS.map((faq, index) => (
+                <article
                   key={faq.question}
-                  className="rounded-[1.4rem] border border-[#E7CFAF] bg-white/85 p-6 shadow-[0_18px_45px_rgba(61,31,13,0.08)]"
-                  style={{ transitionDelay: `${i * 80}ms` }}
+                  className={styles.faqCard}
+                  style={{ transitionDelay: `${index * 90}ms` }}
                 >
-                  <h3 className={`${styles.cardTitle} mb-3`}>
+                  <h3 className={styles.faqQuestion}>
                     {faq.question}
                   </h3>
-                  {faq.question.includes('franchise') ? (
-                    <p className={styles.bodyText}>
+
+                  {faq.question.toLowerCase().includes('franchise') ? (
+                    <p className={styles.faqAnswer}>
                       Yes, Big Bean Cafe offers franchise opportunities. Visit the{' '}
-                      <Link href="/franchise" className="font-bold text-[#C9943A] underline underline-offset-4">
+                      <Link
+                        href="/franchise"
+                        className={styles.faqLink}
+                      >
                         Franchise page
                       </Link>{' '}
                       for more details.
                     </p>
                   ) : (
-                    <p className={styles.bodyText}>{faq.answer}</p>
+                    <p className={styles.faqAnswer}>
+                      {faq.answer}
+                    </p>
                   )}
-                </div>
+                </article>
               ))}
             </div>
           </div>
@@ -476,14 +496,19 @@ export default function OurStoryClient() {
         >
           <div className={styles.shine} />
           <div className={styles.experienceContent}>
-            <p className={`${styles.sectionEyebrow} mb-3 text-[#F6D58D]`}>Visit Big Bean Café</p>
-            <h2 className={`${styles.sectionTitle} mx-auto mb-5 max-w-3xl text-white`}>
+            <p className={styles.experienceEyebrow}>
+              Visit Big Bean Café
+            </p>
+
+            <h2 className={styles.experienceTitle}>
               Experience Big Bean Café Today
             </h2>
-            <p className={`${styles.bodyText} mx-auto mb-8 max-w-xl`} style={{ color: '#F5D7BF' }}>
+
+            <p className={styles.experienceText}>
               Visit our cafés, explore our menu, or order your favourites online.
             </p>
-            <div className={styles.heroActions}>
+
+            <div className={styles.experienceActions}>
               <a
                 href="https://bigbeancafe.store"
                 target="_blank"
