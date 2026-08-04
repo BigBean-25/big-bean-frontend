@@ -42,6 +42,41 @@ interface Category {
   banner_image?: string | null
   children?: Category[]
   childes?: Category[]
+  sub_categories?: Category[]
+  subcategories?: Category[]
+}
+
+function getCategoryChildren(category: Category): Category[] {
+  const possibleChildren = [
+    category.children,
+    category.childes,
+    category.sub_categories,
+    category.subcategories,
+  ]
+  return possibleChildren.find(arr => Array.isArray(arr) && arr.length > 0) || []
+}
+
+function flattenCategories(input: Category[]): Category[] {
+  const result: Category[] = []
+  const seen = new Set<number>()
+
+  const walk = (items: Category[]) => {
+    for (const category of items) {
+      const id = Number(category.id)
+      if (!Number.isFinite(id)) continue
+      if (!seen.has(id)) {
+        seen.add(id)
+        result.push({ ...category, id })
+      }
+      const children = getCategoryChildren(category)
+      if (children.length > 0) {
+        walk(children)
+      }
+    }
+  }
+
+  walk(Array.isArray(input) ? input : [])
+  return result
 }
 
 interface Product {
@@ -168,19 +203,24 @@ export default function Menu() {
       try {
         const res = await fetch(`${API_BASE}/api/store-menu/categories`)
         const json = await res.json()
-        if (!json.success || !json.data?.length) {
+        const rawCategories =
+          Array.isArray(json.data)
+            ? json.data
+            : Array.isArray(json.data?.categories)
+              ? json.data.categories
+              : Array.isArray(json.categories)
+                ? json.categories
+                : []
+
+        if (!json.success || rawCategories.length === 0) {
           if (!cancelled) {
             setApiFailed(true)
             setApiMessage(json.message || 'Live menu is available on our ordering platform.')
           }
           return
         }
-        const flat: Category[] = []
-        json.data.forEach((cat: Category) => {
-          flat.push(cat)
-          const children = cat.children || cat.childes || []
-          if (children?.length) flat.push(...children)
-        })
+
+        const flat = flattenCategories(rawCategories)
         if (cancelled) return
         setCategories(flat)
 
@@ -314,7 +354,7 @@ export default function Menu() {
                       <span style={{ width: 28, height: 28, borderRadius: '50%', background: isActive ? 'rgba(255,247,237,0.18)' : '#F6E6D1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <Coffee style={{ width: 13, height: 13, color: isActive ? '#F6D58D' : '#C9943A' }} />
                       </span>
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cat.name}</span>
+                      <span style={{ minWidth: 0, whiteSpace: 'normal', overflow: 'visible', textOverflow: 'clip', lineHeight: 1.3, overflowWrap: 'anywhere' }}>{cat.name}</span>
                     </span>
                     {count > 0 && (
                       <span style={{ fontSize: '0.68rem', fontWeight: 700, background: isActive ? 'rgba(255,247,237,0.18)' : '#F6E6D1', color: isActive ? '#F6D58D' : '#9B6B50', borderRadius: 20, padding: '0.15rem 0.5rem', flexShrink: 0 }}>{count}</span>
@@ -750,7 +790,7 @@ export default function Menu() {
                                     <span style={{ width: 28, height: 28, borderRadius: '50%', background: isActive ? 'rgba(255,247,237,0.18)' : '#F6E6D1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                       <Coffee style={{ width: 13, height: 13, color: isActive ? '#F6D58D' : '#C9943A' }} />
                                     </span>
-                                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cat.name}</span>
+                                    <span style={{ minWidth: 0, whiteSpace: 'normal', overflow: 'visible', textOverflow: 'clip', lineHeight: 1.3, overflowWrap: 'anywhere' }}>{cat.name}</span>
                                   </span>
                                   {count > 0 && (
                                     <span style={{ fontSize: '0.68rem', fontWeight: 700, background: isActive ? 'rgba(255,247,237,0.18)' : '#F6E6D1', color: isActive ? '#F6D58D' : '#9B6B50', borderRadius: 20, padding: '0.15rem 0.5rem', flexShrink: 0 }}>{count}</span>
