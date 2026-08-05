@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { apiRequest } from '@/utils/api'
 import { saveAdminAuthData } from '@/lib/adminPermissions'
+import styles from './page.module.css'
 
 /* ── static data for preview panel ─────────────────────── */
 const STATS = [
@@ -76,75 +77,61 @@ export default function AdminLogin() {
     }
   }
 
-  const inputBase =
-    'w-full rounded-2xl border bg-[#F8FBF7] px-4 py-3 text-sm font-semibold text-[#1F2A24] outline-none transition placeholder:text-[#9DB0A1] focus:ring-4'
-
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#EEF4EF]">
+    <div className={styles.page}>
 
       {/* ── background decorations ── */}
-      <div className="pointer-events-none absolute inset-0">
-        {/* dot grid */}
-        <div className="absolute inset-0 opacity-[0.045]"
-          style={{ backgroundImage: 'radial-gradient(circle, #1F2A24 1.2px, transparent 1.2px)', backgroundSize: '24px 24px' }} />
-        {/* blobs */}
-        <div className="absolute -top-32 -left-32 h-[480px] w-[480px] rounded-full bg-[#2FBF9B] opacity-[0.09] blur-3xl" />
-        <div className="absolute bottom-[-120px] right-[-80px] h-[420px] w-[420px] rounded-full bg-[#C9943A] opacity-[0.08] blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#3D1F0D] opacity-[0.05] blur-3xl" />
+      <div className={styles.bgDecor}>
+        <div className={styles.dotGrid} />
+        <div className={styles.blobGreen} />
+        <div className={styles.blobBrown} />
+        <div className={styles.blobDark} />
       </div>
 
-      {/* ── two-column grid ── */}
-      <div className="relative z-10 grid min-h-screen items-center gap-8 px-5 py-8
-                      lg:grid-cols-[0.9fr_1.1fr] lg:px-12 xl:px-20">
+      <div className={styles.grid}>
 
         {/* ════════════════════ LEFT — LOGIN CARD ════════════════════ */}
-        <div className="mx-auto w-full max-w-[480px]">
-          <div className="rounded-[34px] border border-white/80 bg-white/85
-                          p-6 shadow-[0_28px_80px_rgba(31,42,36,0.12)] backdrop-blur-xl sm:p-8">
+        <div className={styles.leftPanel}>
+          <div className={styles.loginCard}>
 
             {/* logo + badge */}
-            <div className="mb-5 flex items-center justify-between">
-              <Image
-                src="/logo/big-bean-cafe-logo-transparent.png"
-                alt="Big Bean Café"
-                width={140}
-                height={80}
-                className="h-auto w-[120px] object-contain"
-                style={{ width: 'auto', height: 'auto' }}
-                priority
-              />
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#DDE8DD]
-                               bg-[#EEF4EF] px-3 py-1 text-[10px] font-black uppercase tracking-[0.15em] text-[#607064]">
+            <div className={styles.logoBar}>
+              <div className={styles.logoWrap}>
+                <Image
+                  src="/logo/big-bean-cafe-logo-transparent.png"
+                  alt="Big Bean Café"
+                  width={500}
+                  height={300}
+                  className={styles.logoImg}
+                  priority
+                />
+              </div>
+              <span className={styles.badge}>
                 <ShieldCheck className="h-3 w-3 text-[#2FBF9B]" />
                 Big Bean Admin
               </span>
             </div>
 
-            {/* title */}
-            <h1 className="font-heading text-[28px] font-black leading-tight text-[#1F2A24]">
-              Welcome Admin
-            </h1>
-            <p className="mt-1.5 text-sm text-[#607064]">
+            <h1 className={styles.welcomeTitle}>Welcome Admin</h1>
+            <p className={styles.welcomeDesc}>
               Manage outlets, menu, orders, customers and website content from one place.
             </p>
 
             {/* error */}
             {error && (
-              <div className="mt-5 flex items-start gap-2.5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
+              <div className={styles.errorBox}>
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-                <span className="text-sm font-bold text-red-700">{error}</span>
+                <span className={styles.errorText}>{error}</span>
               </div>
             )}
 
             {/* form */}
-            <form onSubmit={handleSubmit} autoComplete="on" className="mt-5 space-y-4">
+            <form onSubmit={handleSubmit} autoComplete="on" className={styles.form}>
               {/* email */}
-              <div>
-                <label className="mb-1.5 block text-sm font-black text-[#1F2A24]">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9DB0A1]" />
+              <div className={styles.field}>
+                <label className={styles.label}>Email Address</label>
+                <div className={styles.inputWrap}>
+                  <Mail className={styles.inputIcon} />
                   <input
                     type="email"
                     name="email"
@@ -153,18 +140,16 @@ export default function AdminLogin() {
                     required
                     autoComplete="username"
                     placeholder="Enter your email address"
-                    className={inputBase + ' border-[#DDE8DD] pl-11 focus:border-[#2FBF9B] focus:ring-[#2FBF9B]/15'}
+                    className={styles.input}
                   />
                 </div>
               </div>
 
               {/* password */}
-              <div>
-                <label className="mb-1.5 block text-sm font-black text-[#1F2A24]">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9DB0A1]" />
+              <div className={styles.field}>
+                <label className={styles.label}>Password</label>
+                <div className={styles.inputWrap}>
+                  <Lock className={styles.inputIcon} />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     name="password"
@@ -173,13 +158,12 @@ export default function AdminLogin() {
                     required
                     autoComplete="current-password"
                     placeholder="Enter your password"
-                    className={inputBase + ' border-[#DDE8DD] pl-11 pr-12 focus:border-[#2FBF9B] focus:ring-[#2FBF9B]/15'}
+                    className={styles.input}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-[#9DB0A1]
-                               transition hover:bg-[#EEF4EF] hover:text-[#1F2A24]"
+                    className={styles.eyeBtn}
                   >
                     {showPassword ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
                   </button>
@@ -190,22 +174,19 @@ export default function AdminLogin() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="mt-1 w-full rounded-full bg-[#3D1F0D] py-3.5 text-sm font-black
-                           tracking-wide text-[#FFF7ED] shadow-lg transition
-                           hover:bg-[#2FBF9B] hover:text-[#120905] disabled:cursor-not-allowed disabled:opacity-60"
+                className={styles.submitBtn}
               >
                 {isLoading ? 'Signing in…' : 'Sign In to Admin'}
               </button>
             </form>
 
             {/* security + back */}
-            <div className="mt-5 flex items-center justify-between gap-3">
-              <p className="flex items-center gap-1.5 text-[11px] text-[#9DB0A1]">
+            <div className={styles.securityRow}>
+              <p className={styles.securityText}>
                 <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-[#2FBF9B]" />
                 Secure portal. Unauthorized access is prohibited.
               </p>
-              <Link href="/"
-                className="flex items-center gap-1 text-xs font-bold text-[#607064] transition hover:text-[#1F2A24]">
+              <Link href="/" className={styles.backLink}>
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Back to Website
               </Link>
@@ -214,96 +195,88 @@ export default function AdminLogin() {
         </div>
 
         {/* ════════════════════ RIGHT — DASHBOARD PREVIEW ════════════════════ */}
-        <div className="hidden lg:block">
-          <div className="relative rounded-[38px] border border-white/80 bg-white/60
-                          p-6 shadow-xl backdrop-blur-xl">
+        <div className={styles.rightPanel}>
+          <div className={styles.dashboard}>
 
             {/* fake admin top bar */}
-            <div className="mb-5 flex items-center justify-between">
-              <div className="flex flex-1 items-center gap-2 rounded-full border border-[#DDE8DD]
-                              bg-[#F8FBF7] px-3.5 py-2 text-xs text-[#9DB0A1]">
+            <div className={styles.topBar}>
+              <div className={styles.searchPill}>
                 <Search className="h-3.5 w-3.5 shrink-0" />
                 <span>Search anything…</span>
               </div>
-              <div className="ml-3 flex items-center gap-2.5">
-                <div className="relative flex h-9 w-9 items-center justify-center rounded-full
-                                bg-[#EEF4EF] text-[#607064]">
+              <div className={styles.topIcons}>
+                <div className={styles.iconCircle}>
                   <Bell className="h-4 w-4" />
-                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[#C9943A]" />
+                  <span className={styles.notiDot} />
                 </div>
-                <div className="flex h-9 w-9 items-center justify-center rounded-full
-                                bg-[#3D1F0D] text-xs font-black text-[#FFF7ED]">A</div>
+                <div className={styles.avatar}>A</div>
               </div>
             </div>
 
             {/* hero label */}
             <div className="mb-4">
-              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#2FBF9B]">
-                Big Bean Control Center
-              </p>
-              <h2 className="font-heading text-xl font-black text-[#1F2A24]">Operations Overview</h2>
-              <p className="mt-0.5 text-xs text-[#607064]">
-                Saturday, July 2026
-              </p>
+              <p className={styles.heroLabel}>Big Bean Control Center</p>
+              <h2 className={styles.heroTitle}>Operations Overview</h2>
+              <p className={styles.heroDate}>Saturday, July 2026</p>
             </div>
 
             {/* stat cards */}
-            <div className="mb-4 grid grid-cols-4 gap-2.5">
+            <div className={styles.statGrid}>
               {STATS.map(({ label, value, Icon, color, bg }) => (
-                <div key={label}
-                  className="rounded-[18px] border border-[#DDE8DD] bg-white p-3 shadow-sm">
-                  <div className={`mb-2 inline-flex rounded-xl p-1.5 ${bg}`}>
+                <div key={label} className={styles.statCard}>
+                  <div className={`${styles.statIconWrap} ${bg}`}>
                     <Icon className={`h-3.5 w-3.5 ${color}`} />
                   </div>
-                  <p className="text-base font-black text-[#1F2A24]">{value}</p>
-                  <p className="text-[10px] text-[#9DB0A1]">{label}</p>
+                  <p className={styles.statValue}>{value}</p>
+                  <p className={styles.statLabel}>{label}</p>
                 </div>
               ))}
             </div>
 
             {/* chart + calendar row */}
-            <div className="mb-4 grid grid-cols-[1.4fr_1fr] gap-3">
+            <div className={styles.chartRow}>
 
               {/* bar chart */}
-              <div className="rounded-[22px] border border-[#DDE8DD] bg-white p-4 shadow-sm">
-                <div className="mb-3 flex items-center justify-between">
-                  <p className="text-xs font-black text-[#1F2A24]">Performance</p>
+              <div className={styles.chartCard}>
+                <div className={styles.chartHeader}>
+                  <p className={styles.chartTitle}>Performance</p>
                   <BarChart3 className="h-3.5 w-3.5 text-[#9DB0A1]" />
                 </div>
-                <div className="flex items-end gap-1.5 h-[64px]">
+                <div className={styles.chartBars}>
                   {BARS.map((h, i) => (
-                    <div key={i} className="flex flex-1 flex-col items-center gap-1">
+                    <div key={i} className={styles.barWrap}>
                       <div
-                        className="w-full rounded-t-md transition-all"
+                        className={styles.bar}
                         style={{
-                          height: `${h * 0.64}px`,
+                          height: `${h * 0.64}%`,
                           background: h === 95
                             ? 'linear-gradient(180deg,#2FBF9B,#1a8f76)'
                             : 'linear-gradient(180deg,#DFF7EF,#c5edde)'
                         }}
                       />
-                      <span className="text-[9px] text-[#9DB0A1]">{DAYS[i]}</span>
+                      <span className={styles.barDay}>{DAYS[i]}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* mini calendar */}
-              <div className="rounded-[22px] border border-[#DDE8DD] bg-white p-4 shadow-sm">
-                <div className="mb-2 flex items-center justify-between">
-                  <p className="text-xs font-black text-[#1F2A24]">July 2026</p>
+              <div className={styles.calendarCard}>
+                <div className={styles.calendarHeader}>
+                  <p className={styles.calendarTitle}>July 2026</p>
                   <CalendarDays className="h-3.5 w-3.5 text-[#9DB0A1]" />
                 </div>
-                <div className="grid grid-cols-7 gap-[3px]">
+                <div className={styles.calendarGrid}>
                   {['M','T','W','T','F','S','S'].map((d, i) => (
-                    <span key={i} className="text-center text-[8px] font-black text-[#9DB0A1]">{d}</span>
+                    <span key={i} className={styles.dayLabel}>{d}</span>
                   ))}
                   {/* offset for July 2026 starting Tuesday */}
                   <span />
                   {DATES.map(d => (
-                    <span key={d}
-                      className={`flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold mx-auto
-                        ${d === 5 ? 'bg-[#3D1F0D] text-white' : ACTIVE.includes(d) ? 'bg-[#DFF7EF] text-[#2FBF9B]' : 'text-[#607064]'}`}>
+                    <span
+                      key={d}
+                      className={d === 5 ? styles.dayToday : (ACTIVE.includes(d) ? styles.dayActive : styles.dayCell)}
+                    >
                       {d}
                     </span>
                   ))}
@@ -312,35 +285,33 @@ export default function AdminLogin() {
             </div>
 
             {/* recent activity */}
-            <div className="rounded-[22px] border border-[#DDE8DD] bg-white p-4 shadow-sm">
-              <p className="mb-3 text-xs font-black text-[#1F2A24]">Recent Activity</p>
-              <div className="space-y-2.5">
+            <div className={styles.activityCard}>
+              <p className={styles.activityTitle}>Recent Activity</p>
+              <div className={styles.activityList}>
                 {ACTIVITY.map((a, i) => (
-                  <div key={i} className="flex items-center gap-2.5">
-                    <span className={`h-2 w-2 shrink-0 rounded-full ${a.dot}`} />
-                    <span className="flex-1 text-[11px] text-[#1F2A24]">{a.text}</span>
-                    <span className="text-[10px] text-[#9DB0A1]">{a.time}</span>
+                  <div key={i} className={styles.activityItem}>
+                    <span className={`${styles.activityDot} ${a.dot}`} />
+                    <span className={styles.activityText}>{a.text}</span>
+                    <span className={styles.activityTime}>{a.time}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* floating mini cards */}
-            <div className="absolute -right-5 top-24 w-[140px] rounded-2xl border border-white/90
-                            bg-white p-3.5 shadow-[0_12px_40px_rgba(31,42,36,0.13)]">
-              <p className="text-[10px] font-black uppercase tracking-wider text-[#9DB0A1]">Today Sales</p>
-              <p className="mt-1 text-xl font-black text-[#1F2A24]">₹18,420</p>
-              <div className="mt-1.5 flex items-center gap-1 text-[10px] font-bold text-[#2FBF9B]">
+            <div className={styles.floatingCardTop}>
+              <p className={styles.floatingLabel}>Today Sales</p>
+              <p className={styles.floatingValue}>₹18,420</p>
+              <div className={`${styles.floatingTrend} text-[#2FBF9B]`}>
                 <TrendingUp className="h-3 w-3" />
                 +12.4% vs yesterday
               </div>
             </div>
 
-            <div className="absolute -right-5 bottom-32 w-[140px] rounded-2xl border border-white/90
-                            bg-white p-3.5 shadow-[0_12px_40px_rgba(31,42,36,0.13)]">
-              <p className="text-[10px] font-black uppercase tracking-wider text-[#9DB0A1]">Customer Growth</p>
-              <p className="mt-1 text-xl font-black text-[#1F2A24]">+148</p>
-              <div className="mt-1.5 flex items-center gap-1 text-[10px] font-bold text-[#C9943A]">
+            <div className={styles.floatingCardBottom}>
+              <p className={styles.floatingLabel}>Customer Growth</p>
+              <p className={styles.floatingValue}>+148</p>
+              <div className={`${styles.floatingTrend} text-[#C9943A]`}>
                 <Users className="h-3 w-3" />
                 This month
               </div>
