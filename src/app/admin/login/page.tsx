@@ -8,7 +8,7 @@ import {
   Eye, EyeOff, AlertCircle, ShieldCheck, Mail,
   Bell, Search, Users, ShoppingBag, Store,
   TrendingUp, CalendarDays, BarChart3, ArrowLeft,
-  Sparkles, Lock
+  Lock
 } from 'lucide-react'
 import { apiRequest } from '@/utils/api'
 import { saveAdminAuthData } from '@/lib/adminPermissions'
@@ -137,7 +137,7 @@ export default function AdminLogin() {
             )}
 
             {/* form */}
-            <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+            <form onSubmit={handleSubmit} autoComplete="on" className="mt-5 space-y-4">
               {/* email */}
               <div>
                 <label className="mb-1.5 block text-sm font-black text-[#1F2A24]">
@@ -151,7 +151,8 @@ export default function AdminLogin() {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    placeholder="admin@bigbeancafe.in"
+                    autoComplete="username"
+                    placeholder="Enter your email address"
                     className={inputBase + ' border-[#DDE8DD] pl-11 focus:border-[#2FBF9B] focus:ring-[#2FBF9B]/15'}
                   />
                 </div>
@@ -170,6 +171,7 @@ export default function AdminLogin() {
                     value={formData.password}
                     onChange={handleInputChange}
                     required
+                    autoComplete="current-password"
                     placeholder="Enter your password"
                     className={inputBase + ' border-[#DDE8DD] pl-11 pr-12 focus:border-[#2FBF9B] focus:ring-[#2FBF9B]/15'}
                   />
@@ -195,28 +197,6 @@ export default function AdminLogin() {
                 {isLoading ? 'Signing in…' : 'Sign In to Admin'}
               </button>
             </form>
-
-            {/* demo credentials */}
-            <div className="mt-5 rounded-[22px] border border-[#E6C7A8] bg-[#FFF7ED] p-4">
-              <p className="mb-2 flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-[#6B3520]">
-                <Sparkles className="h-3 w-3" />
-                Demo Credentials
-              </p>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 text-sm text-[#7A5A48]">
-                  <span className="w-16 text-xs font-black uppercase tracking-wide text-[#9B7B65]">Email</span>
-                  <code className="rounded-lg bg-white/80 px-2 py-0.5 text-xs font-bold text-[#3D1F0D]">
-                    admin@bigbeancafe.in
-                  </code>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-[#7A5A48]">
-                  <span className="w-16 text-xs font-black uppercase tracking-wide text-[#9B7B65]">Password</span>
-                  <code className="rounded-lg bg-white/80 px-2 py-0.5 text-xs font-bold text-[#3D1F0D]">
-                    admin123
-                  </code>
-                </div>
-              </div>
-            </div>
 
             {/* security + back */}
             <div className="mt-5 flex items-center justify-between gap-3">
