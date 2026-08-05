@@ -9,7 +9,7 @@ import {
   Settings, Globe, LogOut, Menu, X, Bell, Search, ChevronDown,
   User, BookOpen, MapPin, Image as ImageIcon, Phone, Calendar,
   UserCheck, Mail, Smartphone, Home, TrendingUp, Star, Instagram, Headphones as HeadphonesIcon,
-  CreditCard, AlertTriangle, MessageCircle, Building2, Send, AlertCircle, Shield, Ticket, QrCode
+  CreditCard, AlertTriangle, MessageCircle, Building2, Send, AlertCircle, Shield, Ticket, QrCode, Megaphone
 } from 'lucide-react'
 import { formatTimeAgo } from '@/lib/timeAgo'
 import { apiRequest } from '@/lib/api'
@@ -103,6 +103,7 @@ const NAV = [
     items: [
       { href: '/admin/app-promos',       icon: Smartphone, label: 'App Promos'       },
       { href: '/admin/instagram-media',  icon: ImageIcon,  label: 'Instagram Media'  },
+      { href: '/admin/website-popups',     icon: Megaphone,  label: 'Website Popups'   },
     ]
   },
 ]

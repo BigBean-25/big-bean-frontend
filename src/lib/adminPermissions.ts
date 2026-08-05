@@ -12,7 +12,7 @@ export const ADMIN_PERMISSION_MODULES = [
   { group: 'Menu', modules: ['menu_items', 'menu_combos', 'categories'] },
   { group: 'Merchandise', modules: ['merchandise', 'merchandise_categories', 'merchandise_banners', 'merchandise_orders', 'merchandise_reviews'] },
   { group: 'Enquiries', modules: ['contact_enquiries', 'corporate_enquiries', 'franchise_enquiries', 'career_applications', 'career_jobs', 'reservations', 'support_tickets'] },
-  { group: 'Marketing', modules: ['offers', 'blog_posts', 'blog', 'gallery', 'events', 'event_bookings', 'instagram_media', 'newsletter_subscribers', 'app_promos', 'testimonials', 'seo_pages', 'seo', 'legal_pages'] },
+  { group: 'Marketing', modules: ['offers', 'blog_posts', 'blog', 'gallery', 'events', 'event_bookings', 'instagram_media', 'newsletter_subscribers', 'app_promos', 'testimonials', 'seo_pages', 'seo', 'legal_pages', 'website_popups'] },
 ]
 
 export const DATA_SCOPE_OPTIONS = [
@@ -213,6 +213,7 @@ const ROUTE_MODULE_MAP: Record<string, string> = {
   '/admin/instagram-media':            'instagram_media',
   '/admin/newsletter-subscribers':     'newsletter_subscribers',
   '/admin/app-promos':                 'app_promos',
+  '/admin/website-popups':             'website_popups',
   '/admin/testimonials':               'testimonials',
   '/admin/seo':                        'seo_pages',
   '/admin/seo/settings':               'seo_pages',

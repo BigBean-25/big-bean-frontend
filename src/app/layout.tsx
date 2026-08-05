@@ -3,6 +3,7 @@ import { Fraunces, Manrope, Sora } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
 import GlobalSeoScripts from '@/components/common/GlobalSeoScripts'
+import GlobalWebsitePopup from '@/components/common/GlobalWebsitePopup'
 
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -83,6 +84,7 @@ export default function RootLayout({
             },
           }}
         />
+        <GlobalWebsitePopup />
       </body>
     </html>
   )
