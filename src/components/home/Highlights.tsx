@@ -1,116 +1,122 @@
 'use client'
 
-import { Coffee, Users, ShoppingBag, UtensilsCrossed } from 'lucide-react'
-import { useState } from 'react'
+import { Armchair, Coffee, UtensilsCrossed, CakeSlice, Laptop, GlassWater } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
 import styles from './Highlights.module.css'
 
 const highlights = [
   {
+    icon: Armchair,
+    title: 'Cozy Café',
+    description: 'A warm and welcoming café ambience created for conversations, comfort, and memorable moments.',
+    stat: 'Cozy',
+    statLabel: 'Ambience',
+    accent: '#8B5A3C',
+    image: '/images/highlights/cozy-cafe.webp',
+    alt: 'Cozy café interior at Big Bean Café',
+  },
+  {
     icon: Coffee,
     title: 'Premium Coffee',
-    description: 'Freshly brewed coffee crafted with care, rich aroma, and smooth café-style taste.',
+    description: 'Freshly brewed coffee crafted using quality beans, rich aroma, and smooth café-style flavour.',
     stat: 'Fresh',
     statLabel: 'Daily',
     accent: '#C9943A',
-    image: '/images/highlights/coffee.jpg',
-  },
-  {
-    icon: Users,
-    title: 'Cozy Ambience',
-    description: 'A warm café space made for work, conversations, friends, and relaxed coffee moments.',
-    stat: '7+',
-    statLabel: 'Outlets',
-    accent: '#8B5A3C',
-    image: '/images/highlights/outlet.jpg',
+    image: '/images/highlights/premium-coffee.webp',
+    alt: 'Premium coffee at Big Bean Café',
   },
   {
     icon: UtensilsCrossed,
     title: 'Delicious Food',
-    description: 'Enjoy café bites, snacks, desserts, and beverages made to match every mood.',
+    description: 'Enjoy flavourful meals, café favourites, satisfying bites, and dishes prepared for every mood.',
     stat: '100+',
     statLabel: 'Items',
     accent: '#6B3520',
-    image: '/images/highlights/food.jpg',
+    image: '/images/highlights/delicious-food.webp',
+    alt: 'Delicious food at Big Bean Café',
   },
   {
-    icon: ShoppingBag,
-    title: 'Order Online',
-    description: 'Enjoy your Big Bean Café favourites through Zomato, Swiggy, and our online ordering platform.',
-    stat: 'Online',
-    statLabel: 'Orders',
-    accent: '#3D1F0D',
-    image: '/images/highlights/order.jpg',
+    icon: CakeSlice,
+    title: 'Irresistible Desserts',
+    description: 'Indulge in cakes, pastries, desserts, and sweet creations that pair perfectly with your coffee.',
+    stat: 'Sweet',
+    statLabel: 'Moments',
+    accent: '#B97855',
+    image: '/images/highlights/desserts.webp',
+    alt: 'Desserts and pastries at Big Bean Café',
+  },
+  {
+    icon: Laptop,
+    title: 'Work-Friendly Space',
+    description: 'A comfortable environment for work, meetings, studying, and productive coffee breaks.',
+    stat: 'Work',
+    statLabel: 'Comfortably',
+    accent: '#7A5A40',
+    image: '/images/highlights/work-friendly.webp',
+    alt: 'Work-friendly space at Big Bean Café',
+  },
+  {
+    icon: GlassWater,
+    title: 'Signature Coolers',
+    description: 'Refresh yourself with our signature coolers, vibrant flavours, and chilled beverages crafted for every mood.',
+    stat: 'Chilled',
+    statLabel: 'Refreshment',
+    accent: '#5DA9A6',
+    image: '/images/highlights/signature-coolers.webp',
+    alt: 'Signature coolers at Big Bean Café',
   },
 ]
 
-const marqueeImages = [
-  { src: '/images/highlights/coffee.jpg',  label: 'Fresh Coffee'  },
-  { src: '/images/highlights/outlet.jpg',  label: 'Cozy Outlet'   },
-  { src: '/images/highlights/food.jpg',    label: 'Café Food'      },
-  { src: '/images/highlights/dessert.jpg', label: 'Desserts'       },
-  { src: '/images/highlights/order.jpg',   label: 'Order Online'   },
-]
-
-// Triple for seamless loop with no visible gap
-const marqueeLoop = [...marqueeImages, ...marqueeImages, ...marqueeImages]
-
-function MarqueeCard({ src, label }: { src: string; label: string }) {
+function CardBg({ src, accent }: { src: string; accent: string }) {
   const [failed, setFailed] = useState(false)
-  if (failed) {
-    return <div className={styles.imgCardPlaceholder} aria-hidden="true" />
-  }
   return (
-    <div className={styles.imgCard}>
-      <img
-        src={src}
-        alt={label}
-        className={styles.imgCardImg}
-        onError={() => setFailed(true)}
-        draggable={false}
-      />
-      <span className={styles.imgLabel}>{label}</span>
-    </div>
-  )
-}
-
-function CardBg({ src }: { src: string }) {
-  const [failed, setFailed] = useState(false)
-  if (failed) return null
-  return (
-    <img
-      src={src}
-      alt=""
-      aria-hidden="true"
-      onError={() => setFailed(true)}
-      className={styles.cardBgImg}
-    />
+    <>
+      {!failed ? (
+        <img
+          src={src}
+          alt=""
+          aria-hidden="true"
+          onError={() => setFailed(true)}
+          className={styles.cardBgImg}
+          loading="lazy"
+        />
+      ) : (
+        <div
+          className={styles.cardFallback}
+          style={{ background: `linear-gradient(145deg, #3D1F0D 0%, ${accent} 100%)` }}
+          aria-hidden="true"
+        />
+      )}
+      <div className={styles.cardOverlay} aria-hidden="true" />
+    </>
   )
 }
 
 export default function Highlights() {
-  const [isPaused, setIsPaused] = useState(false)
+  const sectionRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            el.querySelectorAll('[data-hl-card]').forEach((card, i) => {
+              setTimeout(() => card.classList.add(styles.visible), i * 130)
+            })
+            observer.disconnect()
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   return (
-    <section
-      className={styles.section}
-      ref={(el) => {
-        if (!el) return
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                el.querySelectorAll('[data-hl-card]').forEach((card, i) => {
-                  setTimeout(() => card.classList.add(styles.visible), i * 130)
-                })
-                observer.disconnect()
-              }
-            })
-          },
-          { threshold: 0.1 }
-        )
-        observer.observe(el)
-      }}
-    >
+    <section ref={sectionRef} className={styles.section}>
       <div className={`container-custom ${styles.inner}`}>
         {/* Heading */}
         <div className="text-center mb-12">
@@ -125,45 +131,24 @@ export default function Highlights() {
             Every visit, every cup, every bite — crafted to make your café moment special.
           </p>
         </div>
-      </div>
 
-      {/* Marquee strip — pause on hover / touch */}
-      <div
-        className={styles.marqueeOuter}
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-        onTouchStart={() => setIsPaused(true)}
-        onTouchEnd={() => setIsPaused(false)}
-        aria-hidden="true"
-      >
-        <div
-          className={`${styles.marqueeTrack}${isPaused ? ' ' + styles.paused : ''}`}
-          style={{ animationPlayState: isPaused ? 'paused' : 'running' }}
-        >
-          {marqueeLoop.map((item, i) => (
-            <MarqueeCard key={i} src={item.src} label={item.label} />
-          ))}
-        </div>
-      </div>
-
-      <div className={`container-custom ${styles.inner}`}>
         {/* Cards */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {highlights.map((item, index) => (
             <div key={index} className={styles.card} data-hl-card="">
-              <CardBg src={item.image} />
+              <CardBg src={item.image} accent={item.accent} />
               <div className={styles.cardInner}>
                 <div className={styles.iconWrap}>
-                  <item.icon className="w-8 h-8" style={{ color: item.accent }} strokeWidth={1.7} />
+                  <item.icon className="w-6 h-6" style={{ color: '#FFF7ED' }} strokeWidth={1.7} aria-hidden="true" />
                 </div>
-                <div className="mb-3">
-                  <span className={styles.stat} style={{ color: item.accent }}>{item.stat}</span>
+                <div className="mb-2">
+                  <span className={styles.stat}>{item.stat}</span>
                   <span className={styles.statLabel}>{item.statLabel}</span>
                 </div>
-                <h3 className="mb-2 text-lg font-bold font-heading" style={{ color: '#3D1F0D' }}>
+                <h3 className={`mb-2 text-xl font-bold font-heading ${styles.cardTitle}`}>
                   {item.title}
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: '#6B3520' }}>
+                <p className={`text-sm leading-relaxed ${styles.cardDesc}`}>
                   {item.description}
                 </p>
               </div>
