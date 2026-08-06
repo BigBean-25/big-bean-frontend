@@ -151,7 +151,9 @@ export default function PopupForm({ mode, initialData = {}, popupId }: PopupForm
   const [buttonText,   setButtonText]   = useState(initialData.button_text  || '')
   const [buttonUrl,    setButtonUrl]    = useState(initialData.button_url   || '')
   const [openNewTab,   setOpenNewTab]   = useState(!!initialData.open_in_new_tab)
-  const [imgClickable, setImgClickable] = useState(!!initialData.image_clickable)
+  const [imgClickEnabled, setImgClickEnabled] = useState(!!initialData.image_click_enabled)
+  const [imgClickUrl,     setImgClickUrl]     = useState(initialData.image_click_url || '')
+  const [imgClickNewTab,  setImgClickNewTab]  = useState(!!initialData.image_click_new_tab)
   const [delayMs,      setDelayMs]      = useState(String(initialData.display_delay_ms ?? 0))
   const [frequency,    setFrequency]    = useState(initialData.display_frequency || 'once_per_session')
   const [pageMode,     setPageMode]     = useState<'all' | 'selected'>(() => {
@@ -172,9 +174,10 @@ export default function PopupForm({ mode, initialData = {}, popupId }: PopupForm
   const [endAt,        setEndAt]        = useState(initialData.end_at   ? initialData.end_at.slice(0, 16)   : '')
   const [status,       setStatus]       = useState(initialData.status !== undefined ? !!initialData.status : true)
 
-  const [desktopFile,  setDesktopFile]  = useState<File | null>(null)
-  const [mobileFile,   setMobileFile]   = useState<File | null>(null)
-  const [removeMobile, setRemoveMobile] = useState(false)
+  const [desktopFile,   setDesktopFile]   = useState<File | null>(null)
+  const [mobileFile,    setMobileFile]    = useState<File | null>(null)
+  const [removeDesktop, setRemoveDesktop] = useState(false)
+  const [removeMobile,  setRemoveMobile]  = useState(false)
 
   const [saving,  setSaving]  = useState(false)
   const [errors,  setErrors]  = useState<Record<string, string>>({})
@@ -187,6 +190,7 @@ export default function PopupForm({ mode, initialData = {}, popupId }: PopupForm
       if (!buttonText.trim()) e.button_text = 'Button text is required when link is enabled'
       if (!buttonUrl.trim())  e.button_url  = 'Button URL is required when link is enabled'
     }
+    if (imgClickEnabled && !imgClickUrl.trim()) e.image_click_url = 'Destination URL is required when image click is enabled'
     if (startAt && endAt && new Date(endAt) <= new Date(startAt)) {
       e.end_at = 'End date must be after start date'
     }
@@ -208,8 +212,10 @@ export default function PopupForm({ mode, initialData = {}, popupId }: PopupForm
       fd.append('button_text', buttonText)
       fd.append('button_url', buttonUrl)
       fd.append('open_in_new_tab', String(openNewTab))
-      fd.append('image_clickable', String(imgClickable))
     }
+    fd.append('image_click_enabled', String(imgClickEnabled))
+    fd.append('image_click_url',     imgClickUrl)
+    fd.append('image_click_new_tab', String(imgClickNewTab))
     fd.append('display_delay_ms', delayMs)
     fd.append('display_frequency', frequency)
     fd.append('target_pages', pageMode === 'all' ? JSON.stringify([]) : JSON.stringify(selectedPages))
@@ -218,9 +224,10 @@ export default function PopupForm({ mode, initialData = {}, popupId }: PopupForm
     fd.append('start_at', startAt)
     fd.append('end_at', endAt)
     fd.append('status', String(status))
-    if (desktopFile) fd.append('desktop_image', desktopFile)
-    if (mobileFile)  fd.append('mobile_image',  mobileFile)
-    if (removeMobile) fd.append('remove_mobile_image', 'true')
+    if (desktopFile)   fd.append('desktop_image', desktopFile)
+    if (mobileFile)    fd.append('mobile_image',  mobileFile)
+    if (removeDesktop) fd.append('remove_desktop_image', 'true')
+    if (removeMobile)  fd.append('remove_mobile_image',  'true')
 
     try {
       const res = await apiRequest(
@@ -313,9 +320,9 @@ export default function PopupForm({ mode, initialData = {}, popupId }: PopupForm
               hint="Recommended 1200×800px · 3:2 ratio · WebP or JPG · max 2 MB"
               aspect="3/2"
               name="desktop_image"
-              existing={mode === 'edit' ? initialData.desktop_image : null}
-              onFile={f => setDesktopFile(f)}
-              onRemove={() => setDesktopFile(null)}
+              existing={mode === 'edit' && !removeDesktop ? initialData.desktop_image : null}
+              onFile={f => { setDesktopFile(f); setRemoveDesktop(false) }}
+              onRemove={() => { setDesktopFile(null); if (mode === 'edit' && initialData.desktop_image) setRemoveDesktop(true) }}
             />
             <ImageUploadField
               label="Mobile Image (optional)"
@@ -354,18 +361,41 @@ export default function PopupForm({ mode, initialData = {}, popupId }: PopupForm
                     className={inputClass(errors.button_url)} />
                   <p className="mt-0.5 text-xs text-[#9DB0A1]">Use /path for internal pages or https:// for external links.</p>
                 </Field>
-                <div className="flex flex-wrap gap-4">
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input type="checkbox" checked={openNewTab} onChange={e => setOpenNewTab(e.target.checked)}
-                      className="h-4 w-4 rounded accent-[#2FBF9B]" />
-                    <span className="text-sm text-[#1F2A24]">Open in new tab</span>
-                  </label>
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input type="checkbox" checked={imgClickable} onChange={e => setImgClickable(e.target.checked)}
-                      className="h-4 w-4 rounded accent-[#2FBF9B]" />
-                    <span className="text-sm text-[#1F2A24]">Image is clickable (links to button URL)</span>
-                  </label>
-                </div>
+                <label className="flex cursor-pointer items-center gap-2">
+                  <input type="checkbox" checked={openNewTab} onChange={e => setOpenNewTab(e.target.checked)}
+                    className="h-4 w-4 rounded accent-[#2FBF9B]" />
+                  <span className="text-sm text-[#1F2A24]">Open in new tab</span>
+                </label>
+              </div>
+            )}
+          </section>
+
+          {/* Clickable Image */}
+          <section className="rounded-2xl border border-[#DDE8DD] bg-white p-5 space-y-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="font-heading text-base font-black text-[#1F2A24]">Clickable Image</h2>
+                <p className="mt-0.5 text-xs text-[#9DB0A1]">When enabled, clicking the popup image opens this destination. This works independently of the CTA button.</p>
+              </div>
+              <button type="button" onClick={() => setImgClickEnabled(v => !v)}
+                className={`relative mt-0.5 inline-flex h-6 w-11 shrink-0 items-center rounded-full transition ${imgClickEnabled ? 'bg-[#2FBF9B]' : 'bg-[#DDE8DD]'}`}>
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition ${imgClickEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+              </button>
+            </div>
+            {imgClickEnabled && (
+              <div className="space-y-3">
+                <Field id="image_click_url" label="Destination URL *" error={errors.image_click_url}>
+                  <input id="image_click_url" type="text" value={imgClickUrl}
+                    onChange={e => setImgClickUrl(e.target.value)}
+                    placeholder="/events  or  https://bigbeancafe.in/events"
+                    className={inputClass(errors.image_click_url)} />
+                  <p className="mt-0.5 text-xs text-[#9DB0A1]">Use /path for internal pages or https:// for external links.</p>
+                </Field>
+                <label className="flex cursor-pointer items-center gap-2">
+                  <input type="checkbox" checked={imgClickNewTab} onChange={e => setImgClickNewTab(e.target.checked)}
+                    className="h-4 w-4 rounded accent-[#2FBF9B]" />
+                  <span className="text-sm text-[#1F2A24]">Open in new tab</span>
+                </label>
               </div>
             )}
           </section>
@@ -483,6 +513,7 @@ export default function PopupForm({ mode, initialData = {}, popupId }: PopupForm
             <p><strong>Pages:</strong> {pageMode === 'all' ? 'All public pages' : selectedPages.length > 0 ? selectedPages.join(', ') : '(none selected)'}</p>
             <p><strong>Delay:</strong> {delayMs}ms {Number(delayMs) === 0 ? '(immediate)' : ''}</p>
             <p><strong>Link:</strong> {linkEnabled ? (buttonUrl || 'URL not set') : 'Disabled'}</p>
+            <p><strong>Image Click:</strong> {imgClickEnabled ? (imgClickUrl || 'URL not set') : 'Disabled'}</p>
           </section>
         </div>
       </div>

@@ -88,6 +88,9 @@ interface PopupData {
   button_url: string | null
   open_in_new_tab: number
   image_clickable: number
+  image_click_enabled: number
+  image_click_url: string | null
+  image_click_new_tab: number
   display_delay_ms: number
   display_frequency: string
   target_devices: string
@@ -201,33 +204,53 @@ export default function GlobalWebsitePopup() {
   const isMobileView  = typeof window !== 'undefined' && window.innerWidth < 768
   const rawImgSrc     = (isMobileView && popup.mobile_image) ? popup.mobile_image : popup.desktop_image
   const imgSrc        = normalizePopupImageUrl(rawImgSrc)
-  const linkOn        = popup.link_enabled === 1
-  const newTab        = popup.open_in_new_tab === 1
-  const imgClickable  = linkOn && popup.image_clickable === 1
-  const isInternal    = (popup.button_url ?? '').startsWith('/')
+  const linkOn         = popup.link_enabled === 1
+  const newTab         = popup.open_in_new_tab === 1
+  const isInternal     = (popup.button_url ?? '').startsWith('/')
+  const imgClickOn     = popup.image_click_enabled === 1 && !!popup.image_click_url
+  const imgClickUrl    = popup.image_click_url ?? ''
+  const imgClickNewTab = popup.image_click_new_tab === 1
+  const imgIsInternal  = imgClickUrl.startsWith('/')
 
-  const ImageBlock = (
-    <div
-      aria-hidden="true"
-      style={{ width: '100%', aspectRatio: isMobileView ? '4/5' : '3/2', overflow: 'hidden' }}
-      className="bg-[#F8FBF7] flex items-center justify-center"
-    >
-      {!imgErr && imgSrc ? (
-        <img
-          src={imgSrc}
-          alt={popup.title}
-          style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
-          onError={() => setImgErr(true)}
-        />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center text-sm font-bold text-[#9DB0A1] p-4 text-center">
-          {popup.title}
-        </div>
-      )}
+  const imgElement = !imgErr && imgSrc ? (
+    <img
+      src={imgSrc}
+      alt={popup.title}
+      style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+      onError={() => setImgErr(true)}
+    />
+  ) : (
+    <div className="flex h-full w-full items-center justify-center text-sm font-bold text-[#9DB0A1] p-4 text-center">
+      {popup.title}
     </div>
   )
 
   const handleNavAndClose = () => handleClose()
+
+  const imageClickProps = imgClickOn ? {
+    onClick: handleNavAndClose,
+    'aria-label': `Go to ${imgClickUrl}`,
+    target: imgClickNewTab ? '_blank' : undefined,
+    rel: imgClickNewTab ? 'noopener noreferrer' : undefined,
+    style: { cursor: 'pointer' } as React.CSSProperties,
+    className: 'block w-full h-full',
+  } : null
+
+  const ImageBlock = (
+    <div
+      aria-hidden="true"
+      style={{ width: '100%', aspectRatio: isMobileView ? '4/5' : '3/2', overflow: 'hidden', maxHeight: isMobileView ? '62dvh' : '520px' }}
+      className="bg-[#F8FBF7] flex items-center justify-center"
+    >
+      {imgClickOn && imageClickProps ? (
+        imgIsInternal ? (
+          <Link href={imgClickUrl} {...imageClickProps}>{imgElement}</Link>
+        ) : (
+          <a href={imgClickUrl} {...imageClickProps}>{imgElement}</a>
+        )
+      ) : imgElement}
+    </div>
+  )
 
   return (
     <>
@@ -256,8 +279,8 @@ export default function GlobalWebsitePopup() {
         style={{ animation: 'bbc-popup-rise 220ms ease forwards' }}
       >
         <div
-          className="relative flex max-h-[90dvh] w-full flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
-          style={{ maxWidth: 'min(calc(100vw - 32px), 820px)' }}
+          className="relative flex w-full flex-col overflow-hidden rounded-[20px] bg-white shadow-2xl"
+          style={{ maxWidth: isMobileView ? 'min(calc(100vw - 24px), 420px)' : 'min(calc(100vw - 48px), 800px)', maxHeight: isMobileView ? '92dvh' : '88dvh' }}
         >
           {/* Close button */}
           <button
@@ -273,31 +296,11 @@ export default function GlobalWebsitePopup() {
           {/* Scrollable body */}
           <div className="overflow-y-auto">
 
-            {/* Image — with optional link wrapper */}
-            {imgClickable && popup.button_url ? (
-              newTab || !isInternal ? (
-                <a
-                  href={popup.button_url}
-                  target={newTab ? '_blank' : undefined}
-                  rel={newTab ? 'noopener noreferrer' : undefined}
-                  className="block cursor-pointer"
-                  onClick={handleNavAndClose}
-                  aria-label={`Navigate to ${popup.button_url}`}
-                >
-                  {ImageBlock}
-                </a>
-              ) : (
-                <Link href={popup.button_url} className="block cursor-pointer" onClick={handleNavAndClose}
-                  aria-label={`Navigate to ${popup.button_url}`}>
-                  {ImageBlock}
-                </Link>
-              )
-            ) : (
-              ImageBlock
-            )}
+            {/* Image */}
+            {ImageBlock}
 
             {/* Text content */}
-            <div className="px-5 pb-6 pt-4">
+            <div className="px-4 pb-5 pt-3">
               <span
                 className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-black uppercase tracking-wider ${
                   TYPE_COLOR[popup.popup_type] ?? TYPE_COLOR.general
@@ -308,7 +311,8 @@ export default function GlobalWebsitePopup() {
 
               <h2
                 id="bbc-popup-title"
-                className="mt-2 font-heading text-xl font-black leading-tight text-[#1F2A24] lg:text-2xl"
+                className="mt-2 font-heading font-black leading-tight text-[#1F2A24]"
+                style={{ fontSize: 'clamp(1.15rem, 2vw, 1.55rem)' }}
               >
                 {popup.title}
               </h2>
