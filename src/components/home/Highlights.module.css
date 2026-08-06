@@ -56,14 +56,109 @@
   100% { left: 160%; }
 }
 
-/* ── Cards ── */
+/* ── Marquee viewport ── */
+.marqueeViewport {
+  width: 100%;
+  overflow: hidden;
+  margin: 0 0 56px;
+  padding: 10px 0 14px;
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  cursor: grab;
+}
+.marqueeViewport:active { cursor: grabbing; }
+
+/* ── Marquee track: two groups, animates -50% for seamless loop ── */
+.marqueeTrack {
+  display: flex;
+  width: max-content;
+  animation: hlMarquee 34s linear infinite;
+  will-change: transform;
+}
+.marqueeTrack.paused { animation-play-state: paused; }
+
+@keyframes hlMarquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── Each marquee group ── */
+.marqueeGroup {
+  display: flex;
+  gap: 28px;
+  padding-right: 28px; /* keeps gap consistent between the two groups */
+}
+
+/* ── Individual marquee image card ── */
+.marqueeCard {
+  position: relative;
+  flex-shrink: 0;
+  width: 360px;
+  height: 240px;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(201,148,58,0.28);
+  box-shadow: 0 16px 44px rgba(61,31,13,0.17);
+  transition: transform 0.32s ease, box-shadow 0.32s ease;
+}
+.marqueeCard:hover {
+  transform: scale(1.04) translateY(-4px);
+  box-shadow: 0 26px 58px rgba(61,31,13,0.26);
+}
+
+/* Bottom fade overlay on marquee card */
+.marqueeCard::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 55%;
+  background: linear-gradient(to top, rgba(25,8,3,0.72) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.marqueeImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Marquee label (bottom-left pill) ── */
+.marqueeLabel {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 2;
+  background: rgba(40,14,5,0.70);
+  color: #FFF7ED;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ── Marquee fallback (when image fails to load) ── */
+.marqueeFallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #4A2518, #8B4A2F);
+}
+
+/* ── Information cards ── */
 .card {
   position: relative;
   overflow: hidden;
+  background: #fff;
+  border: 1px solid #EED9C0;
   border-radius: 24px;
-  min-height: 360px;
-  box-shadow: 0 8px 32px rgba(61,31,13,0.18);
-  transition: transform 0.32s ease, box-shadow 0.32s ease;
+  padding: 2.25rem 1.75rem;
+  text-align: center;
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
   opacity: 0;
   transform: translateY(28px);
 }
@@ -71,119 +166,87 @@
   opacity: 1;
   transform: translateY(0);
   transition: opacity 0.55s ease, transform 0.55s ease,
-              box-shadow 0.32s ease;
+              box-shadow 0.28s ease, border-color 0.28s ease;
 }
 .card:hover {
-  transform: translateY(-7px);
-  box-shadow: 0 30px 72px rgba(61,31,13,0.28);
+  transform: translateY(-8px);
+  box-shadow: 0 24px 60px rgba(61,31,13,0.16);
+  border-color: #C9943A;
 }
 
-/* ── Card background image ── */
-.cardBgImg {
+/* Caramel inset glow on hover */
+.card::before {
+  content: '';
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.55s ease;
-  z-index: 0;
-}
-.card:hover .cardBgImg {
-  transform: scale(1.07);
-}
-
-/* ── Fallback gradient (shown when image fails to load) ── */
-.cardFallback {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-/* ── Dark gradient overlay for text readability ── */
-.cardOverlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(18,6,2,0.86) 0%,
-    rgba(30,10,4,0.54) 48%,
-    rgba(18,6,2,0.20) 100%
-  );
-  z-index: 1;
+  border-radius: 24px;
+  box-shadow: inset 0 0 0 1px rgba(201,148,58,0);
+  transition: box-shadow 0.28s ease;
   pointer-events: none;
 }
-
-/* ── Card content sits above image + overlay ── */
-.cardInner {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  min-height: 360px;
-  padding: 2rem 1.75rem;
+.card:hover::before {
+  box-shadow: inset 0 0 0 1.5px rgba(201,148,58,0.55),
+              0 0 30px rgba(201,148,58,0.08);
 }
 
 /* ── Icon container ── */
 .iconWrap {
-  width: 52px;
-  height: 52px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
-  background: rgba(201,148,58,0.28);
-  border: 1px solid rgba(201,148,58,0.45);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  transition: transform 0.28s ease, background 0.28s ease;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, #F5E6D3, #EED5BA);
+  box-shadow: 0 4px 18px rgba(201,148,58,0.18);
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
 }
 .card:hover .iconWrap {
-  transform: scale(1.1);
-  background: rgba(201,148,58,0.42);
+  transform: scale(1.12);
+  box-shadow: 0 8px 28px rgba(201,148,58,0.28);
 }
 
 /* ── Stat ── */
 .stat {
   display: inline-block;
-  font-size: 1.55rem;
+  font-size: 1.6rem;
   font-weight: 800;
   line-height: 1;
-  color: #C9943A;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
 }
 .statLabel {
   display: block;
-  font-size: 0.64rem;
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.13em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.65);
+  color: #8B5A3C;
 }
-
-/* ── Card title & description ── */
-.cardTitle { color: #FFF7ED; }
-.cardDesc  { color: rgba(255,247,237,0.78); }
 
 /* ── Tablet (768px – 1023px) ── */
 @media (max-width: 1023px) {
-  .section    { padding: 64px 0 72px; }
-  .card       { min-height: 320px; }
-  .cardInner  { min-height: 320px; }
+  .section       { padding: 64px 0 72px; }
+  .marqueeCard   { width: 310px; height: 215px; border-radius: 18px; }
+  .marqueeGroup  { gap: 22px; padding-right: 22px; }
 }
 
 /* ── Mobile (≤ 767px) ── */
 @media (max-width: 767px) {
-  .section    { padding: 48px 0 56px; }
-  .card       { min-height: 300px; border-radius: 20px; }
-  .cardInner  { min-height: 300px; padding: 1.5rem 1.25rem; }
+  .section           { padding: 48px 0 52px; }
+  .card              { padding: 1.75rem 1.25rem; border-radius: 20px; }
+  .marqueeCard       { width: 84vw; height: 222px; border-radius: 16px; }
+  .marqueeGroup      { gap: 18px; padding-right: 18px; }
+  .marqueeViewport   { margin-bottom: 36px; }
 }
 
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   .underline::after { animation: none !important; }
-  .card      { opacity: 1 !important; transform: none !important; transition: none !important; }
-  .cardBgImg { transition: none !important; }
-  .iconWrap  { transition: none !important; }
+  .marqueeTrack     { animation: none !important; }
+  .marqueeViewport  { overflow-x: auto; scroll-snap-type: x mandatory; }
+  .marqueeCard      { scroll-snap-align: start; }
+  .card             { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .card::before     { transition: none !important; }
+  .iconWrap         { transition: none !important; }
 }

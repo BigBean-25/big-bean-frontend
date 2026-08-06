@@ -4,6 +4,17 @@ import { Armchair, Coffee, UtensilsCrossed, CakeSlice, Laptop, GlassWater } from
 import { useState, useEffect, useRef } from 'react'
 import styles from './Highlights.module.css'
 
+// ── Marquee images ────────────────────────────────────────────────────────────
+const marqueeImages = [
+  { src: '/images/highlights/cozy-cafe.webp',         label: 'Cozy Café'             },
+  { src: '/images/highlights/premium-coffee.webp',    label: 'Premium Coffee'        },
+  { src: '/images/highlights/delicious-food.webp',    label: 'Delicious Food'        },
+  { src: '/images/highlights/desserts.webp',          label: 'Irresistible Desserts' },
+  { src: '/images/highlights/work-friendly.webp',     label: 'Work-Friendly Space'   },
+  { src: '/images/highlights/signature-coolers.webp', label: 'Signature Coolers'     },
+]
+
+// ── Information cards ─────────────────────────────────────────────────────────
 const highlights = [
   {
     icon: Armchair,
@@ -12,8 +23,6 @@ const highlights = [
     stat: 'Cozy',
     statLabel: 'Ambience',
     accent: '#8B5A3C',
-    image: '/images/highlights/cozy-cafe.webp',
-    alt: 'Cozy café interior at Big Bean Café',
   },
   {
     icon: Coffee,
@@ -22,8 +31,6 @@ const highlights = [
     stat: 'Fresh',
     statLabel: 'Daily',
     accent: '#C9943A',
-    image: '/images/highlights/premium-coffee.webp',
-    alt: 'Premium coffee at Big Bean Café',
   },
   {
     icon: UtensilsCrossed,
@@ -32,8 +39,6 @@ const highlights = [
     stat: '100+',
     statLabel: 'Items',
     accent: '#6B3520',
-    image: '/images/highlights/delicious-food.webp',
-    alt: 'Delicious food at Big Bean Café',
   },
   {
     icon: CakeSlice,
@@ -42,8 +47,6 @@ const highlights = [
     stat: 'Sweet',
     statLabel: 'Moments',
     accent: '#B97855',
-    image: '/images/highlights/desserts.webp',
-    alt: 'Desserts and pastries at Big Bean Café',
   },
   {
     icon: Laptop,
@@ -52,47 +55,42 @@ const highlights = [
     stat: 'Work',
     statLabel: 'Comfortably',
     accent: '#7A5A40',
-    image: '/images/highlights/work-friendly.webp',
-    alt: 'Work-friendly space at Big Bean Café',
   },
   {
     icon: GlassWater,
     title: 'Signature Coolers',
-    description: 'Refresh yourself with our signature coolers, vibrant flavours, and chilled beverages crafted for every mood.',
+    description: 'Refresh yourself with signature coolers, vibrant flavours, and chilled beverages crafted for every mood.',
     stat: 'Chilled',
     statLabel: 'Refreshment',
     accent: '#5DA9A6',
-    image: '/images/highlights/signature-coolers.webp',
-    alt: 'Signature coolers at Big Bean Café',
   },
 ]
 
-function CardBg({ src, accent }: { src: string; accent: string }) {
+// ── MarqueeImageCard ──────────────────────────────────────────────────────────
+function MarqueeImageCard({ src, label }: { src: string; label: string }) {
   const [failed, setFailed] = useState(false)
   return (
-    <>
+    <div className={styles.marqueeCard}>
       {!failed ? (
         <img
           src={src}
-          alt=""
-          aria-hidden="true"
+          alt={label}
+          className={styles.marqueeImg}
           onError={() => setFailed(true)}
-          className={styles.cardBgImg}
+          draggable={false}
           loading="lazy"
         />
       ) : (
-        <div
-          className={styles.cardFallback}
-          style={{ background: `linear-gradient(145deg, #3D1F0D 0%, ${accent} 100%)` }}
-          aria-hidden="true"
-        />
+        <div className={styles.marqueeFallback} aria-hidden="true" />
       )}
-      <div className={styles.cardOverlay} aria-hidden="true" />
-    </>
+      <span className={styles.marqueeLabel}>{label}</span>
+    </div>
   )
 }
 
+// ── Highlights section ────────────────────────────────────────────────────────
 export default function Highlights() {
+  const [isPaused, setIsPaused] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -117,8 +115,8 @@ export default function Highlights() {
 
   return (
     <section ref={sectionRef} className={styles.section}>
+      {/* ── Heading ── */}
       <div className={`container-custom ${styles.inner}`}>
-        {/* Heading */}
         <div className="text-center mb-12">
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em]" style={{ color: '#C9943A' }}>
             Our Promise
@@ -131,27 +129,54 @@ export default function Highlights() {
             Every visit, every cup, every bite — crafted to make your café moment special.
           </p>
         </div>
+      </div>
 
-        {/* Cards */}
+      {/* ── Marquee image strip ── */}
+      <div
+        className={styles.marqueeViewport}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        onFocus={() => setIsPaused(true)}
+        onBlur={() => setIsPaused(false)}
+        onTouchStart={() => setIsPaused(true)}
+        onTouchEnd={() => setIsPaused(false)}
+        aria-label="Café highlights image gallery"
+        role="region"
+      >
+        <div className={`${styles.marqueeTrack}${isPaused ? ' ' + styles.paused : ''}`}>
+          {/* Original group — visible to screen readers */}
+          <div className={styles.marqueeGroup}>
+            {marqueeImages.map((item, i) => (
+              <MarqueeImageCard key={i} src={item.src} label={item.label} />
+            ))}
+          </div>
+          {/* Duplicate group — hidden from screen readers */}
+          <div className={styles.marqueeGroup} aria-hidden="true">
+            {marqueeImages.map((item, i) => (
+              <MarqueeImageCard key={i} src={item.src} label={item.label} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Information cards ── */}
+      <div className={`container-custom ${styles.inner}`}>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {highlights.map((item, index) => (
             <div key={index} className={styles.card} data-hl-card="">
-              <CardBg src={item.image} accent={item.accent} />
-              <div className={styles.cardInner}>
-                <div className={styles.iconWrap}>
-                  <item.icon className="w-6 h-6" style={{ color: '#FFF7ED' }} strokeWidth={1.7} aria-hidden="true" />
-                </div>
-                <div className="mb-2">
-                  <span className={styles.stat}>{item.stat}</span>
-                  <span className={styles.statLabel}>{item.statLabel}</span>
-                </div>
-                <h3 className={`mb-2 text-xl font-bold font-heading ${styles.cardTitle}`}>
-                  {item.title}
-                </h3>
-                <p className={`text-sm leading-relaxed ${styles.cardDesc}`}>
-                  {item.description}
-                </p>
+              <div className={styles.iconWrap}>
+                <item.icon className="w-8 h-8" style={{ color: item.accent }} strokeWidth={1.7} aria-hidden="true" />
               </div>
+              <div className="mb-3">
+                <span className={styles.stat} style={{ color: item.accent }}>{item.stat}</span>
+                <span className={styles.statLabel}>{item.statLabel}</span>
+              </div>
+              <h3 className="mb-2 text-lg font-bold font-heading" style={{ color: '#3D1F0D' }}>
+                {item.title}
+              </h3>
+              <p className="text-sm leading-relaxed" style={{ color: '#6B3520' }}>
+                {item.description}
+              </p>
             </div>
           ))}
         </div>
