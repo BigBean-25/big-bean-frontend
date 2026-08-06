@@ -6,6 +6,22 @@ import Link from 'next/link'
 import { X, ExternalLink } from 'lucide-react'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+const API_ORIGIN = API_URL.replace(/\/api\/?$/, '')
+
+const normalizePopupImageUrl = (img: string | null | undefined): string | null => {
+  if (!img) return null
+  const s = img.trim()
+  if (!s) return null
+  if (s.startsWith('https://')) return s
+  if (s.startsWith('http://localhost') || s.startsWith('http://127.0.0.1')) {
+    try {
+      const u = new URL(s)
+      return `${API_ORIGIN}${u.pathname}`
+    } catch { return null }
+  }
+  const p = s.startsWith('/') ? s : `/${s}`
+  return `${API_ORIGIN}${p}`
+}
 
 // ── page key helper ───────────────────────────────────────────────────────────
 
@@ -183,7 +199,8 @@ export default function GlobalWebsitePopup() {
   if (!visible || !popup) return null
 
   const isMobileView  = typeof window !== 'undefined' && window.innerWidth < 768
-  const imgSrc        = (isMobileView && popup.mobile_image) ? popup.mobile_image : popup.desktop_image
+  const rawImgSrc     = (isMobileView && popup.mobile_image) ? popup.mobile_image : popup.desktop_image
+  const imgSrc        = normalizePopupImageUrl(rawImgSrc)
   const linkOn        = popup.link_enabled === 1
   const newTab        = popup.open_in_new_tab === 1
   const imgClickable  = linkOn && popup.image_clickable === 1
@@ -195,7 +212,7 @@ export default function GlobalWebsitePopup() {
       style={{ width: '100%', aspectRatio: isMobileView ? '4/5' : '3/2', overflow: 'hidden' }}
       className="bg-[#F8FBF7] flex items-center justify-center"
     >
-      {!imgErr ? (
+      {!imgErr && imgSrc ? (
         <img
           src={imgSrc}
           alt={popup.title}
