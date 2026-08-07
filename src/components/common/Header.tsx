@@ -44,11 +44,12 @@ const NAV_PRIMARY = [
   { name: 'ABOUT',     href: '/about' },
   { name: 'MENU',      href: '/menu' },
   { name: 'OUTLETS',   href: '/outlets' },
-  { name: 'OFFERS',    href: '/offers' },
+  { name: 'EVENTS',    href: '/events' },
   { name: 'CONTACT',   href: '/contact' },
 ]
 
 const NAV_MORE = [
+  { name: 'Offers',           href: '/offers',           icon: Tag },
   { name: 'Gallery',          href: '/gallery',          icon: ImageIcon },
   { name: 'Blog',             href: '/blog',             icon: BookOpen },
   { name: 'Careers',          href: '/careers',          icon: Briefcase },
@@ -168,6 +169,7 @@ export default function Header() {
     router.prefetch('/customer/dashboard')
     router.prefetch('/offers')
     router.prefetch('/outlets')
+    router.prefetch('/events')
     router.prefetch('/contact')
   }, [router])
 
