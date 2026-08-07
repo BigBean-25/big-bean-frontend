@@ -124,7 +124,7 @@ function formatDate(d: string | null): string | null {
   return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-/* ── Same premium card as homepage ── */
+/* ── Premium campaign offer card ── */
 function OfferCard({ offer, index }: { offer: Offer; index: number }) {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
@@ -143,158 +143,94 @@ function OfferCard({ offer, index }: { offer: Offer; index: number }) {
     return () => obs.disconnect()
   }, [])
 
-  /* shared card styles */
-  const cardStyle: React.CSSProperties = {
-    position: 'relative',
-    minHeight: '300px',
-    borderRadius: '26px',
-    background: 'linear-gradient(90deg, #FFF7ED 0%, #FFF2E3 46%, #F8EBDD 100%)',
-    border: '1px solid rgba(201,148,58,0.28)',
-    boxShadow: '0 24px 70px rgba(61,31,13,0.12)',
-    opacity: visible ? 1 : 0,
-    transform: visible ? 'translateY(0)' : 'translateY(28px)',
-    transition: `opacity 0.55s ease ${index * 0.1}s, transform 0.55s ease ${index * 0.1}s, box-shadow 0.3s ease`,
-    cursor: 'default',
-  }
-
   return (
     <div
       ref={ref}
-      style={cardStyle}
-      onMouseOver={e => (e.currentTarget.style.boxShadow = '0 32px 90px rgba(61,31,13,0.18)')}
-      onMouseOut={e => (e.currentTarget.style.boxShadow = '0 24px 70px rgba(61,31,13,0.12)')}
+      className={s.offerCard}
+      style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(28px)', transition: `opacity 0.55s ease ${index * 0.1}s, transform 0.55s ease ${index * 0.1}s` }}
+      aria-label={offer.title}
     >
-      {/* LEFT: text panel */}
-      <div style={{
-        position: 'relative', zIndex: 3, width: '50%',
-        padding: '2.6rem 2rem 2.6rem 2.8rem',
-        display: 'flex', flexDirection: 'column', justifyContent: 'center',
-        minHeight: 'inherit',
-      }}>
-        {/* dot label */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '0.45rem',
-          fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase',
-          letterSpacing: '0.22em', color: '#8B5A3C', marginBottom: '0.6rem',
-        }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C9943A', flexShrink: 0 }} />
+      {/* Decorative elements */}
+      <span className={`${s.offerCardBean} ${s.left}`} aria-hidden="true" />
+      <span className={`${s.offerCardBean} ${s.right}`} aria-hidden="true" />
+
+      {/* Content panel */}
+      <div className={s.offerContent}>
+        {/* campaign eyebrow */}
+        <div className={s.offerLabel}>
+          <span className={s.offerLabelDot} aria-hidden="true" />
           {offer.label_text || (offer.offer_code ? 'LIMITED TIME OFFER' : 'SPECIAL OFFER')}
         </div>
 
-        {/* big discount text */}
+        {/* hero discount */}
         {offer.discount_text && (
-          <p style={{
-            fontSize: 'clamp(1.6rem, 3vw, 2rem)', fontWeight: 900,
-            color: '#A92517', textTransform: 'uppercase', letterSpacing: '0.03em',
-            lineHeight: 1.1, marginBottom: '0.5rem',
-          }}>
-            {offer.discount_text}
-          </p>
+          <p className={s.offerDiscount}>{offer.discount_text}</p>
         )}
 
         {/* title */}
-        <h3 className="font-heading" style={{
-          fontSize: 'clamp(1.2rem, 2.2vw, 1.65rem)', fontWeight: 800,
-          color: '#3D1F0D', lineHeight: 1.25, marginBottom: '0.65rem',
-        }}>
-          {offer.title}
-        </h3>
+        <h3 className={`font-heading ${s.offerTitle}`}>{offer.title}</h3>
 
         {/* description */}
         {offer.description && (
-          <p style={{
-            fontSize: '0.9rem', color: '#6B3520', lineHeight: 1.65,
-            marginBottom: '0.9rem', maxWidth: '420px',
-          }}>
-            {offer.description}
-          </p>
+          <p className={s.offerDesc}>{offer.description}</p>
         )}
 
-        {/* code chip — dashed */}
-        {offer.offer_code && (
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-            background: 'rgba(255,255,255,0.60)',
-            border: '1px dashed rgba(169,37,23,0.38)',
-            borderRadius: '10px', padding: '0.45rem 1rem',
-            color: '#A92517', fontSize: '0.75rem', fontWeight: 800,
-            textTransform: 'uppercase', letterSpacing: '0.1em',
-            marginBottom: '0.9rem', width: 'fit-content',
-          }}>
-            <Tag size={11} />
-            Code:&nbsp;{offer.offer_code}
-          </div>
-        )}
+        {/* connected info strip */}
+        <div className={s.offerInfoStrip}>
+          {offer.offer_code && (
+            <div className={s.offerCode}>
+              <Tag size={13} />
+              <span className={s.offerCodeLabel}>Use Code</span>
+              <span className={s.offerCodeValue}>{offer.offer_code}</span>
+            </div>
+          )}
 
-        {/* validity */}
-        {offer.end_date ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.38rem', fontSize: '0.78rem', color: '#9B7355', marginBottom: '1.4rem' }}>
-            <Calendar size={13} />
-            Valid until {formatDate(offer.end_date)}
-          </div>
-        ) : (
-          <p style={{ fontSize: '0.78rem', color: '#9B7355', marginBottom: '1.4rem' }}>Limited time offer</p>
-        )}
+          {offer.end_date ? (
+            <div className={s.offerValidity}>
+              <Calendar size={13} />
+              <span>Valid until {formatDate(offer.end_date)}</span>
+            </div>
+          ) : (
+            <div className={s.offerValidity}>
+              <Calendar size={13} />
+              <span>Limited time offer</span>
+            </div>
+          )}
+        </div>
 
         {/* CTA */}
         <a
           href={offer.button_url || 'https://bigbeancafe.store'}
           target="_blank"
           rel="noopener noreferrer"
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-            background: '#A92517', color: '#FFF7ED',
-            fontSize: '0.8rem', fontWeight: 900, textTransform: 'uppercase',
-            letterSpacing: '0.1em', padding: '0.85rem 1.85rem',
-            borderRadius: '999px', textDecoration: 'none',
-            boxShadow: '0 12px 28px rgba(139,46,27,0.28)',
-            transition: 'background 0.2s ease, transform 0.18s ease',
-            width: 'fit-content', marginTop: 'auto',
-          }}
-          onMouseOver={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#8B2E1B' }}
-          onMouseOut={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#A92517' }}
+          className={s.offerCta}
         >
           {offer.button_text || 'ORDER NOW'}
-          <ArrowRight size={14} />
+          <ArrowRight size={15} />
         </a>
       </div>
 
-      {/* BEST DEAL badge — at left edge of image */}
-      <div style={{
-        position: 'absolute', top: '28px', left: 'calc(50% - 20px)',
-        zIndex: 10, width: '88px', height: '88px', borderRadius: '50%',
-        background: '#C93024', color: '#fff',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        textAlign: 'center', fontSize: '0.6rem', fontWeight: 900,
-        textTransform: 'uppercase', letterSpacing: '0.08em', lineHeight: 1.3,
-        boxShadow: '0 12px 30px rgba(139,46,27,0.30), 0 0 0 4px rgba(201,148,58,0.20)',
-        pointerEvents: 'none',
-      }}>
-        {badgeParts.map((p, i) => <span key={i} style={{ display: 'block' }}>{p}</span>)}
+      {/* promo badge at transition */}
+      <div className={s.offerBadge} aria-hidden="true">
+        {badgeParts.map((p, i) => <span key={i}>{p}</span>)}
       </div>
 
-      {/* RIGHT: image — absolute, 190px left-radius curve */}
-      <div style={{
-        position: 'absolute', right: 0, top: 0,
-        width: '58%', height: '100%',
-        borderRadius: '0 26px 26px 0',
-        borderTopLeftRadius: '190px',
-        borderBottomLeftRadius: '190px',
-        overflow: 'hidden', zIndex: 1,
-      }}>
+      {/* Image panel */}
+      <div className={s.offerImagePanel} aria-hidden="true">
         {imgUrl ? (
           <img
             src={imgUrl}
             alt={offer.title}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
+            className={s.offerImage}
+            loading="lazy"
           />
         ) : (
-          <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#3D1F0D,#8B5A3C)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Tag size={52} color="#F5E6D3" opacity={0.18} />
+          <div className={s.offerImageFallback}>
+            <Tag size={52} />
           </div>
         )}
-        {/* edge overlay */}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg,rgba(255,247,237,0.22),rgba(255,247,237,0.02))', zIndex: 2, pointerEvents: 'none' }} />
+        <div className={s.offerImageBlend} />
+        <div className={s.offerImageVignette} />
       </div>
     </div>
   )
