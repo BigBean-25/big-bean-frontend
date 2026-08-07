@@ -493,34 +493,46 @@ export default function Outlets() {
                     </div>
 
                     {/* Footer buttons */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', padding: '0 1.4rem 1.4rem' }}>
-                      {mapsHref ? (
-                        <a href={mapsHref} target="_blank" rel="noopener noreferrer"
-                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', background: '#3D1F0D', color: '#FFF7ED', borderRadius: 100, padding: '0.65rem 0.75rem', fontSize: '0.74rem', fontWeight: 800, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.06em', transition: 'all 0.18s' }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#5C2E12' }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#3D1F0D' }}>
-                          <Navigation style={{ width: 13, height: 13 }} /> Directions
-                        </a>
-                      ) : (
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', background: '#E6C7A8', color: '#9B6B50', borderRadius: 100, padding: '0.65rem 0.75rem', fontSize: '0.72rem', fontWeight: 700, textAlign: 'center' }}>
-                          Coming Soon
-                        </span>
-                      )}
-                      {outlet.phone ? (
-                        <a href={`tel:${outlet.phone}`}
-                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', background: 'transparent', color: '#3D1F0D', border: '1.5px solid #E6C7A8', borderRadius: 100, padding: '0.65rem 0.75rem', fontSize: '0.74rem', fontWeight: 800, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.06em', transition: 'all 0.18s' }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#C9943A'; (e.currentTarget as HTMLElement).style.color = '#C9943A' }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = '#E6C7A8'; (e.currentTarget as HTMLElement).style.color = '#3D1F0D' }}>
-                          <Phone style={{ width: 13, height: 13 }} /> Call
-                        </a>
-                      ) : (
-                        <a href="https://bigbeancafe.store" target="_blank" rel="noopener noreferrer"
-                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', background: 'transparent', color: '#C9943A', border: '1.5px solid #C9943A', borderRadius: 100, padding: '0.65rem 0.75rem', fontSize: '0.74rem', fontWeight: 800, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.06em', transition: 'all 0.18s' }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(201,148,58,0.08)' }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}>
-                          Order Online
-                        </a>
-                      )}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem', padding: '0 1.4rem 1.4rem' }}>
+                      {/* Reserve Table — full width, primary CTA */}
+                      <Link href="/reservations"
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.45rem', background: '#C9943A', color: '#120905', borderRadius: 100, height: 46, width: '100%', fontSize: '0.77rem', fontWeight: 900, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.06em', boxShadow: '0 4px 14px rgba(201,148,58,0.22)', transition: 'background 0.22s, transform 0.22s, box-shadow 0.22s' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#F6D58D'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 20px rgba(201,148,58,0.28)'; const arrow = (e.currentTarget as HTMLElement).querySelector('svg'); if (arrow) (arrow as SVGElement).style.transform = 'translateX(3px)' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#C9943A'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 14px rgba(201,148,58,0.22)'; const arrow = (e.currentTarget as HTMLElement).querySelector('svg'); if (arrow) (arrow as SVGElement).style.transform = 'translateX(0)' }}>
+                        Reserve Table
+                        <ArrowRight style={{ width: 14, height: 14, transition: 'transform 0.22s' }} />
+                      </Link>
+
+                      {/* Directions + Call */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                        {mapsHref ? (
+                          <a href={mapsHref} target="_blank" rel="noopener noreferrer"
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', background: '#3D1F0D', color: '#FFF7ED', borderRadius: 100, padding: '0.65rem 0.75rem', fontSize: '0.74rem', fontWeight: 800, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.06em', transition: 'all 0.18s' }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#5C2E12' }}
+                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#3D1F0D' }}>
+                            <Navigation style={{ width: 13, height: 13 }} /> Directions
+                          </a>
+                        ) : (
+                          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', background: '#E6C7A8', color: '#9B6B50', borderRadius: 100, padding: '0.65rem 0.75rem', fontSize: '0.72rem', fontWeight: 700, textAlign: 'center' }}>
+                            Coming Soon
+                          </span>
+                        )}
+                        {outlet.phone ? (
+                          <a href={`tel:${outlet.phone}`}
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', background: 'transparent', color: '#3D1F0D', border: '1.5px solid #E6C7A8', borderRadius: 100, padding: '0.65rem 0.75rem', fontSize: '0.74rem', fontWeight: 800, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.06em', transition: 'all 0.18s' }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#C9943A'; (e.currentTarget as HTMLElement).style.color = '#C9943A' }}
+                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = '#E6C7A8'; (e.currentTarget as HTMLElement).style.color = '#3D1F0D' }}>
+                            <Phone style={{ width: 13, height: 13 }} /> Call
+                          </a>
+                        ) : (
+                          <a href="https://bigbeancafe.store" target="_blank" rel="noopener noreferrer"
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', background: 'transparent', color: '#C9943A', border: '1.5px solid #C9943A', borderRadius: 100, padding: '0.65rem 0.75rem', fontSize: '0.74rem', fontWeight: 800, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.06em', transition: 'all 0.18s' }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(201,148,58,0.08)' }}
+                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}>
+                            Order Online
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )
