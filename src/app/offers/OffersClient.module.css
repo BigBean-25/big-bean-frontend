@@ -246,10 +246,12 @@
 
 .offerCard {
   position: relative;
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: minmax(0, 46%) minmax(0, 54%);
   align-items: stretch;
-  min-height: 410px;
+  width: 100%;
+  min-height: 390px;
+  max-height: 440px;
   max-width: 1150px;
   margin: 0 auto;
   border-radius: 34px;
@@ -318,9 +320,8 @@
 .offerContent {
   position: relative;
   z-index: 2;
-  width: 50%;
-  flex-shrink: 0;
-  padding: 2.6rem 2.4rem 2.6rem 2.8rem;
+  width: 100%;
+  padding: 2.5rem 2.625rem 2.25rem 2.875rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -366,12 +367,15 @@
 /* Hero discount headline */
 .offerDiscount {
   font-family: var(--font-heading, inherit);
-  font-size: clamp(2.4rem, 4.2vw, 4.4rem);
+  font-size: clamp(2.6rem, 3.8vw, 4.2rem);
   font-weight: 900;
   line-height: 0.98;
   letter-spacing: -0.01em;
   color: #A92517;
   text-transform: uppercase;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
   margin-bottom: 0.5rem;
   transform: rotate(-0.8deg);
   text-shadow: 0 2px 0 rgba(255, 247, 237, 0.55), 0 4px 10px rgba(169, 37, 23, 0.12);
@@ -385,6 +389,9 @@
   color: #3D1F0D;
   line-height: 1.15;
   margin-bottom: 0.65rem;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 /* Description */
@@ -465,8 +472,11 @@
 .offerCta {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   width: fit-content;
+  min-width: 180px;
+  height: 54px;
   background: #A92517;
   color: #FFF7ED;
   font-size: 0.78rem;
@@ -474,9 +484,10 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   text-decoration: none;
-  padding: 0.9rem 2rem;
+  padding: 0 1.6rem;
   border-radius: 999px;
   box-shadow: 0 12px 28px rgba(139, 46, 27, 0.28);
+  white-space: nowrap;
   transition: background 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
 }
 
@@ -503,14 +514,11 @@
 
 /* Image panel */
 .offerImagePanel {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 56%;
+  position: relative;
+  width: 100%;
   height: 100%;
+  min-height: 390px;
   border-radius: 0 34px 34px 0;
-  border-top-left-radius: 210px;
-  border-bottom-left-radius: 210px;
   overflow: hidden;
   z-index: 1;
 }
@@ -534,10 +542,10 @@
   inset: 0;
   background: linear-gradient(
     90deg,
-    rgba(255, 247, 237, 0.92) 0%,
-    rgba(255, 247, 237, 0.45) 12%,
-    rgba(255, 247, 237, 0.10) 24%,
-    transparent 36%
+    rgba(255, 247, 237, 0.95) 0%,
+    rgba(255, 247, 237, 0.55) 10%,
+    rgba(255, 247, 237, 0.15) 22%,
+    transparent 34%
   );
   pointer-events: none;
   z-index: 2;
@@ -571,11 +579,11 @@
 /* Promo badge at image/content transition */
 .offerBadge {
   position: absolute;
-  top: 34px;
-  left: calc(50% - 26px);
+  top: 28px;
+  left: calc(46% - 36px);
   z-index: 10;
-  width: 96px;
-  height: 96px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #C93024, #A92517 70%);
   color: #fff;
@@ -620,9 +628,11 @@
 }
 
 /* Tablet */
-@media (max-width: 1024px) {
+@media (max-width: 1024px) and (min-width: 850px) {
   .offerCard {
     min-height: 360px;
+    max-height: none;
+    grid-template-columns: minmax(0, 44%) minmax(0, 56%);
     border-radius: 28px;
   }
 
@@ -631,11 +641,11 @@
   }
 
   .offerContent {
-    padding: 2rem 1.8rem;
+    padding: 2rem 1.75rem 1.8rem 2rem;
   }
 
   .offerDiscount {
-    font-size: clamp(2.1rem, 4.5vw, 3.4rem);
+    font-size: clamp(2.1rem, 4.5vw, 3.2rem);
   }
 
   .offerTitle {
@@ -643,29 +653,31 @@
   }
 
   .offerBadge {
-    width: 82px;
-    height: 82px;
+    width: 76px;
+    height: 76px;
     top: 24px;
-    left: calc(50% - 22px);
+    left: calc(44% - 32px);
     font-size: 0.55rem;
   }
 
   .offerImagePanel {
     border-radius: 0 28px 28px 0;
-    border-top-left-radius: 160px;
-    border-bottom-left-radius: 160px;
   }
 
   .offerCta {
-    padding: 0.8rem 1.6rem;
+    min-width: 170px;
+    height: 50px;
+    padding: 0 1.4rem;
   }
 }
 
-/* Mobile */
-@media (max-width: 640px) {
+/* Mobile and narrow tablet */
+@media (max-width: 849px) {
   .offerCard {
+    display: flex;
     flex-direction: column;
     min-height: auto;
+    max-height: none;
     border-radius: 24px;
   }
 
@@ -675,18 +687,15 @@
 
   .offerContent {
     width: 100%;
-    padding: 1.6rem 1.4rem 1.8rem;
+    padding: 1.5rem 1.375rem 1.625rem;
     order: 2;
   }
 
   .offerImagePanel {
-    position: relative;
-    width: 100%;
-    height: 250px;
     order: 1;
+    height: 245px;
+    min-height: 245px;
     border-radius: 24px 24px 0 0;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
   }
 
   .offerImageBlend,
@@ -717,12 +726,15 @@
 
   .offerCta {
     width: 100%;
+    height: 52px;
+    min-width: auto;
     justify-content: center;
   }
 
   .offerBadge {
     top: 14px;
-    left: 14px;
+    left: auto;
+    right: 14px;
     width: 68px;
     height: 68px;
     font-size: 0.5rem;
