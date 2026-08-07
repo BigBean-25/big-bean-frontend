@@ -18,6 +18,7 @@ interface OutletForm {
   longitude: string
   status: 'active' | 'inactive'
   sort_order: string
+  store_branch_id: string
 }
 
 export default function AddOutlet() {
@@ -32,7 +33,8 @@ export default function AddOutlet() {
     latitude: '',
     longitude: '',
     status: 'active',
-    sort_order: '0'
+    sort_order: '0',
+    store_branch_id: ''
   })
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -82,8 +84,9 @@ export default function AddOutlet() {
       fd.append('opening_hours', formData.opening_hours || '')
       fd.append('latitude',      formData.latitude || '')
       fd.append('longitude',     formData.longitude || '')
-      fd.append('status',        formData.status || 'active')
-      fd.append('sort_order',    formData.sort_order || '0')
+      fd.append('status',           formData.status || 'active')
+      fd.append('sort_order',       formData.sort_order || '0')
+      fd.append('store_branch_id',  formData.store_branch_id || '')
       if (selectedImage) fd.append('image', selectedImage)
 
 
@@ -220,6 +223,19 @@ export default function AddOutlet() {
             </div>
             <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/jpg,image/webp"
               className="hidden" onChange={handleImageChange} />
+          </div>
+        </div>
+
+        {/* Store Menu Integration */}
+        <div className="card p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Store Menu Integration</h2>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Store Menu Branch ID</label>
+            <input type="number" name="store_branch_id" value={formData.store_branch_id} onChange={handleInputChange}
+              className="input-field" placeholder="e.g. 12" min="1" />
+            <p className="text-xs text-gray-500 mt-1">
+              Store branch ID used for outlet-specific menu pricing and availability. Leave empty if menu integration is not configured.
+            </p>
           </div>
         </div>
 

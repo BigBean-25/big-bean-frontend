@@ -1,12 +1,22 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Header from '@/components/common/Header'
 import Footer from '@/components/common/Footer'
-import { Coffee, Search, Leaf, ShoppingBag, AlertCircle, SlidersHorizontal, X, ArrowRight, ChevronDown, Star, BadgeCheck } from 'lucide-react'
+import { Coffee, Search, Leaf, ShoppingBag, AlertCircle, SlidersHorizontal, X, ArrowRight, ChevronDown, Star, BadgeCheck, MapPin } from 'lucide-react'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api$/, '') || 'http://localhost:5000'
 const ORDER_URL = 'https://bigbeancafe.store'
+const OUTLET_STORAGE_KEY = 'bigbean_selected_menu_outlet'
+
+interface Outlet {
+  id: number
+  name: string
+  slug: string
+  address: string
+  menu_available: 0 | 1
+}
 
 interface MenuHero {
   id: number
@@ -120,6 +130,21 @@ function matchesPrice(price: number, range: string): boolean {
 }
 
 export default function Menu() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // ── Outlet selection state ──────────────────────────────────────────
+  const [outlets, setOutlets] = useState<Outlet[]>([])
+  const [loadingOutlets, setLoadingOutlets] = useState(true)
+  const [outletSearch, setOutletSearch] = useState('')
+  const [selectedOutlet, setSelectedOutlet] = useState<Outlet | null>(null)
+  const [showOutletSelector, setShowOutletSelector] = useState(false)
+
+  // Race-condition guard: each load increments this; stale responses are dropped
+  const menuGenRef = useRef(0)
+  const abortCtrlRef = useRef<AbortController | null>(null)
+
+  // ── Menu data state ──────────────────────────────────────────────────
   const [categories, setCategories] = useState<Category[]>([])
   const [allProducts, setAllProducts] = useState<Product[]>([])
   const [categoryProductsMap, setCategoryProductsMap] = useState<Record<number, Product[]>>({})
@@ -128,7 +153,7 @@ export default function Menu() {
   const [priceFilter, setPriceFilter] = useState('all')
   const [sortBy, setSortBy] = useState('popular')
   const [vegFilter, setVegFilter] = useState('all')
-  const [loadingCats, setLoadingCats] = useState(true)
+  const [loadingCats, setLoadingCats] = useState(false)
   const [loadingProducts, setLoadingProducts] = useState(false)
   const [apiFailed, setApiFailed] = useState(false)
   const [apiMessage, setApiMessage] = useState('')
@@ -183,7 +208,117 @@ export default function Menu() {
     return `${ORDER_URL}/category?${params.toString()}`
   }
 
-  // Fetch hero + combos
+  // ── Reset menu state ────────────────────────────────────────────────
+  const resetMenuState = useCallback(() => {
+    setSelectedCatId('all')
+    setSearchTerm('')
+    setPriceFilter('all')
+    setSortBy('popular')
+    setVegFilter('all')
+    setMobileFiltersOpen(false)
+    setCategories([])
+    setAllProducts([])
+    setCategoryProductsMap({})
+    setApiFailed(false)
+    setApiMessage('')
+  }, [])
+
+  // ── Load menu for a given outlet ID ─────────────────────────────────
+  const loadMenu = useCallback(async (outletId: number) => {
+    // Abort any in-flight request
+    abortCtrlRef.current?.abort()
+    const ctrl = new AbortController()
+    abortCtrlRef.current = ctrl
+
+    // Increment generation so stale results are ignored
+    const gen = menuGenRef.current + 1
+    menuGenRef.current = gen
+
+    resetMenuState()
+    setLoadingCats(true)
+    setLoadingProducts(true)
+
+    try {
+      const res = await fetch(`${API_BASE}/api/store-menu/categories?outlet_id=${outletId}`, { signal: ctrl.signal })
+      const json = await res.json()
+
+      if (menuGenRef.current !== gen) return // stale
+
+      const rawCategories =
+        Array.isArray(json.data)
+          ? json.data
+          : Array.isArray(json.data?.categories)
+            ? json.data.categories
+            : Array.isArray(json.categories)
+              ? json.categories
+              : []
+
+      if (!json.success || rawCategories.length === 0) {
+        setApiFailed(true)
+        setApiMessage(json.message || 'Unable to load this outlet\'s menu right now.')
+        return
+      }
+
+      const flat = flattenCategories(rawCategories)
+      if (menuGenRef.current !== gen) return
+
+      setCategories(flat)
+      setLoadingCats(false)
+
+      // Fetch products for all categories in parallel — all share the same outlet_id
+      const results = await Promise.all(
+        flat.map(cat =>
+          fetch(`${API_BASE}/api/store-menu/products/${cat.id}?outlet_id=${outletId}`, { signal: ctrl.signal })
+            .then(r => r.json())
+            .then(j => ({ catId: cat.id, products: (j.success ? j.data : []) as Product[] }))
+            .catch(() => ({ catId: cat.id, products: [] as Product[] }))
+        )
+      )
+
+      if (menuGenRef.current !== gen) return
+
+      const map: Record<number, Product[]> = {}
+      const seen = new Set<number>()
+      const merged: Product[] = []
+      for (const { catId, products } of results) {
+        map[catId] = products
+        for (const p of products) {
+          if (!seen.has(p.id)) { seen.add(p.id); merged.push(p) }
+        }
+      }
+      setCategoryProductsMap(map)
+      setAllProducts(merged)
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'AbortError') return
+      if (menuGenRef.current !== gen) return
+      setApiFailed(true)
+      setApiMessage('Unable to load this outlet\'s menu right now.')
+    } finally {
+      if (menuGenRef.current === gen) {
+        setLoadingCats(false)
+        setLoadingProducts(false)
+      }
+    }
+  }, [resetMenuState])
+
+  // ── Select an outlet (called by the selector UI) ─────────────────────
+  const selectOutlet = useCallback((outlet: Outlet) => {
+    setSelectedOutlet(outlet)
+    setShowOutletSelector(false)
+    try { localStorage.setItem(OUTLET_STORAGE_KEY, String(outlet.id)) } catch {}
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('outlet', String(outlet.id))
+    router.replace(`/menu?${params.toString()}`, { scroll: false })
+    loadMenu(outlet.id)
+  }, [searchParams, router, loadMenu])
+
+  // ── Change outlet (reopen selector without clearing current view) ────
+  const changeOutlet = useCallback(() => {
+    setShowOutletSelector(true)
+    setOutletSearch('')
+  }, [])
+
+  // ── Fetch hero + combos ──────────────────────────────────────────────
   useEffect(() => {
     fetch(`${API_BASE}/api/menu-hero/active`)
       .then(r => r.json())
@@ -195,71 +330,58 @@ export default function Menu() {
       .catch(() => {})
   }, [])
 
-  // Fetch all categories + all products on mount (single run)
+  // ── Fetch outlet list + restore selection from URL / localStorage ────
   useEffect(() => {
     let cancelled = false
-    const load = async () => {
-      setLoadingProducts(true)
+    const init = async () => {
+      setLoadingOutlets(true)
       try {
-        const res = await fetch(`${API_BASE}/api/store-menu/categories`)
+        const res = await fetch(`${API_BASE}/api/store-menu/outlets`)
         const json = await res.json()
-        const rawCategories =
-          Array.isArray(json.data)
-            ? json.data
-            : Array.isArray(json.data?.categories)
-              ? json.data.categories
-              : Array.isArray(json.categories)
-                ? json.categories
-                : []
-
-        if (!json.success || rawCategories.length === 0) {
-          if (!cancelled) {
-            setApiFailed(true)
-            setApiMessage(json.message || 'Live menu is available on our ordering platform.')
-          }
-          return
-        }
-
-        const flat = flattenCategories(rawCategories)
         if (cancelled) return
-        setCategories(flat)
+        const list: Outlet[] = json.success ? (json.data || []) : []
+        setOutlets(list)
 
-        // Fetch products for all categories in parallel
-        const results = await Promise.all(
-          flat.map(cat =>
-            fetch(`${API_BASE}/api/store-menu/products/${cat.id}`)
-              .then(r => r.json())
-              .then(j => ({ catId: cat.id, products: (j.success ? j.data : []) as Product[] }))
-              .catch(() => ({ catId: cat.id, products: [] as Product[] }))
-          )
-        )
-        if (cancelled) return
+        // Determine initial outlet: URL → localStorage → none
+        const urlOutletId = searchParams.get('outlet')
+        let storedId: string | null = null
+        try { storedId = localStorage.getItem(OUTLET_STORAGE_KEY) } catch {}
 
-        const map: Record<number, Product[]> = {}
-        const seen = new Set<number>()
-        const merged: Product[] = []
-        for (const { catId, products } of results) {
-          map[catId] = products
-          for (const p of products) {
-            if (!seen.has(p.id)) { seen.add(p.id); merged.push(p) }
+        const candidateId = urlOutletId || storedId
+        if (candidateId) {
+          const id = parseInt(candidateId, 10)
+          const match = list.find(o => o.id === id && o.menu_available === 1)
+          if (match) {
+            setSelectedOutlet(match)
+            setShowOutletSelector(false)
+            // Ensure URL is canonical
+            if (!urlOutletId) {
+              const params = new URLSearchParams(searchParams.toString())
+              params.set('outlet', String(match.id))
+              router.replace(`/menu?${params.toString()}`, { scroll: false })
+            }
+            if (!cancelled) loadMenu(match.id)
+            return
+          } else {
+            // Stale / unmapped outlet — clear both
+            try { localStorage.removeItem(OUTLET_STORAGE_KEY) } catch {}
+            const params = new URLSearchParams(searchParams.toString())
+            params.delete('outlet')
+            router.replace(`/menu?${params.toString()}`, { scroll: false })
           }
         }
-        setCategoryProductsMap(map)
-        setAllProducts(merged)
+
+        // No valid outlet — show selector
+        setShowOutletSelector(true)
       } catch {
-        if (!cancelled) {
-          setApiFailed(true)
-          setApiMessage('Could not connect to menu service.')
-        }
+        if (!cancelled) setShowOutletSelector(true)
       } finally {
-        if (!cancelled) {
-          setLoadingCats(false)
-          setLoadingProducts(false)
-        }
+        if (!cancelled) setLoadingOutlets(false)
       }
     }
-    load()
+    init()
     return () => { cancelled = true }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Base list for selected category
@@ -688,23 +810,169 @@ export default function Menu() {
           </div>
         </section>
 
+        {/* ── OUTLET SELECTOR ──────────────────────────────────────── */}
+        {(showOutletSelector || !selectedOutlet) && (
+          <section id="choose-cafe" style={{ maxWidth: 1100, margin: '2.5rem auto 0', padding: '0 1.5rem' }}>
+            <div style={{ background: '#FFF7ED', border: '1px solid #E6C7A8', borderRadius: 32, padding: 'clamp(1.5rem,4vw,2.5rem)', boxShadow: '0 12px 40px rgba(61,31,13,0.09)' }}>
+              {/* Header */}
+              <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(201,148,58,0.14)', border: '1px solid rgba(201,148,58,0.32)', borderRadius: 100, padding: '0.38rem 1rem', marginBottom: '1rem' }}>
+                  <MapPin style={{ width: 13, height: 13, color: '#C9943A' }} />
+                  <span style={{ fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.22em', color: '#C9943A', textTransform: 'uppercase' }}>Select Your Outlet</span>
+                </div>
+                <h2 className="font-heading" style={{ fontSize: 'clamp(1.5rem,3vw,2.1rem)', fontWeight: 900, color: '#120905', margin: '0 0 0.5rem' }}>Choose Your Café</h2>
+                <p style={{ fontSize: '0.88rem', color: '#8B5A3C', margin: 0 }}>Select an outlet to view its live menu, pricing and availability.</p>
+              </div>
+
+              {/* Search */}
+              <div style={{ position: 'relative', maxWidth: 420, margin: '0 auto 1.5rem' }}>
+                <Search style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', width: 15, height: 15, color: '#8B5A3C' }} />
+                <input
+                  type="text"
+                  placeholder="Search outlets by name or area…"
+                  value={outletSearch}
+                  onChange={e => setOutletSearch(e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box', background: '#FBF4EC', border: '1.5px solid #E6C7A8', borderRadius: 100, padding: '0.72rem 2.4rem 0.72rem 2.6rem', fontSize: '0.85rem', color: '#3D1F0D', outline: 'none' }}
+                />
+                {outletSearch && (
+                  <button onClick={() => setOutletSearch('')} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
+                    <X style={{ width: 13, height: 13, color: '#9B6B50' }} />
+                  </button>
+                )}
+              </div>
+
+              {/* Outlet grid */}
+              {loadingOutlets ? (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: '0.85rem' }}>
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} style={{ height: 90, borderRadius: 20, background: 'linear-gradient(90deg,#E6C7A8 25%,#F6E6D1 50%,#E6C7A8 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite', opacity: 0.55 }} />
+                  ))}
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: '0.85rem' }}>
+                  {outlets
+                    .filter(o => {
+                      const q = outletSearch.toLowerCase()
+                      return !q || o.name.toLowerCase().includes(q) || o.address.toLowerCase().includes(q)
+                    })
+                    .map(outlet => {
+                      const isMapped = outlet.menu_available === 1
+                      const isCurrentlySelected = selectedOutlet?.id === outlet.id
+                      return (
+                        <button
+                          key={outlet.id}
+                          disabled={!isMapped}
+                          onClick={() => isMapped ? selectOutlet(outlet) : undefined}
+                          style={{
+                            display: 'flex', flexDirection: 'column', gap: '0.3rem', textAlign: 'left',
+                            borderRadius: 20, padding: '1rem 1.1rem',
+                            border: isCurrentlySelected ? '2px solid #C9943A' : '1.5px solid #E6C7A8',
+                            background: isCurrentlySelected ? 'linear-gradient(135deg,#3D1F0D,#6B3520)' : isMapped ? '#fff' : '#F9F4EF',
+                            color: isCurrentlySelected ? '#FFF7ED' : '#3D1F0D',
+                            cursor: isMapped ? 'pointer' : 'default',
+                            opacity: isMapped ? 1 : 0.6,
+                            transition: 'all 0.18s',
+                            boxShadow: isCurrentlySelected ? '0 8px 24px rgba(61,31,13,0.18)' : '0 2px 8px rgba(61,31,13,0.05)',
+                          }}
+                          onMouseEnter={e => { if (isMapped && !isCurrentlySelected) { (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 24px rgba(61,31,13,0.12)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)' } }}
+                          onMouseLeave={e => { if (isMapped && !isCurrentlySelected) { (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 8px rgba(61,31,13,0.05)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)' } }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
+                            <span style={{ width: 32, height: 32, borderRadius: '50%', background: isCurrentlySelected ? 'rgba(255,247,237,0.18)' : isMapped ? 'rgba(201,148,58,0.14)' : '#F0E8DF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                              <MapPin style={{ width: 14, height: 14, color: isCurrentlySelected ? '#F6D58D' : '#C9943A' }} />
+                            </span>
+                            <div style={{ minWidth: 0 }}>
+                              <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, lineHeight: 1.3, color: isCurrentlySelected ? '#FFF7ED' : '#2A120B', overflowWrap: 'anywhere' }}>
+                                {outlet.name.replace(/^Big Bean Caf[eé]\s*[-–—]?\s*/i, '')}
+                              </p>
+                              <p style={{ margin: '0.2rem 0 0', fontSize: '0.72rem', color: isCurrentlySelected ? 'rgba(255,247,237,0.75)' : '#9B6B50', lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                                {outlet.address}
+                              </p>
+                              {!isMapped && (
+                                <p style={{ margin: '0.3rem 0 0', fontSize: '0.65rem', fontWeight: 800, color: '#B89070', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Menu Setup Pending</p>
+                              )}
+                            </div>
+                          </div>
+                        </button>
+                      )
+                    })}
+                </div>
+              )}
+
+              {!loadingOutlets && outlets.filter(o => {
+                const q = outletSearch.toLowerCase()
+                return !q || o.name.toLowerCase().includes(q) || o.address.toLowerCase().includes(q)
+              }).length === 0 && (
+                <p style={{ textAlign: 'center', color: '#9B6B50', fontSize: '0.85rem', margin: '1.5rem 0 0' }}>No outlets match your search.</p>
+              )}
+
+              {/* Dismiss if an outlet is already selected */}
+              {selectedOutlet && (
+                <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
+                  <button onClick={() => setShowOutletSelector(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.82rem', color: '#8B5A3C', fontWeight: 700, textDecoration: 'underline' }}>
+                    Keep viewing {selectedOutlet.name.replace(/^Big Bean Caf[eé]\s*[-–—]?\s*/i, '')}
+                  </button>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* ── SELECTED OUTLET BAR ────────────────────────────────── */}
+        {selectedOutlet && !showOutletSelector && (
+          <section style={{ maxWidth: 1100, margin: '1.5rem auto 0', padding: '0 1.5rem' }}>
+            <div style={{ background: 'linear-gradient(135deg,#1A0D07,#3D1F0D)', border: '1px solid rgba(201,148,58,0.28)', borderRadius: 24, padding: '1rem 1.4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', boxShadow: '0 6px 24px rgba(18,9,5,0.16)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0 }}>
+                <span style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(201,148,58,0.18)', border: '1px solid rgba(201,148,58,0.32)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <MapPin style={{ width: 17, height: 17, color: '#C9943A' }} />
+                </span>
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ margin: 0, fontSize: '0.62rem', fontWeight: 900, letterSpacing: '0.2em', color: '#C9943A', textTransform: 'uppercase' }}>Viewing Menu</p>
+                  <p style={{ margin: '0.1rem 0 0', fontSize: '0.95rem', fontWeight: 900, color: '#FFF7ED', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    Big Bean Café — {selectedOutlet.name.replace(/^Big Bean Caf[eé]\s*[-–—]?\s*/i, '')}
+                  </p>
+                  <p style={{ margin: 0, fontSize: '0.72rem', color: 'rgba(255,247,237,0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '38ch' }}>{selectedOutlet.address}</p>
+                </div>
+              </div>
+              <button
+                onClick={changeOutlet}
+                style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(201,148,58,0.15)', border: '1.5px solid rgba(201,148,58,0.38)', color: '#F6D58D', borderRadius: 100, padding: '0.55rem 1.2rem', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.06em', transition: 'all 0.18s' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(201,148,58,0.28)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(201,148,58,0.15)' }}
+              >
+                <X style={{ width: 11, height: 11 }} /> Change Outlet
+              </button>
+            </div>
+          </section>
+        )}
+
         {/* ── MENU SECTION ──────────────────────────────────────── */}
         <section id="menu-section" style={{ maxWidth: 1400, margin: '0 auto', padding: '2.5rem 1.5rem 4rem' }}>
 
           {/* API failure */}
-          {apiFailed && !loadingCats && (
+          {apiFailed && !loadingCats && selectedOutlet && (
             <div style={{ borderRadius: 24, border: '1px solid #E6C7A8', background: '#fff', padding: '3rem 2rem', textAlign: 'center', marginBottom: '2rem' }}>
               <AlertCircle style={{ width: 48, height: 48, margin: '0 auto 1rem', color: '#C9943A' }} />
-              <h2 className="font-heading" style={{ fontSize: '1.2rem', fontWeight: 900, color: '#3D1F0D', marginBottom: '0.5rem' }}>Full live menu available online</h2>
-              <p style={{ fontSize: '0.88rem', color: '#8B5A3C', marginBottom: '1.5rem' }}>{apiMessage}</p>
-              <a href={ORDER_URL} target="_blank" rel="noopener noreferrer"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#3D1F0D', color: '#FFF7ED', borderRadius: 100, padding: '0.78rem 1.8rem', fontSize: '0.8rem', fontWeight: 900, textDecoration: 'none', textTransform: 'uppercase' }}>
-                <ShoppingBag style={{ width: 15, height: 15 }} /> Order Online
-              </a>
+              <h2 className="font-heading" style={{ fontSize: '1.2rem', fontWeight: 900, color: '#3D1F0D', marginBottom: '0.5rem' }}>Menu unavailable</h2>
+              <p style={{ fontSize: '0.88rem', color: '#8B5A3C', marginBottom: '1.5rem' }}>{apiMessage || 'Unable to load this outlet\'s menu right now.'}</p>
+              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button onClick={() => selectedOutlet && loadMenu(selectedOutlet.id)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#3D1F0D', color: '#FFF7ED', borderRadius: 100, padding: '0.72rem 1.6rem', fontSize: '0.8rem', fontWeight: 900, border: 'none', cursor: 'pointer', textTransform: 'uppercase' }}>
+                  Try Again
+                </button>
+                <button onClick={changeOutlet}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'transparent', color: '#3D1F0D', borderRadius: 100, padding: '0.72rem 1.6rem', fontSize: '0.8rem', fontWeight: 900, border: '1.5px solid #E6C7A8', cursor: 'pointer', textTransform: 'uppercase' }}>
+                  <MapPin style={{ width: 13, height: 13 }} /> Change Outlet
+                </button>
+                <a href={ORDER_URL} target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'transparent', color: '#3D1F0D', borderRadius: 100, padding: '0.72rem 1.6rem', fontSize: '0.8rem', fontWeight: 900, textDecoration: 'none', border: '1.5px solid #E6C7A8', textTransform: 'uppercase' }}>
+                  <ShoppingBag style={{ width: 13, height: 13 }} /> Order Online
+                </a>
+              </div>
             </div>
           )}
 
-          {!apiFailed && (
+          {!apiFailed && selectedOutlet && !showOutletSelector && (
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr)', gap: '1.75rem' }} className="lg:grid-cols-menu">
 
               {/* ── Mobile filter bar ─────────────────────────── */}
@@ -934,17 +1202,24 @@ export default function Menu() {
 
                   {/* Loading skeleton */}
                   {loadingProducts && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
-                      {[...Array(8)].map((_, i) => (
-                        <div key={i} style={{ borderRadius: 26, background: '#fff', border: '1px solid #E6C7A8', overflow: 'hidden' }}>
-                          <div style={{ height: 190, background: 'linear-gradient(90deg,#E6C7A8 25%,#F6E6D1 50%,#E6C7A8 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite' }} />
-                          <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                            <div style={{ height: 14, width: '70%', background: '#E6C7A8', borderRadius: 8, opacity: 0.5 }} />
-                            <div style={{ height: 11, width: '90%', background: '#E6C7A8', borderRadius: 8, opacity: 0.35 }} />
-                            <div style={{ height: 11, width: '55%', background: '#E6C7A8', borderRadius: 8, opacity: 0.25 }} />
+                    <div>
+                      {selectedOutlet && (
+                        <p style={{ fontSize: '0.82rem', color: '#9B6B50', marginBottom: '1rem', fontStyle: 'italic' }}>
+                          Loading menu for {selectedOutlet.name.replace(/^Big Bean Caf[eé]\s*[-–—]?\s*/i, '')}…
+                        </p>
+                      )}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
+                        {[...Array(8)].map((_, i) => (
+                          <div key={i} style={{ borderRadius: 26, background: '#fff', border: '1px solid #E6C7A8', overflow: 'hidden' }}>
+                            <div style={{ height: 190, background: 'linear-gradient(90deg,#E6C7A8 25%,#F6E6D1 50%,#E6C7A8 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite' }} />
+                            <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                              <div style={{ height: 14, width: '70%', background: '#E6C7A8', borderRadius: 8, opacity: 0.5 }} />
+                              <div style={{ height: 11, width: '90%', background: '#E6C7A8', borderRadius: 8, opacity: 0.35 }} />
+                              <div style={{ height: 11, width: '55%', background: '#E6C7A8', borderRadius: 8, opacity: 0.25 }} />
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   )}
 

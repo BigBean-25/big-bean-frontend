@@ -26,6 +26,7 @@ interface OutletForm {
   image: string
   status: string
   sort_order: number
+  store_branch_id: string
 }
 
 export default function EditOutlet() {
@@ -44,7 +45,8 @@ export default function EditOutlet() {
     opening_hours: '',
     image: '',
     status: 'active',
-    sort_order: 0
+    sort_order: 0,
+    store_branch_id: ''
   })
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -62,17 +64,18 @@ export default function EditOutlet() {
         const data = await res.json()
         const o = data.data
         setFormData({
-          name:          o.name          || '',
-          slug:          o.slug          || '',
-          address:       o.address       || '',
-          phone:         o.phone         || '',
-          email:         o.email         || '',
-          latitude:      o.latitude      != null ? String(o.latitude)  : '',
-          longitude:     o.longitude     != null ? String(o.longitude) : '',
-          opening_hours: o.opening_hours || '',
-          image:         o.image         || '',
-          status:        o.status        || 'active',
-          sort_order:    o.sort_order    ?? 0
+          name:             o.name             || '',
+          slug:             o.slug             || '',
+          address:          o.address          || '',
+          phone:            o.phone            || '',
+          email:            o.email            || '',
+          latitude:         o.latitude         != null ? String(o.latitude)  : '',
+          longitude:        o.longitude        != null ? String(o.longitude) : '',
+          opening_hours:    o.opening_hours    || '',
+          image:            o.image            || '',
+          status:           o.status           || 'active',
+          sort_order:       o.sort_order       ?? 0,
+          store_branch_id:  o.store_branch_id  != null ? String(o.store_branch_id) : ''
         })
       } else {
         alert('Failed to fetch outlet')
@@ -90,7 +93,7 @@ export default function EditOutlet() {
     const { name, value, type } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'number' ? (parseFloat(value) || 0) : value
+      [name]: (type === 'number' && name === 'sort_order') ? (parseFloat(value) || 0) : value
     }))
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }))
   }
@@ -125,8 +128,9 @@ export default function EditOutlet() {
       fd.append('opening_hours', formData.opening_hours || '')
       fd.append('latitude',      formData.latitude || '')
       fd.append('longitude',     formData.longitude || '')
-      fd.append('status',        formData.status || 'active')
-      fd.append('sort_order',    String(formData.sort_order ?? 0))
+      fd.append('status',           formData.status || 'active')
+      fd.append('sort_order',       String(formData.sort_order ?? 0))
+      fd.append('store_branch_id',  formData.store_branch_id || '')
       if (imageFile) fd.append('image', imageFile)
 
       const res = await apiRequest(`/outlets/${id}`, {
@@ -278,6 +282,19 @@ export default function EditOutlet() {
             </div>
             <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/jpg,image/webp"
               className="hidden" onChange={handleImageChange} />
+          </div>
+        </div>
+
+        {/* Store Menu Integration */}
+        <div className="card p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Store Menu Integration</h2>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Store Menu Branch ID</label>
+            <input type="number" name="store_branch_id" value={formData.store_branch_id} onChange={handleInputChange}
+              className="input-field" placeholder="e.g. 12" min="1" />
+            <p className="text-xs text-gray-500 mt-1">
+              Store branch ID used for outlet-specific menu pricing and availability. Leave empty to remove menu integration.
+            </p>
           </div>
         </div>
 
