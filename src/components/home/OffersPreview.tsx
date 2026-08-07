@@ -88,67 +88,72 @@ function formatDate(d: string | null): string | null {
   return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-/* ── Badge label split into two lines ── */
-function BadgeLabel({ label }: { label: string }) {
-  const parts = label.split('\n')
-  return (
-    <>
-      {parts.map((p, i) => (
-        <span key={i} style={{ display: 'block' }}>{p}</span>
-      ))}
-    </>
-  )
-}
-
 /* ─────────── Single featured card ─────────── */
 function FeaturedOfferCard({ offer, index }: { offer: Offer; index: number }) {
   const imgUrl = getImageUrl(offer.image)
   const badgeLabel = (offer.badge_text || BADGE_FALLBACKS[index % BADGE_FALLBACKS.length]).replace(' ', '\n')
+  const badgeParts = badgeLabel.split('\n')
 
   return (
     <div className={styles.card}>
+      <span className={styles.cardBean} aria-hidden="true" />
 
-      {/* ── LEFT: text panel ── */}
-      <div className={styles.textPanel}>
+      {/* Image panel — left 43% (order:1 via CSS) */}
+      <div className={styles.imagePanel} aria-hidden="true">
+        {imgUrl ? (
+          <img src={imgUrl} alt={offer.title} className={styles.offerImg} loading="lazy" />
+        ) : (
+          <div className={styles.imgFallback}>
+            <Tag size={48} />
+          </div>
+        )}
+        <div className={styles.imageBlend} />
+        <div className={styles.imageVignette} />
+      </div>
 
-        {/* small label with dot */}
+      {/* Badge at image/content boundary */}
+      <div className={styles.badge} aria-hidden="true">
+        {badgeParts.map((p, i) => <span key={i}>{p}</span>)}
+      </div>
+
+      {/* Content panel — right 57% (order:2 via CSS) */}
+      <div className={styles.contentPanel}>
         <div className={styles.offerLabel}>
-          <span className={styles.offerLabelDot} />
+          <span className={styles.offerLabelDot} aria-hidden="true" />
           {offer.label_text || (offer.offer_code ? 'LIMITED TIME OFFER' : 'SPECIAL OFFER')}
         </div>
 
-        {/* big discount text — NOT a pill */}
         {offer.discount_text && (
           <p className={styles.discountText}>{offer.discount_text}</p>
         )}
 
-        {/* title */}
         <h3 className={`${styles.offerTitle} font-heading`}>{offer.title}</h3>
 
-        {/* description */}
         {offer.description && (
           <p className={styles.offerDesc}>{offer.description}</p>
         )}
 
-        {/* code chip — dashed */}
-        {offer.offer_code && (
-          <div className={styles.codeChip}>
-            <Tag size={11} />
-            Code:&nbsp;{offer.offer_code}
-          </div>
-        )}
+        <div className={styles.infoStrip}>
+          {offer.offer_code && (
+            <div className={styles.codeChip}>
+              <Tag size={12} />
+              <span className={styles.codeLabel}>Use Code</span>
+              <span className={styles.codeValue}>{offer.offer_code}</span>
+            </div>
+          )}
+          {offer.end_date ? (
+            <div className={styles.validity}>
+              <Calendar size={12} />
+              <span>Valid until {formatDate(offer.end_date)}</span>
+            </div>
+          ) : (
+            <div className={styles.validity}>
+              <Calendar size={12} />
+              <span>Limited time offer</span>
+            </div>
+          )}
+        </div>
 
-        {/* validity */}
-        {offer.end_date ? (
-          <div className={styles.validity}>
-            <Calendar size={13} />
-            Valid until {formatDate(offer.end_date)}
-          </div>
-        ) : (
-          <div className={styles.validity}>Limited time offer</div>
-        )}
-
-        {/* CTA */}
         <a
           href={offer.button_url || 'https://bigbeancafe.store'}
           target="_blank"
@@ -156,25 +161,8 @@ function FeaturedOfferCard({ offer, index }: { offer: Offer; index: number }) {
           className={styles.ctaBtn}
         >
           {offer.button_text || 'ORDER NOW'}
-          <ArrowRight size={15} />
+          <ArrowRight size={14} />
         </a>
-      </div>
-
-      {/* ── BEST DEAL badge — sits at left-edge of image ── */}
-      <div className={styles.badge}>
-        <BadgeLabel label={badgeLabel} />
-      </div>
-
-      {/* ── RIGHT: image — absolute, 190px left-radius curve ── */}
-      <div className={styles.imageWrap}>
-        {imgUrl ? (
-          <img src={imgUrl} alt={offer.title} className={styles.offerImg} />
-        ) : (
-          <div className={styles.imgFallback}>
-            <Tag size={52} color="#F5E6D3" opacity={0.18} />
-          </div>
-        )}
-        <div className={styles.imageOverlay} />
       </div>
     </div>
   )
