@@ -194,7 +194,14 @@ export default function EventsPreview() {
         {loading ? (
           <div style={{ display: 'flex', gap: `${CARD_GAP}px` }}>
             {[1, 2, 3].map(i => (
-              <div key={i} style={{ flex: `0 0 ${cardW}px`, height: '400px', borderRadius: '22px', background: 'rgba(61,31,13,0.07)', border: '1px solid rgba(201,148,58,0.18)' }} />
+              <div key={i} style={{ flex: `0 0 ${cardW}px`, borderRadius: '22px', overflow: 'hidden', border: '1px solid rgba(201,148,58,0.18)', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ height: '240px', background: 'rgba(61,31,13,0.10)' }} />
+                <div style={{ flex: 1, padding: '1.1rem 1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', background: '#1A0D07', opacity: 0.5 }}>
+                  <div style={{ height: '14px', width: '80%', borderRadius: '6px', background: '#3D1F0D' }} />
+                  <div style={{ height: '10px', width: '60%', borderRadius: '6px', background: '#3D1F0D' }} />
+                  <div style={{ height: '10px', width: '50%', borderRadius: '6px', background: '#3D1F0D' }} />
+                </div>
+              </div>
             ))}
           </div>
         ) : (
@@ -214,65 +221,74 @@ export default function EventsPreview() {
                   const loc = ev.outlet_name || ev.location || 'Big Bean Café'
                   return (
                     <div key={ev.id}
-                      style={{ flex: `0 0 ${cardW}px`, height: '420px', borderRadius: '22px', overflow: 'hidden', position: 'relative', background: '#1A0D07', boxShadow: '0 24px 64px rgba(0,0,0,0.28)', border: '1px solid rgba(201,148,58,0.15)', cursor: 'pointer', transition: 'transform 0.28s ease, box-shadow 0.28s ease' }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-10px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 40px 90px rgba(0,0,0,0.40)' }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 24px 64px rgba(0,0,0,0.28)' }}>
+                      style={{ flex: `0 0 ${cardW}px`, borderRadius: '22px', overflow: 'hidden', position: 'relative', background: '#1A0D07', boxShadow: '0 24px 64px rgba(0,0,0,0.28)', border: '1px solid rgba(201,148,58,0.15)', cursor: 'pointer', transition: 'transform 0.35s ease, box-shadow 0.35s ease', display: 'flex', flexDirection: 'column' }}
+                      onMouseEnter={e => {
+                        (e.currentTarget as HTMLElement).style.transform = 'translateY(-5px)';
+                        (e.currentTarget as HTMLElement).style.boxShadow = '0 36px 80px rgba(0,0,0,0.38)';
+                        const img = (e.currentTarget as HTMLElement).querySelector('img') as HTMLImageElement | null;
+                        if (img) img.style.transform = 'scale(1.035)';
+                      }}
+                      onMouseLeave={e => {
+                        (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+                        (e.currentTarget as HTMLElement).style.boxShadow = '0 24px 64px rgba(0,0,0,0.28)';
+                        const img = (e.currentTarget as HTMLElement).querySelector('img') as HTMLImageElement | null;
+                        if (img) img.style.transform = 'scale(1)';
+                      }}>
 
-                      {/* Event poster — object-contain keeps all poster text visible.
-                          Upload posters with safe padding around text for best display. */}
-                      {imgUrl ? (
-                        <img src={imgUrl} alt={ev.title}
-                          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center', transition: 'transform 0.5s ease' }}
-                          onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.04)')}
-                          onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} />
-                      ) : (
-                        <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(160deg, #2A120B ${i * 12}%, #6B3520, #C9943A)` }}>
-                          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.12 }}>
-                            <Calendar style={{ width: 80, height: 80, color: '#FFF7ED' }} />
+                      {/* ── Image area ── */}
+                      <div style={{ position: 'relative', width: '100%', height: '240px', flexShrink: 0, overflow: 'hidden' }}>
+                        {imgUrl ? (
+                          <img src={imgUrl} alt={ev.title}
+                            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', transition: 'transform 0.5s ease' }} />
+                        ) : (
+                          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(160deg, #2A120B ${i * 12}%, #6B3520, #C9943A)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Calendar style={{ width: 72, height: 72, color: '#FFF7ED', opacity: 0.18 }} />
                           </div>
-                        </div>
-                      )}
+                        )}
+                        {/* Subtle bottom-edge fade only — does not darken the image */}
+                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,4,2,0.18), transparent 35%)', pointerEvents: 'none' }} />
 
-                      {/* Gradient overlay bottom */}
-                      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,4,2,0.97) 0%, rgba(10,4,2,0.6) 45%, rgba(10,4,2,0.1) 75%, transparent 100%)' }} />
+                        {/* Price badge top-left */}
+                        {ev.price && (
+                          <div style={{ position: 'absolute', top: 14, left: 14, background: '#A92517', color: '#FFF7ED', borderRadius: '20px', padding: '4px 12px', fontSize: '0.7rem', fontWeight: 800, boxShadow: '0 2px 10px rgba(0,0,0,0.35)', zIndex: 2 }}>
+                            {ev.price}
+                          </div>
+                        )}
 
-                      {/* Date badge top-right */}
-                      {dateObj && (
-                        <div style={{ position: 'absolute', top: 16, right: 16, background: '#C9943A', borderRadius: '12px', padding: '6px 10px', textAlign: 'center', minWidth: '44px', boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}>
-                          <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#0E0704', lineHeight: 1 }}>{dateObj.day}</div>
-                          <div style={{ fontSize: '0.58rem', fontWeight: 800, color: '#0E0704', letterSpacing: '0.04em' }}>{dateObj.month}</div>
-                        </div>
-                      )}
+                        {/* Date badge top-right */}
+                        {dateObj && (
+                          <div style={{ position: 'absolute', top: 14, right: 14, background: '#C9943A', borderRadius: '12px', padding: '6px 10px', textAlign: 'center', minWidth: '44px', boxShadow: '0 4px 16px rgba(0,0,0,0.35)', zIndex: 2 }}>
+                            <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#0E0704', lineHeight: 1 }}>{dateObj.day}</div>
+                            <div style={{ fontSize: '0.58rem', fontWeight: 800, color: '#0E0704', letterSpacing: '0.04em' }}>{dateObj.month}</div>
+                          </div>
+                        )}
+                      </div>
 
-                      {/* Price badge top-left */}
-                      {ev.price && (
-                        <div style={{ position: 'absolute', top: 16, left: 16, background: '#A92517', color: '#FFF7ED', borderRadius: '20px', padding: '4px 12px', fontSize: '0.7rem', fontWeight: 800, boxShadow: '0 2px 10px rgba(0,0,0,0.4)' }}>
-                          {ev.price}
-                        </div>
-                      )}
-
-                      {/* Content bottom */}
-                      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '1.4rem' }}>
-                        <h3 className="font-heading" style={{ fontSize: '1.12rem', fontWeight: 800, color: '#FFF7ED', lineHeight: 1.28, marginBottom: '0.55rem' }}>
+                      {/* ── Content area ── */}
+                      <div style={{ flex: 1, background: '#1A0D07', padding: '1.1rem 1.25rem 1.25rem', display: 'flex', flexDirection: 'column' }}>
+                        <h3 className="font-heading" style={{ fontSize: '1.08rem', fontWeight: 800, color: '#FFF7ED', lineHeight: 1.28, marginBottom: '0.5rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                           {ev.title}
                         </h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', marginBottom: '1rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.28rem', marginBottom: '0.7rem' }}>
                           {timeStr && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.76rem', color: 'rgba(255,247,237,0.65)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.74rem', color: 'rgba(255,247,237,0.72)' }}>
                               <Clock style={{ width: 11, height: 11, flexShrink: 0, color: '#C9943A' }} />{timeStr}
                             </div>
                           )}
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.76rem', color: 'rgba(255,247,237,0.65)' }}>
-                            <MapPin style={{ width: 11, height: 11, flexShrink: 0, color: '#C9943A' }} />{loc}
+                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.4rem', fontSize: '0.74rem', color: 'rgba(255,247,237,0.72)' }}>
+                            <MapPin style={{ width: 11, height: 11, flexShrink: 0, color: '#C9943A', marginTop: '2px' }} />
+                            <span style={{ overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{loc}</span>
                           </div>
                         </div>
-                        <a href={ev.booking_url || '/events'}
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: ev.status === 'booking_open' ? '#C9943A' : '#5F4A3A', color: ev.status === 'booking_open' ? '#0E0704' : '#FFF7ED', borderRadius: '100px', padding: '0.52rem 1.2rem', fontSize: '0.72rem', fontWeight: 900, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.06em', transition: 'background 0.2s, transform 0.2s' }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = ev.status === 'booking_open' ? '#FFF7ED' : '#7A5A48'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)' }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ev.status === 'booking_open' ? '#C9943A' : '#5F4A3A'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)' }}>
-                          {ev.status === 'booking_open' ? 'Book Tickets' : 'View Details'}
-                          <ArrowRight style={{ width: 11, height: 11 }} />
-                        </a>
+                        <div style={{ marginTop: 'auto' }}>
+                          <a href={ev.booking_url || '/events'}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: ev.status === 'booking_open' ? '#C9943A' : '#5F4A3A', color: ev.status === 'booking_open' ? '#0E0704' : '#FFF7ED', borderRadius: '100px', padding: '0 1.15rem', height: '42px', fontSize: '0.72rem', fontWeight: 900, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.06em', transition: 'background 0.2s, transform 0.2s', whiteSpace: 'nowrap' }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = ev.status === 'booking_open' ? '#E8A83A' : '#7A5A48'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)' }}
+                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ev.status === 'booking_open' ? '#C9943A' : '#5F4A3A'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)' }}>
+                            {ev.status === 'booking_open' ? 'Book Tickets' : 'View Details'}
+                            <ArrowRight style={{ width: 12, height: 12 }} />
+                          </a>
+                        </div>
                       </div>
                     </div>
                   )
