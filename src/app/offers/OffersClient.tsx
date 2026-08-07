@@ -801,7 +801,7 @@ export default function Offers() {
 
         {/* ── ACTIVE OFFERS (original section) ── */}
         <section style={{ padding: '4rem 0 0', background: 'transparent' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', paddingLeft: '2rem', paddingRight: '2rem' }}>
+          <div style={{ maxWidth: 1240, margin: '0 auto', paddingLeft: '30px', paddingRight: '30px' }}>
             <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
               <p style={{ fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.22em', color: '#C9943A', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Current Deals</p>
               <h2 className="font-heading" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.5rem)', fontWeight: 900, color: '#3D1F0D', lineHeight: 1.1, marginBottom: '1rem' }}>Active Café Offers</h2>

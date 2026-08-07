@@ -247,14 +247,15 @@
 .offerCard {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 46%) minmax(0, 54%);
+  grid-template-columns: minmax(0, 45%) minmax(0, 55%);
   align-items: stretch;
   width: 100%;
-  min-height: 390px;
-  max-height: 440px;
-  max-width: 1150px;
+  min-height: 350px;
+  height: 370px;
+  max-height: 380px;
+  max-width: 1180px;
   margin: 0 auto;
-  border-radius: 34px;
+  border-radius: 28px;
   overflow: hidden;
   background: linear-gradient(100deg, #FFF7ED 0%, #F9F0E4 55%, #F5E6D3 100%);
   border: 1px solid rgba(201, 148, 58, 0.32);
@@ -271,7 +272,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 34px;
+  border-radius: 28px;
   box-shadow: inset 0 0 0 1px rgba(201, 148, 58, 0.12);
   pointer-events: none;
   z-index: 4;
@@ -321,7 +322,7 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  padding: 2.5rem 2.625rem 2.25rem 2.875rem;
+  padding: 2rem 2.125rem 1.75rem 2.5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -353,7 +354,7 @@
   text-transform: uppercase;
   letter-spacing: 0.22em;
   color: #8B5A3C;
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.45rem;
 }
 
 .offerLabelDot {
@@ -367,9 +368,9 @@
 /* Hero discount headline */
 .offerDiscount {
   font-family: var(--font-heading, inherit);
-  font-size: clamp(2.6rem, 3.8vw, 4.2rem);
+  font-size: clamp(2.6rem, 3.5vw, 3.8rem);
   font-weight: 900;
-  line-height: 0.98;
+  line-height: 0.95;
   letter-spacing: -0.01em;
   color: #A92517;
   text-transform: uppercase;
@@ -384,7 +385,7 @@
 /* Title */
 .offerTitle {
   font-family: var(--font-heading, inherit);
-  font-size: clamp(1.25rem, 2.2vw, 1.7rem);
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
   font-weight: 800;
   color: #3D1F0D;
   line-height: 1.15;
@@ -398,8 +399,8 @@
 .offerDesc {
   font-size: 0.9rem;
   color: #6B3520;
-  line-height: 1.7;
-  margin-bottom: 1.1rem;
+  line-height: 1.55;
+  margin-bottom: 0.75rem;
   max-width: 420px;
 }
 
@@ -408,9 +409,9 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.7rem;
+  gap: 0.6rem;
   margin-top: auto;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.9rem;
 }
 
 /* Coupon code chip */
@@ -476,7 +477,7 @@
   gap: 0.5rem;
   width: fit-content;
   min-width: 180px;
-  height: 54px;
+  height: 50px;
   background: #A92517;
   color: #FFF7ED;
   font-size: 0.78rem;
@@ -484,7 +485,7 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   text-decoration: none;
-  padding: 0 1.6rem;
+  padding: 0 1.75rem;
   border-radius: 999px;
   box-shadow: 0 12px 28px rgba(139, 46, 27, 0.28);
   white-space: nowrap;
@@ -517,8 +518,8 @@
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 390px;
-  border-radius: 0 34px 34px 0;
+  min-height: 350px;
+  border-radius: 0 28px 28px 0;
   overflow: hidden;
   z-index: 1;
 }
@@ -579,11 +580,11 @@
 /* Promo badge at image/content transition */
 .offerBadge {
   position: absolute;
-  top: 28px;
-  left: calc(46% - 36px);
+  top: 24px;
+  left: calc(45% - 36px);
   z-index: 10;
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #C93024, #A92517 70%);
   color: #fff;
@@ -628,61 +629,65 @@
 }
 
 /* Tablet */
-@media (max-width: 1024px) and (min-width: 850px) {
+@media (max-width: 1199px) and (min-width: 768px) {
   .offerCard {
-    min-height: 360px;
-    max-height: none;
-    grid-template-columns: minmax(0, 44%) minmax(0, 56%);
-    border-radius: 28px;
+    width: calc(100% - 40px);
+    min-height: 350px;
+    height: auto;
+    max-height: 390px;
+    grid-template-columns: minmax(0, 46%) minmax(0, 54%);
+    border-radius: 24px;
   }
 
   .offerCard::before {
-    border-radius: 28px;
+    border-radius: 24px;
   }
 
   .offerContent {
-    padding: 2rem 1.75rem 1.8rem 2rem;
+    padding: 1.75rem 1.6rem 1.6rem 1.85rem;
   }
 
   .offerDiscount {
-    font-size: clamp(2.1rem, 4.5vw, 3.2rem);
+    font-size: clamp(2rem, 4vw, 3rem);
   }
 
   .offerTitle {
-    font-size: clamp(1.1rem, 2.2vw, 1.45rem);
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
   }
 
   .offerBadge {
-    width: 76px;
-    height: 76px;
-    top: 24px;
-    left: calc(44% - 32px);
-    font-size: 0.55rem;
+    width: 68px;
+    height: 68px;
+    top: 20px;
+    left: calc(46% - 34px);
+    font-size: 0.52rem;
   }
 
   .offerImagePanel {
-    border-radius: 0 28px 28px 0;
+    min-height: 350px;
+    border-radius: 0 24px 24px 0;
   }
 
   .offerCta {
-    min-width: 170px;
-    height: 50px;
-    padding: 0 1.4rem;
+    min-width: 165px;
+    height: 48px;
+    padding: 0 1.3rem;
   }
 }
 
-/* Mobile and narrow tablet */
-@media (max-width: 849px) {
+/* Mobile */
+@media (max-width: 767px) {
   .offerCard {
     display: flex;
     flex-direction: column;
     min-height: auto;
+    height: auto;
     max-height: none;
-    border-radius: 24px;
+    border-radius: 22px;
   }
 
   .offerCard::before {
-    border-radius: 24px;
+    border-radius: 22px;
   }
 
   .offerContent {
@@ -693,9 +698,9 @@
 
   .offerImagePanel {
     order: 1;
-    height: 245px;
-    min-height: 245px;
-    border-radius: 24px 24px 0 0;
+    height: 240px;
+    min-height: 240px;
+    border-radius: 22px 22px 0 0;
   }
 
   .offerImageBlend,
