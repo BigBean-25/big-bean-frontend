@@ -644,7 +644,7 @@ export default function BookEventPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-[#3D1F0D]">Email <span className="text-[#9CB3AC] font-normal">(optional)</span></label>
+                    <label className="block text-sm font-bold text-[#3D1F0D]">Email</label>
                     <div className="relative mt-1.5">
                       <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CB3AC]" />
                       <input
