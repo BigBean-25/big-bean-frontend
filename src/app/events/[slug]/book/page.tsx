@@ -125,8 +125,7 @@ const getSeatsLeft = (dates: EventDate[]) => {
 }
 
 const isValidEmail = (email: string) => {
-  if (!email) return true
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
 }
 
 export default function BookEventPage() {
@@ -232,7 +231,7 @@ export default function BookEventPage() {
     if (totalQuantity <= 0) return false
     if (!customer.name.trim()) return false
     if (!customer.phone.trim() || customer.phone.replace(/\D/g, '').length < 10) return false
-    if (customer.email && !isValidEmail(customer.email)) return false
+    if (!customer.email.trim() || !isValidEmail(customer.email)) return false
     if (!selectedDate || totalQuantity > selectedDate.available_seats) return false
     return true
   }
@@ -275,7 +274,11 @@ export default function BookEventPage() {
       toast.error('Please enter a valid 10-digit phone number')
       return
     }
-    if (customer.email && !isValidEmail(customer.email)) {
+    if (!customer.email.trim()) {
+      toast.error('Please enter your email address')
+      return
+    }
+    if (!isValidEmail(customer.email)) {
       toast.error('Please enter a valid email address')
       return
     }
@@ -292,7 +295,7 @@ export default function BookEventPage() {
           quantity: ticket.quantity,
           customer_name: customer.name,
           customer_phone: customer.phone,
-          customer_email: customer.email || null,
+          customer_email: customer.email.trim(),
           notes: customer.notes || null,
         }),
       })
@@ -324,7 +327,7 @@ export default function BookEventPage() {
         order_id: data.data.razorpay_order_id,
         prefill: {
           name: customer.name,
-          email: customer.email || '',
+          email: customer.email.trim(),
           contact: customer.phone,
         },
         theme: { color: '#3D1F0D' },
@@ -644,11 +647,12 @@ export default function BookEventPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-[#3D1F0D]">Email</label>
+                    <label className="block text-sm font-bold text-[#3D1F0D]">Email <span className="text-[#A92517]">*</span></label>
                     <div className="relative mt-1.5">
                       <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CB3AC]" />
                       <input
                         type="email"
+                        required
                         value={customer.email}
                         onChange={e => setCustomer(prev => ({ ...prev, email: e.target.value }))}
                         placeholder="you@example.com"
