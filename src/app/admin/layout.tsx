@@ -41,6 +41,7 @@ const NAV = [
     items: [
       { href: '/admin/home-banners',       icon: Home,       label: 'Home Banners'       },
       { href: '/admin/about-hero',         icon: BookOpen,   label: 'About Hero'         },
+      { href: '/admin/about-founders',     icon: User,       label: 'Founder Management' },
       { href: '/admin/menu-hero',          icon: Coffee,     label: 'Menu Hero'          },
       { href: '/admin/offers-hero',        icon: Tag,        label: 'Offers Hero'        },
       { href: '/admin/outlet-hero',        icon: MapPin,     label: 'Outlet Hero'        },

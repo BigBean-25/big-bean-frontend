@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Header from '@/components/common/Header'
 import Footer from '@/components/common/Footer'
-import { Coffee, Store, Users, Heart, Sparkles, MapPin, Award, Leaf, ArrowRight, Star, Smartphone, QrCode, Check, Plus, Minus, HelpCircle } from 'lucide-react'
+import { Coffee, Store, Users, Heart, Sparkles, MapPin, Award, Leaf, ArrowRight, Star, Smartphone, QrCode, Check, Plus, Minus, HelpCircle, Phone, Mail, Instagram, Linkedin } from 'lucide-react'
 import type { MapOutlet } from '@/components/about/AboutOutletsMap'
 
 const AboutOutletsMap = dynamic(
@@ -66,6 +66,18 @@ const WHY = [
   { icon: Heart, title: 'Customer Happiness', text: 'Your happiness is our biggest achievement.' },
   { icon: Sparkles, title: 'Loyalty Rewards', text: 'Earn Big Coins and enjoy exclusive benefits.' },
 ]
+
+interface FounderType {
+  id: number
+  name: string
+  role: string
+  description: string
+  image: string | null
+  phone: string | null
+  email: string | null
+  instagram_url: string | null
+  linkedin_url: string | null
+}
 
 type HeroType = typeof DEFAULT_HERO
 
@@ -216,6 +228,8 @@ export default function AboutPage() {
   const [heroImg, setHeroImg] = useState<string | null>(null)
   const [appPromo, setAppPromo] = useState<AppPromoData>(APP_FALLBACK)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
+  const [founders, setFounders] = useState<FounderType[]>([])
+  const [foundersLoading, setFoundersLoading] = useState(true)
 
   useEffect(() => {
     fetch(`${API_URL}/about-hero/active`)
@@ -242,6 +256,12 @@ export default function AboutPage() {
       .then(r => r.json())
       .then(d => { const items: AppPromoData[] = d.data || []; if (items.length > 0) setAppPromo(items[0]) })
       .catch(() => {})
+
+    fetch(`${API_URL}/about-founders/active`)
+      .then(r => r.json())
+      .then(d => { setFounders(d.data || []) })
+      .catch(() => { setFounders([]) })
+      .finally(() => { setFoundersLoading(false) })
   }, [])
 
   const handleOutletSelect = (outlet: MapOutlet) => {
@@ -454,6 +474,59 @@ export default function AboutPage() {
           }
         }
 
+        /* ── FOUNDER SECTION ── */
+        .founder-grid {
+          display: grid;
+          grid-template-columns: 40% 1fr;
+          gap: 3.5rem;
+          align-items: center;
+        }
+        .founder-img-wrap {
+          border-radius: 26px;
+          overflow: hidden;
+          height: 440px;
+          border: 1px solid #E6C7A8;
+          box-shadow: 0 20px 64px rgba(61,31,13,0.11);
+          transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        @media (hover: hover) {
+          .founder-img-wrap:hover { transform: scale(1.015); box-shadow: 0 28px 80px rgba(61,31,13,0.17); }
+        }
+        .founder-social-btn {
+          width: 42px; height: 42px; border-radius: 50%;
+          background: #FFF7ED; border: 1.5px solid #C9943A;
+          display: flex; align-items: center; justify-content: center;
+          color: #3D1F0D;
+          transition: background 0.22s, color 0.22s, transform 0.22s;
+          text-decoration: none;
+        }
+        .founder-social-btn:hover {
+          background: #3D1F0D; color: #FFF7ED;
+          transform: translateY(-3px);
+        }
+        .founder-social-btn:focus-visible {
+          outline: 2px solid #C9943A; outline-offset: 3px;
+        }
+        @keyframes founderFadeUp {
+          from { opacity: 0; transform: translateY(22px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .founder-card {
+          animation: founderFadeUp 0.6s ease-out both;
+        }
+        @media (max-width: 900px) {
+          .founder-grid { grid-template-columns: 1fr; gap: 2rem; }
+          .founder-img-wrap { height: 340px; }
+        }
+        @media (max-width: 640px) {
+          .founder-img-wrap { height: 300px; border-radius: 20px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .founder-card { animation: none !important; }
+          .founder-img-wrap { transition: none !important; transform: none !important; }
+          .founder-social-btn { transition: none !important; transform: none !important; }
+        }
+
         /* ── APP CTA SUB-LINKS ── */
         .app-cta-sub-links a { white-space: nowrap; }
         @media (max-width: 420px) {
@@ -647,6 +720,148 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
+
+        {/* FOUNDER & VISIONARY */}
+        {!foundersLoading && founders.length > 0 && (
+          <section id="founder" style={{ background: '#FBF4EC', padding: '5rem 0' }}>
+            <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 2rem' }}>
+
+              {/* Section eyebrow */}
+              <div style={{ textAlign: 'center', marginBottom: '2.75rem' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ width: 32, height: 2, background: 'linear-gradient(90deg,transparent,#C9943A)', borderRadius: 2 }} />
+                  <p style={{ fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.25em', color: '#C9943A', textTransform: 'uppercase', margin: 0 }}>
+                    {founders.length === 1 ? 'MEET THE FOUNDER' : 'FOUNDERS & VISIONARIES'}
+                  </p>
+                  <div style={{ width: 32, height: 2, background: 'linear-gradient(90deg,#C9943A,transparent)', borderRadius: 2 }} />
+                </div>
+              </div>
+
+              {/* Founder cards */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+                {founders.map((founder, idx) => {
+                  const founderImg = getImg(founder.image)
+                  return (
+                    <article
+                      key={founder.id}
+                      className="founder-card"
+                      style={{ background: '#FFF7ED', borderRadius: 30, border: '1px solid #E6C7A8', boxShadow: '0 16px 60px rgba(61,31,13,0.09)', overflow: 'hidden', position: 'relative', animationDelay: `${idx * 0.12}s` }}
+                    >
+                      {/* Decorative watermark initial */}
+                      <div aria-hidden style={{ position: 'absolute', top: -16, right: 24, fontSize: '11rem', fontWeight: 900, color: 'rgba(201,148,58,0.055)', lineHeight: 1, userSelect: 'none', pointerEvents: 'none', fontFamily: 'Georgia,serif', zIndex: 0 }}>
+                        {founder.name.charAt(0)}
+                      </div>
+
+                      <div className="founder-grid" style={{ padding: '2.5rem', position: 'relative', zIndex: 1 }}>
+                        {/* LEFT — Image */}
+                        <div>
+                          <div className="founder-img-wrap">
+                            {founderImg ? (
+                              <img
+                                src={founderImg}
+                                alt={`${founder.name}, ${founder.role} at Big Bean Café`}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
+                              />
+                            ) : (
+                              <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#3D1F0D,#8B4A2F,#C9943A)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Coffee style={{ width: 56, height: 56, color: 'rgba(255,247,237,0.45)' }} />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* RIGHT — Content */}
+                        <div>
+                          {/* Eyebrow */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1rem' }}>
+                            <div style={{ width: 22, height: 2, background: '#C9943A', borderRadius: 2 }} />
+                            <p style={{ fontSize: '0.62rem', fontWeight: 900, letterSpacing: '0.22em', color: '#C9943A', textTransform: 'uppercase', margin: 0 }}>FOUNDER &amp; VISIONARY</p>
+                          </div>
+
+                          {/* Name */}
+                          <h2 className="font-heading" style={{ fontSize: 'clamp(1.8rem,2.8vw,2.75rem)', fontWeight: 900, color: '#3D1F0D', lineHeight: 1.05, margin: '0 0 0.5rem' }}>
+                            {founder.name}
+                          </h2>
+
+                          {/* Role */}
+                          <p style={{ fontSize: '0.9rem', fontWeight: 700, color: '#C9943A', margin: '0 0 1.25rem', letterSpacing: '0.04em' }}>
+                            {founder.role}
+                          </p>
+
+                          {/* Gold divider */}
+                          <div style={{ width: 52, height: 3, background: 'linear-gradient(90deg,#C9943A,#F6D58D)', borderRadius: 3, marginBottom: '1.5rem' }} />
+
+                          {/* Description */}
+                          <p style={{ fontSize: '0.92rem', color: '#6B3520', lineHeight: 1.8, margin: '0 0 1.75rem', maxWidth: 540 }}>
+                            {founder.description}
+                          </p>
+
+                          {/* Phone / Email */}
+                          {(founder.phone || founder.email) && (
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.75rem' }}>
+                              {founder.phone && (
+                                <a
+                                  href={`tel:${founder.phone}`}
+                                  aria-label={`Call ${founder.name}`}
+                                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.82rem', color: '#3D1F0D', fontWeight: 600, textDecoration: 'none', padding: '0.4rem 0.85rem', borderRadius: 100, background: 'rgba(201,148,58,0.1)', border: '1px solid rgba(201,148,58,0.28)', transition: 'background 0.2s' }}
+                                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(201,148,58,0.2)' }}
+                                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(201,148,58,0.1)' }}
+                                >
+                                  <Phone style={{ width: 13, height: 13, color: '#C9943A', flexShrink: 0 }} />
+                                  {founder.phone}
+                                </a>
+                              )}
+                              {founder.email && (
+                                <a
+                                  href={`mailto:${founder.email}`}
+                                  aria-label={`Email ${founder.name}`}
+                                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.82rem', color: '#3D1F0D', fontWeight: 600, textDecoration: 'none', padding: '0.4rem 0.85rem', borderRadius: 100, background: 'rgba(201,148,58,0.1)', border: '1px solid rgba(201,148,58,0.28)', transition: 'background 0.2s' }}
+                                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(201,148,58,0.2)' }}
+                                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(201,148,58,0.1)' }}
+                                >
+                                  <Mail style={{ width: 13, height: 13, color: '#C9943A', flexShrink: 0 }} />
+                                  {founder.email}
+                                </a>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Social icons */}
+                          {(founder.instagram_url || founder.linkedin_url) && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                              {founder.instagram_url && (
+                                <a
+                                  href={founder.instagram_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  aria-label="Instagram"
+                                  className="founder-social-btn"
+                                >
+                                  <Instagram style={{ width: 17, height: 17 }} />
+                                </a>
+                              )}
+                              {founder.linkedin_url && (
+                                <a
+                                  href={founder.linkedin_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  aria-label="LinkedIn"
+                                  className="founder-social-btn"
+                                >
+                                  <Linkedin style={{ width: 17, height: 17 }} />
+                                </a>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* VALUES */}
         <section style={{ position: 'relative', padding: '4rem 0', overflow: 'hidden', background: '#FFF7ED' }}>
