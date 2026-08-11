@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
+import toast from 'react-hot-toast'
 import { apiRequest } from '@/lib/api'
 import { isSuperAdmin, ADMIN_PERMISSION_MODULES, DATA_SCOPE_OPTIONS } from '@/lib/adminPermissions'
 
@@ -24,57 +25,28 @@ interface AdminUserModalProps {
   onClose: () => void
   user?: any | null
   onSaved: () => void
+  mode?: 'edit' | 'permissions'
 }
 
-const DESIGNATIONS = [
-  'Store Manager',
-  'Event Host',
-  'Marketing',
-  'Support',
-  'Accounts',
-  'Custom Admin'
-]
-
-const PRESETS: Record<string, any> = {
-  'Event Host': {
-    permissions: { dashboard: ['view'], notifications: ['view'], events: ['view', 'create', 'edit'], reservations: ['view', 'edit'] },
-    data_scope: { events: 'assigned', reservations: 'assigned' }
-  },
-  'Store Manager': {
-    permissions: { dashboard: ['view'], notifications: ['view'], merchandise: ['view', 'create', 'edit'], merchandise_orders: ['view', 'edit', 'export'], reservations: ['view', 'edit'] },
-    data_scope: { merchandise_orders: 'all', reservations: 'assigned' }
-  },
-  'Marketing': {
-    permissions: { dashboard: ['view'], notifications: ['view'], offers: ['view', 'create', 'edit'], blog: ['view', 'create', 'edit'], events: ['view', 'create', 'edit'], instagram_media: ['view', 'edit'], newsletter_subscribers: ['view', 'create', 'edit'], app_promos: ['view', 'create', 'edit'], testimonials: ['view', 'create', 'edit'], seo: ['view', 'create', 'edit'], seo_pages: ['view', 'create', 'edit'], legal_pages: ['view', 'create', 'edit'] },
-    data_scope: {}
-  },
-  'Support': {
-    permissions: { dashboard: ['view'], notifications: ['view'], support_tickets: ['view', 'create', 'edit'], contact_enquiries: ['view', 'edit'], corporate_enquiries: ['view', 'edit'], franchise_enquiries: ['view', 'edit'] },
-    data_scope: { support_tickets: 'assigned', contact_enquiries: 'assigned', corporate_enquiries: 'assigned', franchise_enquiries: 'assigned' }
-  },
-  'Accounts': {
-    permissions: { dashboard: ['view'], reports: ['view', 'export'], merchandise_orders: ['view', 'edit', 'export'], corporate_orders: ['view', 'export'] },
-    data_scope: { merchandise_orders: 'all' }
-  },
-  'View Only': {
-    permissions: { dashboard: ['view'], notifications: ['view'] },
-    data_scope: {}
-  }
+interface Role {
+  id: number
+  role_name: string
+  role_key: string
+  is_active: number
 }
 
-export default function AdminUserModal({ isOpen, onClose, user, onSaved }: AdminUserModalProps) {
+export default function AdminUserModal({ isOpen, onClose, user, onSaved, mode = 'edit' }: AdminUserModalProps) {
   const [activeTab, setActiveTab] = useState('basic')
   const [allPermissions, setAllPermissions] = useState<Permission[]>([])
   const [userPermissions, setUserPermissions] = useState<Record<string, Permission>>({})
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirm_password: '',
-    designation: '',
-    status: 'active'
-  })
+  const [roles, setRoles] = useState<Role[]>([])
+  const [rolesLoading, setRolesLoading] = useState(false)
+  const [rolesError, setRolesError] = useState(false)
+  const [activePresetId, setActivePresetId] = useState<number | null>(null)
+  const [formData, setFormData] = useState<{
+    name: string; email: string; phone: string; password: string
+    confirm_password: string; role_id: number | null; status: string
+  }>({ name: '', email: '', phone: '', password: '', confirm_password: '', role_id: null, status: 'active' })
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(false)
 
@@ -83,8 +55,10 @@ export default function AdminUserModal({ isOpen, onClose, user, onSaved }: Admin
 
   useEffect(() => {
     if (!isOpen) return
+    setActiveTab(mode === 'permissions' ? 'permissions' : 'basic')
     fetchAllPermissions()
-  }, [isOpen])
+    fetchRoles()
+  }, [isOpen, mode])
 
   useEffect(() => {
     if (user) {
@@ -94,13 +68,15 @@ export default function AdminUserModal({ isOpen, onClose, user, onSaved }: Admin
         phone: user.phone || '',
         password: '',
         confirm_password: '',
-        designation: user.designation || '',
+        role_id: user.role_id || null,
         status: user.status || 'active'
       })
+      setActivePresetId(user.role_id || null)
       if (user.id) fetchUserPermissions(user.id)
     } else {
-      setFormData({ name: '', email: '', phone: '', password: '', confirm_password: '', designation: '', status: 'active' })
+      setFormData({ name: '', email: '', phone: '', password: '', confirm_password: '', role_id: null, status: 'active' })
       setUserPermissions({})
+      setActivePresetId(null)
     }
   }, [user])
 
@@ -117,6 +93,58 @@ export default function AdminUserModal({ isOpen, onClose, user, onSaved }: Admin
     } finally {
       setFetching(false)
     }
+  }
+
+  const fetchRoles = async () => {
+    setRolesLoading(true)
+    setRolesError(false)
+    try {
+      const res = await apiRequest('/admin-roles')
+      if (!res.ok) throw new Error()
+      const data = await res.json()
+      const all: Role[] = data.data || []
+      setRoles(all.filter(r => r.is_active === 1 && (isSuperAdmin() || r.role_key !== 'super_admin')))
+    } catch {
+      setRolesError(true)
+    } finally {
+      setRolesLoading(false)
+    }
+  }
+
+  const applyRolePreset = async (roleId: number) => {
+    if (isSuperAdminUser) return
+    setActivePresetId(roleId)
+    try {
+      const res = await apiRequest(`/admin-roles/${roleId}/permissions`)
+      if (!res.ok) return
+      const data = await res.json()
+      const newMap: Record<string, Permission> = {}
+      allPermissions.forEach(p => {
+        newMap[p.module_key] = { ...p, can_view: false, can_create: false, can_edit: false, can_delete: false, can_export: false, data_scope: 'assigned' }
+      })
+      ;(data.data || []).forEach((rp: any) => {
+        if (newMap[rp.module_key]) {
+          newMap[rp.module_key] = {
+            ...newMap[rp.module_key],
+            can_view: !!rp.can_view,
+            can_create: !!rp.can_create,
+            can_edit: !!rp.can_edit,
+            can_delete: !!rp.can_delete,
+            can_export: !!rp.can_export,
+            data_scope: rp.data_scope || 'assigned'
+          }
+        }
+      })
+      setUserPermissions(newMap)
+    } catch (err) {
+      console.error('Apply role preset error:', err)
+    }
+  }
+
+  const handleRoleSelect = (roleId: number | null) => {
+    setFormData(prev => ({ ...prev, role_id: roleId }))
+    if (roleId) applyRolePreset(roleId)
+    else setActivePresetId(null)
   }
 
   const fetchUserPermissions = async (userId: number) => {
@@ -179,32 +207,9 @@ export default function AdminUserModal({ isOpen, onClose, user, onSaved }: Admin
     })
   }
 
-  const applyPreset = (presetName: string) => {
-    if (isSuperAdminUser) return
-    const preset = PRESETS[presetName]
-    if (!preset) return
-    const newMap: Record<string, Permission> = {}
-    allPermissions.forEach(p => {
-      const actions = preset.permissions[p.module_key] || []
-      newMap[p.module_key] = {
-        id: p.id,
-        module_key: p.module_key,
-        module_name: p.module_name,
-        permission_key: p.permission_key,
-        permission_name: p.permission_name,
-        can_view: actions.includes('view'),
-        can_create: actions.includes('create'),
-        can_edit: actions.includes('edit'),
-        can_delete: actions.includes('delete'),
-        can_export: actions.includes('export'),
-        data_scope: preset.data_scope[p.module_key] || 'assigned'
-      }
-    })
-    setUserPermissions(newMap)
-  }
-
   const clearAll = () => {
     if (isSuperAdminUser) return
+    setActivePresetId(null)
     const newMap: Record<string, Permission> = {}
     allPermissions.forEach(p => {
       newMap[p.module_key] = {
@@ -227,11 +232,11 @@ export default function AdminUserModal({ isOpen, onClose, user, onSaved }: Admin
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.password && !isEdit) {
-      alert('Password is required')
+      toast.error('Password is required')
       return
     }
     if (formData.password && formData.password !== formData.confirm_password) {
-      alert('Passwords do not match')
+      toast.error('Passwords do not match')
       return
     }
 
@@ -270,7 +275,7 @@ export default function AdminUserModal({ isOpen, onClose, user, onSaved }: Admin
       onClose()
       setActiveTab('basic')
     } catch (err: any) {
-      alert(err.message || 'Failed to save user')
+      toast.error(err.message || 'Failed to save user')
     } finally {
       setLoading(false)
     }
@@ -330,11 +335,25 @@ export default function AdminUserModal({ isOpen, onClose, user, onSaved }: Admin
                   <input type="password" required={!isEdit} value={formData.confirm_password} onChange={e => setFormData({ ...formData, confirm_password: e.target.value })} className="w-full rounded-xl border border-[#DCE8E3] px-4 py-2.5 text-sm outline-none focus:border-[#2FBF9B]" />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-bold text-[#5F6F68]">Designation / Access Label</label>
-                  <select value={formData.designation} onChange={e => setFormData({ ...formData, designation: e.target.value })} className="w-full rounded-xl border border-[#DCE8E3] px-4 py-2.5 text-sm outline-none focus:border-[#2FBF9B]">
-                    <option value="">Select Designation</option>
-                    {DESIGNATIONS.map(d => <option key={d} value={d}>{d}</option>)}
-                  </select>
+                  <label className="mb-1 block text-xs font-bold text-[#5F6F68]">Admin Role</label>
+                  <p className="mb-1.5 text-xs text-[#9CB3AC]">Select a permission preset for this admin user.</p>
+                  {rolesLoading ? (
+                    <div className="flex h-10 items-center rounded-xl border border-[#DCE8E3] px-4 text-sm text-[#9CB3AC]">Loading roles…</div>
+                  ) : rolesError ? (
+                    <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-500">
+                      Unable to load admin roles.
+                      <button type="button" onClick={fetchRoles} className="font-bold underline hover:no-underline">Retry</button>
+                    </div>
+                  ) : (
+                    <select
+                      value={formData.role_id ?? ''}
+                      onChange={e => handleRoleSelect(e.target.value ? Number(e.target.value) : null)}
+                      className="w-full rounded-xl border border-[#DCE8E3] px-4 py-2.5 text-sm outline-none focus:border-[#2FBF9B]"
+                    >
+                      <option value="">— No role assigned —</option>
+                      {roles.map(r => <option key={r.id} value={r.id}>{r.role_name}</option>)}
+                    </select>
+                  )}
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-bold text-[#5F6F68]">Status</label>
@@ -348,14 +367,30 @@ export default function AdminUserModal({ isOpen, onClose, user, onSaved }: Admin
             ) : (
               <div className="space-y-6">
                 {!isSuperAdminUser && (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="text-xs font-bold text-[#5F6F68]">Presets:</span>
-                    {Object.keys(PRESETS).map(preset => (
-                      <button key={preset} type="button" onClick={() => applyPreset(preset)} className="rounded-full bg-[#EAF8F3] px-3 py-1 text-xs font-bold text-[#167E68] hover:bg-[#2FBF9B] hover:text-white">
-                        {preset}
-                      </button>
-                    ))}
-                    <button type="button" onClick={clearAll} className="rounded-full bg-[#FDE8E8] px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-600 hover:text-white">
+                    {rolesLoading && <span className="text-xs text-[#9CB3AC]">Loading…</span>}
+                    {!rolesLoading && roles.filter(r => r.role_key !== 'super_admin').map(role => {
+                      const isActive = activePresetId === role.id
+                      return (
+                        <button
+                          key={role.id}
+                          type="button"
+                          onClick={() => applyRolePreset(role.id)}
+                          className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold transition ${
+                            isActive
+                              ? 'bg-[#2FBF9B] text-white shadow-sm'
+                              : 'bg-[#EAF8F3] text-[#167E68] hover:bg-[#2FBF9B] hover:text-white'
+                          }`}
+                        >
+                          {isActive && <span>✓</span>}{role.role_name}
+                        </button>
+                      )
+                    })}
+                    {!rolesLoading && roles.filter(r => r.role_key !== 'super_admin').length === 0 && (
+                      <span className="text-xs text-[#9CB3AC]">No presets available</span>
+                    )}
+                    <button type="button" onClick={clearAll} className="ml-auto rounded-full bg-[#FDE8E8] px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-600 hover:text-white">
                       Clear All
                     </button>
                   </div>

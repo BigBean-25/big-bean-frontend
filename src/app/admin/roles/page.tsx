@@ -6,6 +6,7 @@ import {
   Shield, Plus, Edit, Trash2, Search, Check, X, MoreVertical,
   Lock, Unlock, Users, ChevronDown, ChevronUp
 } from 'lucide-react'
+import toast from 'react-hot-toast'
 import { apiRequest } from '@/lib/api'
 import { isSuperAdmin } from '@/lib/adminPermissions'
 import AdminRouteGuard from '@/components/admin/AdminRouteGuard'
@@ -108,16 +109,16 @@ export default function RolesPage() {
         method: 'POST',
         body: JSON.stringify(formData)
       })
-      if (!res.ok) throw new Error('Failed to create role')
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.message || 'Failed to create role')
       if (data.success) {
         setShowAddModal(false)
         setFormData({ role_name: '', role_key: '', description: '' })
         fetchRoles()
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Create role error:', error)
-      alert('Failed to create role')
+      toast.error(error.message || 'Failed to create role')
     } finally {
       setSubmitting(false)
     }
@@ -132,17 +133,17 @@ export default function RolesPage() {
         method: 'PUT',
         body: JSON.stringify(formData)
       })
-      if (!res.ok) throw new Error('Failed to update role')
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.message || 'Failed to update role')
       if (data.success) {
         setShowEditModal(false)
         setSelectedRole(null)
         setFormData({ role_name: '', role_key: '', description: '' })
         fetchRoles()
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Update role error:', error)
-      alert('Failed to update role')
+      toast.error(error.message || 'Failed to update role')
     } finally {
       setSubmitting(false)
     }
@@ -151,15 +152,15 @@ export default function RolesPage() {
   const handleDeleteRole = async (id: number) => {
     try {
       const res = await apiRequest(`/admin-roles/${id}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error('Failed to delete role')
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.message || 'Failed to delete role')
       if (data.success) {
         setDeleteConfirm(null)
         fetchRoles()
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Delete role error:', error)
-      alert('Failed to delete role')
+      toast.error(error.message || 'Failed to delete role')
     }
   }
 
@@ -172,16 +173,17 @@ export default function RolesPage() {
         method: 'PUT',
         body: JSON.stringify({ permissions: flatPermissions })
       })
-      if (!res.ok) throw new Error('Failed to update permissions')
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.message || 'Failed to update permissions')
       if (data.success) {
+        toast.success('Permissions saved')
         setShowPermissionModal(false)
         setSelectedRole(null)
         fetchRoles()
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Update permissions error:', error)
-      alert('Failed to update permissions')
+      toast.error(error.message || 'Failed to update permissions')
     } finally {
       setSubmitting(false)
     }
