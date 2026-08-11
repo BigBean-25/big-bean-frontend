@@ -13,6 +13,7 @@ const FIELDS: { key: string; label: string; placeholder: string; type?: string; 
   [
     { key: 'google_analytics_id',               label: 'Google Analytics ID',              placeholder: 'G-XXXXXXXXXX',        hint: 'GA4 Measurement ID' },
     { key: 'google_tag_manager_id',             label: 'Google Tag Manager ID',            placeholder: 'GTM-XXXXXXX',         hint: 'GTM Container ID' },
+    { key: 'google_ads_tag_id',                 label: 'Google Ads Tag ID',                placeholder: 'AW-XXXXXXXXXXX',      hint: 'Google Ads / Google Tag ID' },
     { key: 'google_search_console_verification',label: 'Google Search Console Verification', placeholder: 'abc123...',         hint: 'HTML meta tag content value' },
     { key: 'facebook_domain_verification',      label: 'Facebook Domain Verification',     placeholder: 'abc123...',           hint: 'Facebook meta tag content value' },
     { key: 'bing_verification',                 label: 'Bing Webmaster Verification',      placeholder: 'abc123...',           hint: 'Bing meta tag content value' },
@@ -44,6 +45,7 @@ export default function SeoSettingsPage() {
   const [settings, setSettings] = useState<Settings>({})
   const [loading, setLoading]   = useState(true)
   const [saving, setSaving]     = useState(false)
+  const [errors, setErrors]     = useState<Record<string, string>>({})
 
   useEffect(() => {
     apiRequest('/seo-pages/settings')
@@ -52,10 +54,27 @@ export default function SeoSettingsPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  const set = (key: string, value: string) =>
+  const set = (key: string, value: string) => {
     setSettings(prev => ({ ...prev, [key]: value }))
+    if (errors[key]) setErrors(prev => { const next = { ...prev }; delete next[key]; return next })
+  }
+
+  const validate = (data: Settings): Record<string, string> => {
+    const next: Record<string, string> = {}
+    const adsId = data.google_ads_tag_id?.trim() || ''
+    if (adsId && !/^AW-\d+$/.test(adsId)) {
+      next.google_ads_tag_id = 'Google Ads Tag ID must be AW- followed by digits (e.g. AW-17626186376)'
+    }
+    return next
+  }
 
   const save = async () => {
+    const validation = validate(settings)
+    setErrors(validation)
+    if (Object.keys(validation).length > 0) {
+      toast.error('Please fix validation errors before saving')
+      return
+    }
     setSaving(true)
     try {
       const res = await apiRequest('/seo-pages/settings', { method: 'PUT', body: JSON.stringify(settings) })
@@ -108,6 +127,7 @@ export default function SeoSettingsPage() {
                     className="w-full px-4 py-2.5 rounded-2xl border border-[#DCE8E3] bg-[#F8FFFE] text-sm text-[#1A2E27] placeholder-[#9CB3AC] focus:outline-none focus:ring-2 focus:ring-[#2FBF9B]/30 focus:border-[#2FBF9B]"
                   />
                   {field.hint && <p className="text-[11px] text-[#9CB3AC] mt-1">{field.hint}</p>}
+                  {errors[field.key] && <p className="text-[11px] text-red-500 mt-1">{errors[field.key]}</p>}
                 </div>
               ))}
             </div>

@@ -26,6 +26,7 @@ export default async function GlobalSeoScripts() {
 
   const gtmId  = settings.google_tag_manager_id  || null
   const gaId   = settings.google_analytics_id    || null
+  const adsId  = settings.google_ads_tag_id      || null
   const gscKey = settings.google_search_console_verification || null
   const bingKey = settings.bing_verification      || null
   const fbKey  = settings.facebook_domain_verification || null
@@ -53,13 +54,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         />
       )}
 
-      {/* ── Google Analytics 4 (no GTM) ───────────────────────── */}
-      {gaId && !gtmId && (
+      {/* ── Google Analytics 4 / Google Ads (no GTM) ──────────── */}
+      {!gtmId && (gaId || adsId) && (
         <>
-          <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
+          <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId || adsId}`} />
           <script
             dangerouslySetInnerHTML={{
-              __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}');`,
+              __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());${gaId ? `gtag('config','${gaId}');` : ''}${adsId ? `gtag('config','${adsId}');` : ''}`,
             }}
           />
         </>
