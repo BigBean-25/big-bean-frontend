@@ -471,6 +471,11 @@ export default function Franchise() {
                 <div className="rounded-3xl p-6 border" style={{ background: '#FFF7ED', borderColor: '#E6C7A8' }}>
                   <p className="text-xs font-bold tracking-widest mb-4" style={{ color: '#C9943A' }}>CONTACT OUR TEAM</p>
                   <div className="space-y-3">
+                    {pubSettings.franchise_phone && (
+                      <a href={`tel:${formatPhoneForTel(pubSettings.franchise_phone)}`} className="flex items-center gap-3 text-sm hover:underline" style={{ color: '#3D1F0D' }}>
+                        <Phone className="w-4 h-4 flex-shrink-0" style={{ color: '#C9943A' }} />{pubSettings.franchise_phone}
+                      </a>
+                    )}
                     <a href={`mailto:${pubSettings.franchise_email}`} className="flex items-center gap-3 text-sm hover:underline" style={{ color: '#3D1F0D' }}>
                       <Mail className="w-4 h-4 flex-shrink-0" style={{ color: '#C9943A' }} />{pubSettings.franchise_email}
                     </a>
