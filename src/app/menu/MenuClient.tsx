@@ -312,11 +312,6 @@ export default function Menu() {
     loadMenu(outlet.id)
   }, [searchParams, router, loadMenu])
 
-  // ── Change outlet (reopen selector without clearing current view) ────
-  const changeOutlet = useCallback(() => {
-    setShowOutletSelector(true)
-    setOutletSearch('')
-  }, [])
 
   // ── Fetch hero + combos ──────────────────────────────────────────────
   useEffect(() => {
@@ -934,14 +929,23 @@ export default function Menu() {
                   <p style={{ margin: 0, fontSize: '0.72rem', color: 'rgba(255,247,237,0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '38ch' }}>{selectedOutlet.address}</p>
                 </div>
               </div>
-              <button
-                onClick={changeOutlet}
-                style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(201,148,58,0.15)', border: '1.5px solid rgba(201,148,58,0.38)', color: '#F6D58D', borderRadius: 100, padding: '0.55rem 1.2rem', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.06em', transition: 'all 0.18s' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(201,148,58,0.28)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(201,148,58,0.15)' }}
-              >
-                <X style={{ width: 11, height: 11 }} /> Change Outlet
-              </button>
+              <div style={{ position: 'relative', flex: '1 1 12rem', minWidth: 0, maxWidth: '20rem' }}>
+                <select
+                  value={selectedOutlet.id}
+                  onChange={e => {
+                    const outlet = outlets.find(o => o.id === Number(e.target.value) && o.menu_available === 1)
+                    if (outlet && outlet.id !== selectedOutlet.id) selectOutlet(outlet)
+                  }}
+                  style={{ width: '100%', minHeight: 44, appearance: 'none', WebkitAppearance: 'none', background: 'rgba(201,148,58,0.12)', border: '1.5px solid rgba(201,148,58,0.35)', borderRadius: 100, padding: '0.6rem 2.4rem 0.6rem 1.1rem', fontSize: '0.82rem', fontWeight: 800, color: '#F6D58D', cursor: 'pointer', outline: 'none' }}
+                >
+                  {outlets.filter(o => o.menu_available === 1).map(o => (
+                    <option key={o.id} value={o.id} style={{ background: '#1A0D07', color: '#F6D58D' }}>
+                      {o.name.replace(/^Big Bean Caf[eé]\s*[-–—]?\s*/i, '')}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', width: 14, height: 14, color: '#C9943A', pointerEvents: 'none' }} />
+              </div>
             </div>
           </section>
         )}
@@ -959,10 +963,6 @@ export default function Menu() {
                 <button onClick={() => selectedOutlet && loadMenu(selectedOutlet.id)}
                   style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#3D1F0D', color: '#FFF7ED', borderRadius: 100, padding: '0.72rem 1.6rem', fontSize: '0.8rem', fontWeight: 900, border: 'none', cursor: 'pointer', textTransform: 'uppercase' }}>
                   Try Again
-                </button>
-                <button onClick={changeOutlet}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'transparent', color: '#3D1F0D', borderRadius: 100, padding: '0.72rem 1.6rem', fontSize: '0.8rem', fontWeight: 900, border: '1.5px solid #E6C7A8', cursor: 'pointer', textTransform: 'uppercase' }}>
-                  <MapPin style={{ width: 13, height: 13 }} /> Change Outlet
                 </button>
                 <a href={ORDER_URL} target="_blank" rel="noopener noreferrer"
                   style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'transparent', color: '#3D1F0D', borderRadius: 100, padding: '0.72rem 1.6rem', fontSize: '0.8rem', fontWeight: 900, textDecoration: 'none', border: '1.5px solid #E6C7A8', textTransform: 'uppercase' }}>
