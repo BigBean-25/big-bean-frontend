@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { apiRequest } from '@/lib/api'
-import { isSuperAdmin, ADMIN_PERMISSION_MODULES, DATA_SCOPE_OPTIONS } from '@/lib/adminPermissions'
+import { isSuperAdmin, ADMIN_PERMISSION_MODULES, DATA_SCOPE_OPTIONS, DATA_SCOPE_ENFORCED_MODULES } from '@/lib/adminPermissions'
 
 interface Permission {
   id: number
@@ -440,14 +440,18 @@ export default function AdminUserModal({ isOpen, onClose, user, onSaved, mode = 
                                     </td>
                                   ))}
                                   <td className="px-4 py-2">
-                                    <select
-                                      value={perm.data_scope}
-                                      disabled={disabled || !perm.can_view}
-                                      onChange={e => updatePermission(moduleKey, 'data_scope', e.target.value)}
-                                      className="rounded-lg border border-[#DCE8E3] px-2 py-1 text-xs outline-none focus:border-[#2FBF9B]"
-                                    >
-                                      {DATA_SCOPE_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                                    </select>
+                                    {DATA_SCOPE_ENFORCED_MODULES.has(moduleKey) ? (
+                                      <select
+                                        value={perm.data_scope}
+                                        disabled={disabled || !perm.can_view}
+                                        onChange={e => updatePermission(moduleKey, 'data_scope', e.target.value)}
+                                        className="rounded-lg border border-[#DCE8E3] px-2 py-1 text-xs outline-none focus:border-[#2FBF9B] disabled:opacity-50"
+                                      >
+                                        {DATA_SCOPE_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                                      </select>
+                                    ) : (
+                                      <span className="text-xs text-[#9CB3AC]" title="Data scope not enforced for this module">—</span>
+                                    )}
                                   </td>
                                 </tr>
                               )

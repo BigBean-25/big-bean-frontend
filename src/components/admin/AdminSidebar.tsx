@@ -83,6 +83,15 @@ export default function AdminSidebar({ nav, pathname, user, onLogout, onNav }: A
         aria-label="Admin menu"
         className="custom-admin-scroll flex-1 overflow-y-auto px-3 py-3"
       >
+        {nav.length === 0 && (
+          <div className="mx-2 mt-6 rounded-2xl border border-[#DCE8E3] bg-[#F3F8F6] px-4 py-5 text-center">
+            <p className="text-xs font-black text-[#5F6F68]">No admin modules assigned</p>
+            <p className="mt-1 text-[11px] leading-relaxed text-[#9CB3AC]">
+              Please contact a Super Admin to configure your account permissions.
+            </p>
+          </div>
+        )}
+
         {nav.map(({ group, items }) => (
           <div key={group} className="mb-1">
             <div className="font-nav px-3 pb-1 pt-4 text-[10px] font-black uppercase tracking-[0.18em] text-[#8A9A91]">

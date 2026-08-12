@@ -8,12 +8,22 @@ export const ADMIN_MENU_ACCESS_KEY = 'admin_menu_access'
 
 export const ADMIN_PERMISSION_MODULES = [
   { group: 'Main', modules: ['dashboard', 'notifications', 'reports', 'settings', 'site_settings', 'admin_users', 'roles_permissions', 'customers'] },
-  { group: 'Website Content', modules: ['home_banners', 'about_hero', 'menu_hero', 'offers_hero', 'outlet_hero', 'reservation_hero', 'career_hero', 'corporate_hero', 'franchise_hero', 'gallery_hero', 'blog_hero', 'contact_hero'] },
+  { group: 'Website Content', modules: ['home_banners', 'about_hero', 'about_founders', 'menu_hero', 'offers_hero', 'outlet_hero', 'reservation_hero', 'career_hero', 'corporate_hero', 'franchise_hero', 'gallery_hero', 'blog_hero', 'contact_hero'] },
   { group: 'Menu', modules: ['menu_items', 'menu_combos', 'categories'] },
   { group: 'Merchandise', modules: ['merchandise', 'merchandise_categories', 'merchandise_banners', 'merchandise_orders', 'merchandise_reviews'] },
   { group: 'Enquiries', modules: ['contact_enquiries', 'corporate_enquiries', 'franchise_enquiries', 'career_applications', 'career_jobs', 'reservations', 'support_tickets'] },
   { group: 'Marketing', modules: ['offers', 'blog_posts', 'blog', 'gallery', 'events', 'event_bookings', 'instagram_media', 'newsletter_subscribers', 'app_promos', 'testimonials', 'seo_pages', 'seo', 'legal_pages', 'website_popups'] },
 ]
+
+// Modules where data_scope is actually backend-enforced
+export const DATA_SCOPE_ENFORCED_MODULES = new Set([
+  'reservations',
+  'support_tickets',
+  'contact_enquiries',
+  'corporate_enquiries',
+  'franchise_enquiries',
+  'merchandise_orders',
+])
 
 export const DATA_SCOPE_OPTIONS = [
   { value: 'all', label: 'All Data' },
@@ -152,7 +162,7 @@ export function hasAnyPermission(permissionKeys: string[]): boolean {
 
 // ── Route access ──────────────────────────────────────────────
 
-const ROUTE_MODULE_MAP: Record<string, string> = {
+export const ROUTE_MODULE_MAP: Record<string, string> = {
   '/admin/dashboard':                  'dashboard',
   '/admin/notifications':              'notifications',
   '/admin/reports':                    'reports',
@@ -177,7 +187,7 @@ const ROUTE_MODULE_MAP: Record<string, string> = {
   '/admin/events-hero':                'events',
 
   // Menu
-  '/admin/menu-categories':            'menu_categories',
+  '/admin/menu-categories':            'categories',
   '/admin/menu-combos':                'menu_combos',
   '/admin/menu':                       'menu_items',
 
@@ -219,6 +229,15 @@ const ROUTE_MODULE_MAP: Record<string, string> = {
   '/admin/seo/settings':               'seo_pages',
   '/admin/legal-pages':                'legal_pages',
   '/admin/site-settings':              'site_settings',
+
+  // Previously missing — added for complete coverage
+  '/admin/about-founders':             'about_founders',
+  '/admin/page-heroes':                'site_settings',
+  '/admin/settings/contact':           'settings',
+  '/admin/careers':                    'career_applications',
+
+  // Universal authenticated routes — empty module key = always accessible to any valid admin token
+  '/admin/no-access':                  '',
 }
 
 export function canAccessRoute(pathname: string): boolean {
@@ -227,11 +246,64 @@ export function canAccessRoute(pathname: string): boolean {
   const routes = Object.keys(ROUTE_MODULE_MAP).sort((a, b) => b.length - a.length)
   for (const route of routes) {
     if (pathname === route || pathname.startsWith(route + '/')) {
-      return hasPermission(ROUTE_MODULE_MAP[route], 'view')
+      const moduleKey = ROUTE_MODULE_MAP[route]
+      // Empty module key = universally accessible to any authenticated admin (e.g. /admin/no-access)
+      if (!moduleKey) return true
+      return hasPermission(moduleKey, 'view')
     }
   }
-  // Route not in the map — allow by default to prevent false Access Denied screens
-  return true
+  // Route not in the map — deny by default (secure-by-default)
+  return false
+}
+
+// Ordered list of routes tried in priority order when finding first accessible page
+const FIRST_ALLOWED_ROUTE_PRIORITY = [
+  '/admin/dashboard',
+  '/admin/notifications',
+  '/admin/reports',
+  '/admin/users',
+  '/admin/roles',
+  '/admin/customers',
+  '/admin/events',
+  '/admin/event-bookings',
+  '/admin/reservations',
+  '/admin/merchandise',
+  '/admin/merchandise-orders',
+  '/admin/blog',
+  '/admin/gallery',
+  '/admin/offers',
+  '/admin/menu',
+  '/admin/menu-combos',
+  '/admin/franchise-enquiries',
+  '/admin/corporate-enquiries',
+  '/admin/contact-enquiries',
+  '/admin/career-applications',
+  '/admin/career-jobs',
+  '/admin/support-tickets',
+  '/admin/newsletter-subscribers',
+  '/admin/testimonials',
+  '/admin/app-promos',
+  '/admin/instagram-media',
+  '/admin/website-popups',
+  '/admin/seo',
+  '/admin/seo/settings',
+  '/admin/legal-pages',
+  '/admin/about-founders',
+  '/admin/about-hero',
+  '/admin/home-banners',
+  '/admin/site-settings',
+  '/admin/settings',
+  '/admin/page-heroes',
+  '/admin/outlets',
+]
+
+export function getFirstAllowedAdminRoute(): string {
+  if (isSuperAdmin()) return '/admin/dashboard'
+  for (const route of FIRST_ALLOWED_ROUTE_PRIORITY) {
+    if (canAccessRoute(route)) return route
+  }
+  // zero-permission fallback — dedicated no-access landing
+  return '/admin/no-access'
 }
 
 export function filterMenuByPermissions(menuGroups: any[]): any[] {
@@ -241,7 +313,7 @@ export function filterMenuByPermissions(menuGroups: any[]): any[] {
       ...group,
       items: group.items.filter((item: any) => {
         const moduleKey = ROUTE_MODULE_MAP[item.href] || ''
-        if (!moduleKey) return true
+        if (!moduleKey) return false
         return hasPermission(moduleKey, item.action || 'view')
       })
     }))

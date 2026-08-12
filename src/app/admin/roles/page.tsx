@@ -28,17 +28,35 @@ interface Permission {
   permission_key: string
   permission_name: string
   permission_group: string
+  can_view?: boolean
+  can_create?: boolean
+  can_edit?: boolean
+  can_delete?: boolean
+  can_export?: boolean
+}
+
+interface ModulePermission {
+  module_key: string
+  module_name: string
+  permission_group: string
   can_view: boolean
   can_create: boolean
   can_edit: boolean
   can_delete: boolean
   can_export: boolean
+  data_scope: string
+  view_id?: number
+  create_id?: number
+  edit_id?: number
+  delete_id?: number
+  export_id?: number
 }
 
 export default function RolesPage() {
   const router = useRouter()
   const [roles, setRoles] = useState<Role[]>([])
-  const [permissions, setPermissions] = useState<Record<string, Permission[]>>({})
+  const [modulePerms, setModulePerms] = useState<Record<string, ModulePermission[]>>({})
+  const [permLoading, setPermLoading] = useState(false)
   const [loading, setLoading] = useState(true)
   const [selectedRole, setSelectedRole] = useState<Role | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
@@ -76,28 +94,84 @@ export default function RolesPage() {
     }
   }
 
-  const fetchRolePermissions = async (roleId: number) => {
+  const fetchRolePermissions = async (roleId: number, role: Role) => {
+    setPermLoading(true)
     try {
-      const res = await apiRequest(`/admin-roles/${roleId}/permissions`)
-      if (!res.ok) throw new Error('Failed to fetch permissions')
-      const data = await res.json()
-      if (data.success) {
-        // Group permissions by module
-        const grouped: Record<string, Permission[]> = {}
-        data.data.forEach((perm: Permission) => {
-          if (!grouped[perm.permission_group]) {
-            grouped[perm.permission_group] = []
+      const [catalogRes, assignRes] = await Promise.all([
+        apiRequest('/admin-permissions'),
+        apiRequest(`/admin-roles/${roleId}/permissions`)
+      ])
+      if (!catalogRes.ok) throw new Error('Failed to fetch permission catalog')
+      const catalogData = await catalogRes.json()
+      const allCatalog: Permission[] = catalogData.data || []
+
+      // Build module-level map (one entry per unique module_key)
+      const moduleMap: Record<string, ModulePermission> = {}
+      allCatalog.forEach(p => {
+        if (!moduleMap[p.module_key]) {
+          moduleMap[p.module_key] = {
+            module_key: p.module_key,
+            module_name: p.module_name,
+            permission_group: p.permission_group,
+            can_view: false, can_create: false, can_edit: false, can_delete: false, can_export: false,
+            data_scope: 'assigned'
           }
-          grouped[perm.permission_group].push(perm)
+        }
+        const action = p.permission_key.split('.').pop()
+        if (action === 'view')   moduleMap[p.module_key].view_id   = p.id
+        if (action === 'create') moduleMap[p.module_key].create_id = p.id
+        if (action === 'edit')   moduleMap[p.module_key].edit_id   = p.id
+        if (action === 'delete') moduleMap[p.module_key].delete_id = p.id
+        if (action === 'export') moduleMap[p.module_key].export_id = p.id
+      })
+
+      // Overlay role's current assignments onto module map
+      if (assignRes.ok) {
+        const assignData = await assignRes.json()
+        const assigned: any[] = assignData.data || []
+        assigned.forEach(rp => {
+          const m = moduleMap[rp.module_key]
+          if (!m) return
+          const action = rp.permission_key?.split('.').pop()
+          if (action === 'view'   && rp.can_view)   m.can_view   = true
+          if (action === 'create' && rp.can_create) m.can_create = true
+          if (action === 'edit'   && rp.can_edit)   m.can_edit   = true
+          if (action === 'delete' && rp.can_delete) m.can_delete = true
+          if (action === 'export' && rp.can_export) m.can_export = true
+          if (rp.data_scope) m.data_scope = rp.data_scope
         })
-        setPermissions(grouped)
-        // Expand all groups by default
-        const expanded: Record<string, boolean> = {}
-        Object.keys(grouped).forEach(group => expanded[group] = true)
-        setExpandedGroups(expanded)
       }
+
+      // Super Admin: mark every available action as checked (read-only display)
+      if (role.role_key === 'super_admin') {
+        Object.values(moduleMap).forEach(m => {
+          if (m.view_id)   m.can_view   = true
+          if (m.create_id) m.can_create = true
+          if (m.edit_id)   m.can_edit   = true
+          if (m.delete_id) m.can_delete = true
+          if (m.export_id) m.can_export = true
+          m.data_scope = 'all'
+        })
+      }
+
+      // Group collapsed modules by permission_group for display
+      const grouped: Record<string, ModulePermission[]> = {}
+      Object.values(moduleMap).forEach(m => {
+        const g = m.permission_group || 'Other'
+        if (!grouped[g]) grouped[g] = []
+        grouped[g].push(m)
+      })
+      setModulePerms(grouped)
+
+      // Expand all groups by default
+      const expanded: Record<string, boolean> = {}
+      Object.keys(grouped).forEach(g => { expanded[g] = true })
+      setExpandedGroups(expanded)
     } catch (error) {
       console.error('Fetch permissions error:', error)
+      toast.error('Failed to load permission catalog')
+    } finally {
+      setPermLoading(false)
     }
   }
 
@@ -164,14 +238,42 @@ export default function RolesPage() {
     }
   }
 
+  const togglePermission = (group: string, moduleKey: string, field: 'can_view' | 'can_create' | 'can_edit' | 'can_delete' | 'can_export') => {
+    if (selectedRole?.role_key === 'super_admin') return
+    setModulePerms(prev => ({
+      ...prev,
+      [group]: prev[group].map(m =>
+        m.module_key === moduleKey ? { ...m, [field]: !m[field] } : m
+      )
+    }))
+  }
+
   const handleUpdatePermissions = async () => {
-    if (!selectedRole) return
+    if (!selectedRole || selectedRole.role_key === 'super_admin') return
     setSubmitting(true)
     try {
-      const flatPermissions = Object.values(permissions).flat()
+      const actions = ['view', 'create', 'edit', 'delete', 'export'] as const
+      const payload: any[] = []
+      Object.values(modulePerms).flat().forEach(m => {
+        actions.forEach(action => {
+          const permId = (m as any)[`${action}_id`] as number | undefined
+          if (!permId) return
+          if (m[`can_${action}`]) {
+            payload.push({
+              permission_id: permId,
+              can_view:   action === 'view'   ? 1 : 0,
+              can_create: action === 'create' ? 1 : 0,
+              can_edit:   action === 'edit'   ? 1 : 0,
+              can_delete: action === 'delete' ? 1 : 0,
+              can_export: action === 'export' ? 1 : 0,
+              data_scope: m.data_scope || 'assigned'
+            })
+          }
+        })
+      })
       const res = await apiRequest(`/admin-roles/${selectedRole.id}/permissions`, {
         method: 'PUT',
-        body: JSON.stringify({ permissions: flatPermissions })
+        body: JSON.stringify({ permissions: payload })
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.message || 'Failed to update permissions')
@@ -189,15 +291,6 @@ export default function RolesPage() {
     }
   }
 
-  const togglePermission = (group: string, permIndex: number, field: 'can_view' | 'can_create' | 'can_edit' | 'can_delete' | 'can_export') => {
-    setPermissions(prev => ({
-      ...prev,
-      [group]: prev[group].map((perm, idx) =>
-        idx === permIndex ? { ...perm, [field]: !perm[field] } : perm
-      )
-    }))
-  }
-
   const openEditModal = (role: Role) => {
     setSelectedRole(role)
     setFormData({
@@ -210,7 +303,8 @@ export default function RolesPage() {
 
   const openPermissionModal = (role: Role) => {
     setSelectedRole(role)
-    fetchRolePermissions(role.id)
+    setModulePerms({})
+    fetchRolePermissions(role.id, role)
     setShowPermissionModal(true)
   }
 
@@ -421,112 +515,138 @@ export default function RolesPage() {
         {/* Permissions Modal */}
         {showPermissionModal && selectedRole && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl border border-[#DCE8E3] bg-white flex flex-col">
-              <div className="flex items-center justify-between border-b border-[#DCE8E3] p-6">
+            <div className="flex w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-[#DCE8E3] bg-white" style={{ maxHeight: '90vh' }}>
+
+              {/* Header */}
+              <div className="flex shrink-0 items-center justify-between border-b border-[#DCE8E3] px-6 py-5">
                 <div>
                   <h2 className="text-xl font-black text-[#0F1F1A]">Permissions: {selectedRole.role_name}</h2>
                   <p className="text-sm text-[#5F6F68]">Configure access for this role</p>
                 </div>
-                <button
-                  onClick={() => { setShowPermissionModal(false); setSelectedRole(null) }}
-                  className="rounded-xl p-2 text-[#5F6F68] hover:bg-[#F3F8F6]"
-                >
-                  <X className="h-5 w-5" />
-                </button>
+                <div className="flex items-center gap-3">
+                  {selectedRole.role_key === 'super_admin' && (
+                    <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-amber-700">Full System Access</span>
+                  )}
+                  <button
+                    onClick={() => { setShowPermissionModal(false); setSelectedRole(null) }}
+                    className="rounded-xl p-2 text-[#5F6F68] hover:bg-[#F3F8F6]"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
               </div>
 
+              {/* Super Admin banner */}
+              {selectedRole.role_key === 'super_admin' && (
+                <div className="shrink-0 border-b border-amber-100 bg-amber-50 px-6 py-3">
+                  <p className="text-sm font-bold text-amber-800">
+                    Super Admin bypasses all permission checks and always has full system access. The matrix below is read-only.
+                  </p>
+                </div>
+              )}
+
+              {/* Body */}
               <div className="flex-1 overflow-y-auto p-6">
-                {Object.entries(permissions).map(([group, perms]) => (
-                  <div key={group} className="mb-4">
-                    <button
-                      onClick={() => toggleGroup(group)}
-                      className="flex items-center gap-2 text-sm font-black uppercase tracking-wider text-[#5F6F68] hover:text-[#0F1F1A]"
-                    >
-                      {expandedGroups[group] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                      {group}
-                    </button>
-                    
-                    {expandedGroups[group] && (
-                      <div className="mt-3 overflow-hidden rounded-xl border border-[#DCE8E3]">
-                        <table className="w-full">
-                          <thead className="bg-[#F3F8F6]">
-                            <tr>
-                              <th className="px-4 py-2 text-left text-xs font-bold text-[#5F6F68]">Module</th>
-                              <th className="px-4 py-2 text-center text-xs font-bold text-[#5F6F68]">View</th>
-                              <th className="px-4 py-2 text-center text-xs font-bold text-[#5F6F68]">Create</th>
-                              <th className="px-4 py-2 text-center text-xs font-bold text-[#5F6F68]">Edit</th>
-                              <th className="px-4 py-2 text-center text-xs font-bold text-[#5F6F68]">Delete</th>
-                              <th className="px-4 py-2 text-center text-xs font-bold text-[#5F6F68]">Export</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-[#DCE8E3]">
-                            {perms.map((perm, idx) => (
-                              <tr key={perm.id} className="hover:bg-[#F3F8F6]">
-                                <td className="px-4 py-2 text-sm font-bold text-[#0F1F1A]">{perm.module_name}</td>
-                                <td className="px-4 py-2 text-center">
-                                  <button
-                                    onClick={() => togglePermission(group, idx, 'can_view')}
-                                    className={`rounded-lg p-1 ${perm.can_view ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}
-                                  >
-                                    {perm.can_view ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-                                  </button>
-                                </td>
-                                <td className="px-4 py-2 text-center">
-                                  <button
-                                    onClick={() => togglePermission(group, idx, 'can_create')}
-                                    className={`rounded-lg p-1 ${perm.can_create ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}
-                                  >
-                                    {perm.can_create ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-                                  </button>
-                                </td>
-                                <td className="px-4 py-2 text-center">
-                                  <button
-                                    onClick={() => togglePermission(group, idx, 'can_edit')}
-                                    className={`rounded-lg p-1 ${perm.can_edit ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}
-                                  >
-                                    {perm.can_edit ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-                                  </button>
-                                </td>
-                                <td className="px-4 py-2 text-center">
-                                  <button
-                                    onClick={() => togglePermission(group, idx, 'can_delete')}
-                                    className={`rounded-lg p-1 ${perm.can_delete ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}
-                                  >
-                                    {perm.can_delete ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-                                  </button>
-                                </td>
-                                <td className="px-4 py-2 text-center">
-                                  <button
-                                    onClick={() => togglePermission(group, idx, 'can_export')}
-                                    className={`rounded-lg p-1 ${perm.can_export ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}
-                                  >
-                                    {perm.can_export ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                {permLoading ? (
+                  <div className="flex min-h-[220px] items-center justify-center">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#2FBF9B] border-t-transparent" />
+                  </div>
+                ) : Object.keys(modulePerms).length === 0 ? (
+                  <div className="flex min-h-[220px] flex-col items-center justify-center gap-3 text-center">
+                    <Shield className="h-10 w-10 text-[#9CB3AC]" />
+                    <p className="text-sm font-bold text-[#5F6F68]">No permission modules found</p>
+                    <p className="text-xs text-[#9CB3AC]">Ensure the admin_permissions table is seeded.</p>
+                  </div>
+                ) : (
+                  <>
+                    {selectedRole.role_key !== 'super_admin' &&
+                      Object.values(modulePerms).flat().every(m => !m.can_view && !m.can_create && !m.can_edit && !m.can_delete && !m.can_export) && (
+                      <div className="mb-4 rounded-xl bg-[#F3F8F6] px-4 py-3 text-sm text-[#5F6F68]">
+                        No permissions are selected for this role yet. Use the checkboxes below to configure access.
                       </div>
                     )}
-                  </div>
-                ))}
+                    {Object.entries(modulePerms).map(([group, mods]) => (
+                      <div key={group} className="mb-4">
+                        <button
+                          onClick={() => toggleGroup(group)}
+                          className="flex items-center gap-2 text-sm font-black uppercase tracking-wider text-[#5F6F68] hover:text-[#0F1F1A]"
+                        >
+                          {expandedGroups[group] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                          {group}
+                          <span className="ml-1 rounded-full bg-[#EAF8F3] px-2 py-0.5 text-[10px] font-black text-[#167E68]">{mods.length}</span>
+                        </button>
+                        {expandedGroups[group] && (
+                          <div className="mt-3 overflow-x-auto rounded-xl border border-[#DCE8E3]">
+                            <table className="w-full min-w-[560px]">
+                              <thead className="bg-[#F3F8F6]">
+                                <tr>
+                                  <th className="px-4 py-2.5 text-left text-xs font-bold text-[#5F6F68]">Module</th>
+                                  <th className="px-4 py-2.5 text-center text-xs font-bold text-[#5F6F68]">View</th>
+                                  <th className="px-4 py-2.5 text-center text-xs font-bold text-[#5F6F68]">Create</th>
+                                  <th className="px-4 py-2.5 text-center text-xs font-bold text-[#5F6F68]">Edit</th>
+                                  <th className="px-4 py-2.5 text-center text-xs font-bold text-[#5F6F68]">Delete</th>
+                                  <th className="px-4 py-2.5 text-center text-xs font-bold text-[#5F6F68]">Export</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-[#DCE8E3]">
+                                {mods.map(m => (
+                                  <tr key={m.module_key} className="hover:bg-[#F3F8F6]">
+                                    <td className="px-4 py-2.5 text-sm font-bold text-[#0F1F1A]">{m.module_name}</td>
+                                    {(['view', 'create', 'edit', 'delete', 'export'] as const).map(action => {
+                                      const permId = (m as any)[`${action}_id`] as number | undefined
+                                      const enabled = m[`can_${action}`]
+                                      return (
+                                        <td key={action} className="px-4 py-2.5 text-center">
+                                          {permId ? (
+                                            <button
+                                              onClick={() => togglePermission(group, m.module_key, `can_${action}`)}
+                                              disabled={selectedRole.role_key === 'super_admin'}
+                                              title={selectedRole.role_key === 'super_admin' ? 'Super Admin has full access' : undefined}
+                                              className={`rounded-lg p-1 transition ${
+                                                enabled ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
+                                              } ${
+                                                selectedRole.role_key === 'super_admin'
+                                                  ? 'cursor-default'
+                                                  : 'hover:ring-2 hover:ring-[#2FBF9B]/40'
+                                              }`}
+                                            >
+                                              {enabled ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
+                                            </button>
+                                          ) : (
+                                            <span className="text-xs text-[#DCE8E3]">—</span>
+                                          )}
+                                        </td>
+                                      )
+                                    })}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </>
+                )}
               </div>
 
-              <div className="flex justify-end gap-2 border-t border-[#DCE8E3] p-6">
+              {/* Footer */}
+              <div className="flex shrink-0 justify-end gap-2 border-t border-[#DCE8E3] px-6 py-4">
                 <button
                   onClick={() => { setShowPermissionModal(false); setSelectedRole(null) }}
                   className="rounded-xl border border-[#DCE8E3] px-6 py-2.5 text-sm font-bold text-[#0F1F1A] hover:bg-[#F3F8F6]"
                 >
-                  Cancel
+                  {selectedRole.role_key === 'super_admin' ? 'Close' : 'Cancel'}
                 </button>
-                <button
-                  onClick={handleUpdatePermissions}
-                  disabled={submitting}
-                  className="rounded-xl bg-[#2FBF9B] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#167E68] disabled:opacity-50"
-                >
-                  {submitting ? 'Saving...' : 'Save Permissions'}
-                </button>
+                {selectedRole.role_key !== 'super_admin' && (
+                  <button
+                    onClick={handleUpdatePermissions}
+                    disabled={submitting || permLoading}
+                    className="rounded-xl bg-[#2FBF9B] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#167E68] disabled:opacity-50"
+                  >
+                    {submitting ? 'Saving...' : 'Save Permissions'}
+                  </button>
+                )}
               </div>
             </div>
           </div>

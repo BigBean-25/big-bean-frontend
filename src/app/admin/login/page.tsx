@@ -11,7 +11,7 @@ import {
   Lock
 } from 'lucide-react'
 import { apiRequest } from '@/utils/api'
-import { saveAdminAuthData } from '@/lib/adminPermissions'
+import { saveAdminAuthData, getFirstAllowedAdminRoute } from '@/lib/adminPermissions'
 import styles from './page.module.css'
 
 /* ── static data for preview panel ─────────────────────── */
@@ -65,7 +65,7 @@ export default function AdminLogin() {
         const menuAccess  = data.menuAccess  || data.menu_access || {}
 
         saveAdminAuthData(token, user, permissions, menuAccess)
-        router.replace('/admin/dashboard')
+        router.replace(getFirstAllowedAdminRoute())
       } else {
         setError(data.message || 'Login failed. Please try again.')
       }

@@ -15,9 +15,11 @@ import { formatTimeAgo } from '@/lib/timeAgo'
 import { apiRequest } from '@/lib/api'
 import {
   isSuperAdmin, filterMenuByPermissions, clearAdminAuthData,
-  getAdminToken, getAdminUser, saveAdminAuthData
+  getAdminToken, getAdminUser, saveAdminAuthData,
+  canAccessRoute
 } from '@/lib/adminPermissions'
 import AdminSidebar from '@/components/admin/AdminSidebar'
+import AccessRestricted from '@/components/admin/AccessRestricted'
 import AdminDateTime from '@/components/admin/AdminDateTime'
 import { Toaster } from 'react-hot-toast'
 
@@ -469,7 +471,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           {/* Page content */}
           <main className="min-h-[calc(100vh-68px)] p-5 lg:p-8">
-            {children}
+            {(isSuperAdmin() || canAccessRoute(pathname))
+              ? children
+              : <AccessRestricted />}
           </main>
         </div>
       </div>
