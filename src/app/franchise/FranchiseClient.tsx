@@ -356,8 +356,8 @@ export default function Franchise() {
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {[
-                { icon: '₹', t: 'Investment Range', d: '₹25–50 Lakhs (indicative, varies by location and format)' },
-                { icon: '📐', t: 'Preferred Space', d: '800–1500 sq. ft. in a high-visibility commercial area' },
+                { icon: '₹', t: 'Investment Range', d: 'Upfront Investment ₹85 Lakhs' },
+                { icon: '📐', t: 'Preferred Space', d: '1000 sq. ft.' },
                 { icon: '📍', t: 'Location Type', d: 'High-footfall locations: malls, high streets, office zones, residential hubs' },
                 { icon: '✅', t: 'Brand Standards', d: 'Adherence to Big Bean café identity, SOP and customer experience norms' },
                 { icon: '🎯', t: 'Operations Discipline', d: 'Commitment to quality, hygiene and consistent service standards' },
@@ -429,11 +429,9 @@ export default function Franchise() {
                       <div><label className={lc} style={{ color: '#3D1F0D' }}>Investment Range</label>
                         <select className={ic} name="investmentRange" value={formData.investmentRange} onChange={handleChange}>
                           <option value="">Select range</option>
-                          <option>₹25–30 Lakhs</option>
-                          <option>₹30–40 Lakhs</option>
-                          <option>₹40–50 Lakhs</option>
-                          <option>₹50+ Lakhs</option>
-                          <option>Need guidance</option>
+                          <option>₹50 – ₹75 Lakhs</option>
+                          <option>₹75 – ₹85 Lakhs</option>
+                          <option>₹1 Crore+</option>
                         </select>
                       </div>
                     </div>
@@ -456,8 +454,8 @@ export default function Franchise() {
                 <div className="rounded-3xl p-6 border" style={{ background: 'linear-gradient(135deg,#120905,#3D1F0D)', borderColor: 'rgba(201,148,58,0.3)' }}>
                   <p className="text-xs font-bold tracking-widest mb-4" style={{ color: '#C9943A' }}>FRANCHISE SNAPSHOT</p>
                   {[
-                    ['Investment', '₹25–50 Lakhs (approx.)'],
-                    ['Space', '800–1500 sq. ft.'],
+                    ['Investment', 'Upfront Investment ₹85 Lakhs'],
+                    ['Space', '1000 sq. ft.'],
                     ['Model', 'FOCO / Brand-led'],
                     ['Brand Support', '360° support'],
                     ['Response Time', 'Within 48 hours'],
