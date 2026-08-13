@@ -432,6 +432,7 @@ export default function Franchise() {
                           <option>₹50 – ₹75 Lakhs</option>
                           <option>₹75 – ₹85 Lakhs</option>
                           <option>₹1 Crore+</option>
+                          <option>Need guidance</option>
                         </select>
                       </div>
                     </div>
