@@ -1,5 +1,4 @@
 import {
-  generateLocalBusinessSchema,
   generateOrganizationSchema,
   websiteSchema,
 } from '@/lib/schema'
@@ -28,7 +27,6 @@ export default async function GlobalSeoScripts() {
   const bingKey = settings.bing_verification      || null
   const fbKey  = settings.facebook_domain_verification || null
 
-  const lbSchema  = generateLocalBusinessSchema(settings)
   const orgSchema = generateOrganizationSchema(settings)
 
   return (
@@ -42,10 +40,6 @@ export default async function GlobalSeoScripts() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(lbSchema) }}
       />
       <script
         type="application/ld+json"

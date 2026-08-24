@@ -19,6 +19,11 @@ interface OutletForm {
   status: 'active' | 'inactive'
   sort_order: string
   store_branch_id: string
+  seo_title: string
+  seo_description: string
+  seo_h1: string
+  og_title: string
+  og_description: string
 }
 
 export default function AddOutlet() {
@@ -34,7 +39,12 @@ export default function AddOutlet() {
     longitude: '',
     status: 'active',
     sort_order: '0',
-    store_branch_id: ''
+    store_branch_id: '',
+    seo_title: '',
+    seo_description: '',
+    seo_h1: '',
+    og_title: '',
+    og_description: ''
   })
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -87,6 +97,11 @@ export default function AddOutlet() {
       fd.append('status',           formData.status || 'active')
       fd.append('sort_order',       formData.sort_order || '0')
       fd.append('store_branch_id',  formData.store_branch_id || '')
+      fd.append('seo_title',        formData.seo_title || '')
+      fd.append('seo_description',  formData.seo_description || '')
+      fd.append('seo_h1',           formData.seo_h1 || '')
+      fd.append('og_title',         formData.og_title || '')
+      fd.append('og_description',   formData.og_description || '')
       if (selectedImage) fd.append('image', selectedImage)
 
 
@@ -223,6 +238,62 @@ export default function AddOutlet() {
             </div>
             <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/jpg,image/webp"
               className="hidden" onChange={handleImageChange} />
+          </div>
+        </div>
+
+        {/* SEO & Search Settings */}
+        <div className="card p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">SEO &amp; Search Settings</h2>
+          <p className="text-sm text-gray-500 mb-6">
+            Per-outlet metadata for the public outlet page. OG URL and JSON-LD are generated automatically from the canonical URL and outlet data.
+          </p>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">SEO Title</label>
+            <input type="text" name="seo_title" value={formData.seo_title} onChange={handleInputChange}
+              className="input-field" placeholder="e.g. Big Bean Cafe Koramangala | Coffee, Breakfast & Brunch" />
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-xs text-gray-500">Recommended ~50–60 characters. Falls back to outlet name if empty.</p>
+              <p className="text-xs text-gray-500">{formData.seo_title.length} / 60</p>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Meta Description</label>
+            <textarea name="seo_description" value={formData.seo_description} onChange={handleInputChange}
+              rows={3} className="input-field"
+              placeholder="e.g. Visit Big Bean Cafe on 80 Feet Road, Koramangala, Bengaluru, for specialty coffee, breakfast, brunch and desserts." />
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-xs text-gray-500">Recommended ~140–160 characters.</p>
+              <p className="text-xs text-gray-500">{formData.seo_description.length} / 160</p>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">SEO H1</label>
+            <input type="text" name="seo_h1" value={formData.seo_h1} onChange={handleInputChange}
+              className="input-field" placeholder="e.g. Big Bean Cafe - Koramangala" />
+            <p className="text-xs text-gray-500 mt-1">Visible page heading. Falls back to the outlet name if empty.</p>
+          </div>
+
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Canonical URL</label>
+            <input type="text" readOnly
+              value={`https://www.bigbeancafe.in/outlets/${formData.slug || 'slug'}`}
+              className="input-field bg-gray-50 text-gray-500 cursor-not-allowed" />
+            <p className="text-xs text-gray-500 mt-1">Auto-generated from the slug. Used for rel=canonical and og:url.</p>
+          </div>
+
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Open Graph Title</label>
+            <input type="text" name="og_title" value={formData.og_title} onChange={handleInputChange}
+              className="input-field" placeholder="Defaults to SEO Title when empty" />
+          </div>
+
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Open Graph Description</label>
+            <textarea name="og_description" value={formData.og_description} onChange={handleInputChange}
+              rows={3} className="input-field" placeholder="Defaults to Meta Description when empty" />
           </div>
         </div>
 

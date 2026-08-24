@@ -437,28 +437,49 @@ export default function Outlets() {
                   ? `https://www.google.com/maps/search/${encodeURIComponent(outlet.address)}`
                   : null
 
+                const detailHref = outlet.slug ? `/outlets/${outlet.slug}` : null
+
                 return (
                   <div key={outlet.id}
                     style={{ borderRadius: 30, overflow: 'hidden', background: '#fff', border: '1px solid #E6C7A8', boxShadow: '0 4px 20px rgba(61,31,13,0.06)', transition: 'all 0.28s', display: 'flex', flexDirection: 'column' }}
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-6px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 20px 52px rgba(61,31,13,0.14)'; (e.currentTarget as HTMLElement).style.borderColor = '#C9943A' }}
                     onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(61,31,13,0.06)'; (e.currentTarget as HTMLElement).style.borderColor = '#E6C7A8' }}>
 
-                    <div style={{ height: 240, position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg,#3D1F0D,#6B3520,#C9943A)', flexShrink: 0 }}>
-                      {imgUrl ? (
-                        <img src={imgUrl} alt={outlet.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLImageElement).style.transform = 'scale(1.06)' }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLImageElement).style.transform = 'scale(1)' }} />
-                      ) : (
-                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Store style={{ width: 52, height: 52, color: 'rgba(255,247,237,0.35)' }} />
+                    {detailHref ? (
+                      <Link href={detailHref} style={{ display: 'block', textDecoration: 'none', height: 240, position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg,#3D1F0D,#6B3520,#C9943A)', flexShrink: 0 }}
+                        onMouseEnter={e => { const img = e.currentTarget.querySelector('img'); if (img) img.style.transform = 'scale(1.06)' }}
+                        onMouseLeave={e => { const img = e.currentTarget.querySelector('img'); if (img) img.style.transform = 'scale(1)' }}>
+                        {imgUrl ? (
+                          <img src={imgUrl} alt={outlet.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }} />
+                        ) : (
+                          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Store style={{ width: 52, height: 52, color: 'rgba(255,247,237,0.35)' }} />
+                          </div>
+                        )}
+                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,13,7,0.75) 0%, rgba(26,13,7,0.1) 55%, transparent 100%)' }} />
+                        <div style={{ position: 'absolute', bottom: 14, left: 16, right: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+                          <h3 className="font-heading" style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFF7ED', lineHeight: 1.2, textShadow: '0 1px 6px rgba(0,0,0,0.5)', maxWidth: '75%' }}>{outlet.name}</h3>
+                          <span style={{ background: 'rgba(34,197,94,0.88)', color: '#fff', borderRadius: 20, padding: '0.2rem 0.65rem', fontSize: '0.65rem', fontWeight: 800, flexShrink: 0 }}>Active</span>
                         </div>
-                      )}
-                      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,13,7,0.75) 0%, rgba(26,13,7,0.1) 55%, transparent 100%)' }} />
-                      <div style={{ position: 'absolute', bottom: 14, left: 16, right: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-                        <h3 className="font-heading" style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFF7ED', lineHeight: 1.2, textShadow: '0 1px 6px rgba(0,0,0,0.5)', maxWidth: '75%' }}>{outlet.name}</h3>
-                        <span style={{ background: 'rgba(34,197,94,0.88)', color: '#fff', borderRadius: 20, padding: '0.2rem 0.65rem', fontSize: '0.65rem', fontWeight: 800, flexShrink: 0 }}>Active</span>
+                      </Link>
+                    ) : (
+                      <div style={{ height: 240, position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg,#3D1F0D,#6B3520,#C9943A)', flexShrink: 0 }}>
+                        {imgUrl ? (
+                          <img src={imgUrl} alt={outlet.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLImageElement).style.transform = 'scale(1.06)' }}
+                            onMouseLeave={e => { (e.currentTarget as HTMLImageElement).style.transform = 'scale(1)' }} />
+                        ) : (
+                          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Store style={{ width: 52, height: 52, color: 'rgba(255,247,237,0.35)' }} />
+                          </div>
+                        )}
+                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,13,7,0.75) 0%, rgba(26,13,7,0.1) 55%, transparent 100%)' }} />
+                        <div style={{ position: 'absolute', bottom: 14, left: 16, right: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+                          <h3 className="font-heading" style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFF7ED', lineHeight: 1.2, textShadow: '0 1px 6px rgba(0,0,0,0.5)', maxWidth: '75%' }}>{outlet.name}</h3>
+                          <span style={{ background: 'rgba(34,197,94,0.88)', color: '#fff', borderRadius: 20, padding: '0.2rem 0.65rem', fontSize: '0.65rem', fontWeight: 800, flexShrink: 0 }}>Active</span>
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <div style={{ padding: '1.25rem 1.4rem', display: 'flex', flexDirection: 'column', flex: 1, gap: '0.55rem' }}>
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.55rem' }}>
@@ -480,6 +501,17 @@ export default function Outlets() {
                         </div>
                       )}
                     </div>
+
+                    {detailHref && (
+                      <div style={{ padding: '0 1.4rem 0.8rem' }}>
+                        <Link href={detailHref}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: '#C9943A', fontSize: '0.8rem', fontWeight: 800, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.04em', transition: 'color 0.18s' }}
+                          onMouseEnter={e => (e.currentTarget.style.color = '#8B4A2F')}
+                          onMouseLeave={e => (e.currentTarget.style.color = '#C9943A')}>
+                          View Outlet <ArrowRight style={{ width: 14, height: 14 }} />
+                        </Link>
+                      </div>
+                    )}
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem', padding: '0 1.4rem 1.4rem' }}>
                       <Link href="/reservations"

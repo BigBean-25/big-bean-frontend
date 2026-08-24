@@ -28,7 +28,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://bigbeancafe.in'),
   title: 'Big Bean Café Coffee Roasters',
   description: 'Premium coffee, café dining, events and franchise opportunities.',
-  keywords: 'coffee, café, big bean café, coffee roasters, premium coffee, bangalore café',
   icons: {
     icon: [
       { url: '/logo/big-bean-cafe-logo-transparent.png', type: 'image/png' },
