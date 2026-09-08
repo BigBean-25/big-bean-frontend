@@ -224,7 +224,7 @@ export default function OurStoryClient() {
   }, [])
 
   const rawImage = isMobile && hero.mobile_hero_image ? hero.mobile_hero_image : hero.hero_image
-  const heroImg = getImageUrl(rawImage, '/images/highlights/coffee.jpg')
+  const heroImg = getImageUrl(rawImage, '/images/about/about-story-girl-cafe.png')
   const overlay = Number(hero.overlay_opacity ?? 0.45)
 
   const heroRef = useReveal()

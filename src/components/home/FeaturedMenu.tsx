@@ -17,18 +17,18 @@ const PRIORITY_CATEGORIES = ['Hot Beverages', 'Cold Beverages', 'Food', 'Bakery'
 function getCategoryFallback(label = '') {
   const l = label.toLowerCase()
   if (l.includes('beverage') || l.includes('coffee') || l.includes('drink') || l.includes('shake')) {
-    return '/images/highlights/coffee.jpg'
+    return '/images/highlights/premium-coffee.webp'
   }
   if (l.includes('food') || l.includes('snack') || l.includes('sandwich')) {
-    return '/images/highlights/food.jpg'
+    return '/images/highlights/delicious-food.webp'
   }
   if (l.includes('bakery') || l.includes('dessert') || l.includes('sweet') || l.includes('cake')) {
-    return '/images/highlights/dessert.jpg'
+    return '/images/highlights/desserts.webp'
   }
-  return '/images/highlights/coffee.jpg'
+  return '/images/highlights/premium-coffee.webp'
 }
 
-function getImageUrl(image?: string | null, fallback = '/images/highlights/coffee.jpg') {
+function getImageUrl(image?: string | null, fallback = '/images/highlights/premium-coffee.webp') {
   if (!image) return fallback
 
   const img = String(image).trim()
@@ -60,10 +60,10 @@ interface FeaturedItem {
 }
 
 const FALLBACK_ITEMS: FeaturedItem[] = [
-  { id: 1, name: 'Biscoff Shake',     description: 'Thick, creamy shake blended with caramelized Biscoff cookies.', image_url: '/images/highlights/coffee.jpg',  display_price: '₹290',  is_veg: true,  categoryLabel: 'Cold Beverages', fallbackImg: '/images/highlights/coffee.jpg' },
-  { id: 2, name: 'Espresso Tonic',    description: 'Short shot of espresso poured over ice with tonic water.',         image_url: '/images/highlights/coffee.jpg',  display_price: '₹280',  is_veg: true,  categoryLabel: 'Cold Beverages', fallbackImg: '/images/highlights/coffee.jpg' },
-  { id: 3, name: 'Café Sandwich',     description: 'Fresh café sandwich served with delicious fillings and sides.',     image_url: '/images/highlights/food.jpg',    display_price: 'View Menu', is_veg: false, categoryLabel: 'Food',           fallbackImg: '/images/highlights/food.jpg' },
-  { id: 4, name: 'Chocolate Dessert', description: 'A sweet café dessert made for perfect coffee moments.',              image_url: '/images/highlights/dessert.jpg', display_price: 'View Menu', is_veg: true,  categoryLabel: 'Dessert',        fallbackImg: '/images/highlights/dessert.jpg' },
+  { id: 1, name: 'Biscoff Shake',     description: 'Thick, creamy shake blended with caramelized Biscoff cookies.', image_url: '/images/highlights/premium-coffee.webp',  display_price: '₹290',  is_veg: true,  categoryLabel: 'Cold Beverages', fallbackImg: '/images/highlights/premium-coffee.webp' },
+  { id: 2, name: 'Espresso Tonic',    description: 'Short shot of espresso poured over ice with tonic water.',         image_url: '/images/highlights/premium-coffee.webp',  display_price: '₹280',  is_veg: true,  categoryLabel: 'Cold Beverages', fallbackImg: '/images/highlights/premium-coffee.webp' },
+  { id: 3, name: 'Café Sandwich',     description: 'Fresh café sandwich served with delicious fillings and sides.',     image_url: '/images/highlights/delicious-food.webp',    display_price: 'View Menu', is_veg: false, categoryLabel: 'Food',           fallbackImg: '/images/highlights/delicious-food.webp' },
+  { id: 4, name: 'Chocolate Dessert', description: 'A sweet café dessert made for perfect coffee moments.',              image_url: '/images/highlights/desserts.webp', display_price: 'View Menu', is_veg: true,  categoryLabel: 'Dessert',        fallbackImg: '/images/highlights/desserts.webp' },
 ]
 
 function ProductImg({ src, fallback, alt }: { src: string; fallback: string; alt: string }) {
@@ -201,7 +201,7 @@ export default function FeaturedMenu() {
 
   return (
     <section className={styles.section}>
-      <div className={`container-custom ${styles.innerContainer}`}> 
+      <div className={`container-custom ${styles.innerContainer}`}>
 
         {/* ── Heading ── */}
         <div className={`text-center ${styles.headingWrap}`}>

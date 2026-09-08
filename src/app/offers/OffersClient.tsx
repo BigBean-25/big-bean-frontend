@@ -71,7 +71,7 @@ const FALLBACK_OFFERS: Offer[] = [
     offer_code: 'WEDBOGO',
     start_date: null,
     end_date: null,
-    image: '/images/highlights/coffee.jpg',
+    image: '/images/highlights/premium-coffee.webp',
     button_text: 'ORDER NOW',
     button_url: 'https://bigbeancafe.store',
     status: 'active',

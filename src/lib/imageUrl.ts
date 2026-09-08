@@ -1,7 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 const BACKEND_ORIGIN = API_URL.replace(/\/api$/, '')
 
-export function getImageUrl(image?: string | null, fallback = '/images/highlights/coffee.jpg') {
+export function getImageUrl(image?: string | null, fallback = '/images/highlights/premium-coffee.webp') {
   if (!image) return fallback
   const img = String(image).trim()
   if (!img) return fallback
