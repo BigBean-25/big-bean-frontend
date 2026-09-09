@@ -79,7 +79,7 @@ export default function FranchiseCTA() {
                 <ArrowRight size={18} />
               </a>
               <a href="/franchise" className={s.btnSecondary}>
-                Learn More
+                Explore Franchise
               </a>
             </div>
           </div>
