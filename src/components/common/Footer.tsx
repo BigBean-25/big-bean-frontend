@@ -123,6 +123,7 @@ export default function Footer() {
                   itemClassName={s.brandFlipItem}
                   frontClassName={s.brandFlipFront}
                   backClassName={s.brandFlipBack}
+                  mode="icon"
                 />
               </div>
             )}

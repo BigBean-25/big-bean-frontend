@@ -27,6 +27,7 @@ interface SocialFlipButtonProps {
     itemClassName?: string;
     frontClassName?: string;
     backClassName?: string;
+    mode?: 'flip' | 'icon';
 }
 
 const defaultItems: SocialItem[] = [
@@ -48,6 +49,7 @@ const SocialFlipNode = ({
     itemClassName,
     frontClassName,
     backClassName,
+    mode,
 }: {
     item: SocialItem;
     index: number;
@@ -57,25 +59,29 @@ const SocialFlipNode = ({
     itemClassName?: string;
     frontClassName?: string;
     backClassName?: string;
+    mode?: 'flip' | 'icon';
 }) => {
     const Wrapper = item.href ? "a" : "div";
     const wrapperProps = item.href
         ? { href: item.href, target: "_blank", rel: "noopener noreferrer" }
         : { onClick: item.onClick };
 
+    const isIconMode = mode === 'icon';
+    const showTooltip = isIconMode ? tooltipIndex === index : isHovered && tooltipIndex === index;
+
     return (
         <Wrapper
             {...wrapperProps}
             className={cn("relative h-10 w-10 cursor-pointer", itemClassName)}
-            style={{ perspective: "1000px" }}
+            style={isIconMode ? undefined : { perspective: "1000px" }}
             onMouseEnter={() => setTooltipIndex(index)}
             onMouseLeave={() => setTooltipIndex(null)}
         >
             <AnimatePresence>
-                {isHovered && tooltipIndex === index && (
+                {showTooltip && (
                     <motion.div
                         initial={{ opacity: 0, y: 10, scale: 0.8, x: "-50%" }}
-                        animate={{ opacity: 1, y: -50, scale: 1, x: "-50%" }}
+                        animate={{ opacity: 1, y: -48, scale: 1, x: "-50%" }}
                         exit={{ opacity: 0, y: 10, scale: 0.8, x: "-50%" }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
                         className="absolute left-1/2 z-50 whitespace-nowrap rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-white shadow-xl"
@@ -86,44 +92,57 @@ const SocialFlipNode = ({
                 )}
             </AnimatePresence>
 
-            <motion.div
-                className="relative h-full w-full"
-                initial={false}
-                animate={{ rotateY: isHovered ? 180 : 0 }}
-                transition={{
-                    duration: 0.8,
-                    type: "spring",
-                    stiffness: 120,
-                    damping: 15,
-                    delay: index * 0.08,
-                }}
-                style={{ transformStyle: "preserve-3d" }}
-            >
-                {/* Front - Letter */}
-                <div
+            {isIconMode ? (
+                <motion.div
                     className={cn(
-                        "absolute inset-0 flex items-center justify-center rounded-lg bg-neutral-100 text-lg font-bold text-neutral-800 shadow-sm",
-                        frontClassName
-                    )}
-                    style={{ backfaceVisibility: "hidden" }}
-                >
-                    {item.letter}
-                </div>
-
-                {/* Back - Icon */}
-                <div
-                    className={cn(
-                        "absolute inset-0 flex items-center justify-center rounded-lg bg-black text-lg text-white",
+                        "absolute inset-0 flex items-center justify-center rounded-lg text-lg",
                         backClassName
                     )}
-                    style={{
-                        backfaceVisibility: "hidden",
-                        transform: "rotateY(180deg)",
-                    }}
+                    whileHover={{ scale: 1.08, y: -2 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
                 >
                     {item.icon}
-                </div>
-            </motion.div>
+                </motion.div>
+            ) : (
+                <motion.div
+                    className="relative h-full w-full"
+                    initial={false}
+                    animate={{ rotateY: isHovered ? 180 : 0 }}
+                    transition={{
+                        duration: 0.8,
+                        type: "spring",
+                        stiffness: 120,
+                        damping: 15,
+                        delay: index * 0.08,
+                    }}
+                    style={{ transformStyle: "preserve-3d" }}
+                >
+                    {/* Front - Letter */}
+                    <div
+                        className={cn(
+                            "absolute inset-0 flex items-center justify-center rounded-lg bg-neutral-100 text-lg font-bold text-neutral-800 shadow-sm",
+                            frontClassName
+                        )}
+                        style={{ backfaceVisibility: "hidden" }}
+                    >
+                        {item.letter}
+                    </div>
+
+                    {/* Back - Icon */}
+                    <div
+                        className={cn(
+                            "absolute inset-0 flex items-center justify-center rounded-lg bg-black text-lg text-white",
+                            backClassName
+                        )}
+                        style={{
+                            backfaceVisibility: "hidden",
+                            transform: "rotateY(180deg)",
+                        }}
+                    >
+                        {item.icon}
+                    </div>
+                </motion.div>
+            )}
         </Wrapper>
     );
 };
@@ -134,6 +153,7 @@ export default function SocialFlipButton({
     itemClassName,
     frontClassName,
     backClassName,
+    mode = 'flip',
 }: SocialFlipButtonProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [tooltipIndex, setTooltipIndex] = useState<number | null>(null);
@@ -173,6 +193,7 @@ export default function SocialFlipButton({
                         itemClassName={itemClassName}
                         frontClassName={frontClassName}
                         backClassName={backClassName}
+                        mode={mode}
                     />
                 ))}
             </div>
