@@ -5,7 +5,7 @@ import MenuClient from './MenuClient'
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSeo('menu')
   return buildMetadata(seo, {
-    title: 'Big Bean Café Menu | Coffee, Food, Desserts & Beverages',
+    title: 'Big Bean Cafe Menu | Coffee, Breakfast, Pizza & Desserts in Bengaluru',
     description: 'Explore the Big Bean Café menu with handcrafted coffee, fresh beverages, café bites, desserts and all-day favourites across Bengaluru outlets.',
     path: '/menu',
   })

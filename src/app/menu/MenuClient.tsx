@@ -1266,7 +1266,7 @@ export default function Menu() {
             <Coffee style={{ width: 40, height: 40, color: '#C9943A', margin: '0 auto 1rem' }} />
             <h2 className="font-heading" style={{ fontSize: 'clamp(1.6rem,3vw,2.4rem)', fontWeight: 900, color: '#FFF7ED', marginBottom: '0.75rem' }}>Ready to Order?</h2>
             <p style={{ fontSize: '0.95rem', color: '#C7A489', lineHeight: 1.75, marginBottom: '1.8rem' }}>
-              Enjoy your favourite coffee and food from Big Bean Cafe. Order online or visit our Koramangala café today.
+              Enjoy your favourite coffee and food from Big Bean Cafe. Order online or visit your nearest Bengaluru café today.
             </p>
             <a href={ORDER_URL} target="_blank" rel="noopener noreferrer"
               style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#C9943A', color: '#120905', borderRadius: 100, padding: '0.9rem 2.2rem', fontSize: '0.82rem', fontWeight: 900, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.08em', boxShadow: '0 12px 32px rgba(201,148,58,0.30)', transition: 'all 0.22s' }}
