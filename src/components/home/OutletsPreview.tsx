@@ -67,7 +67,7 @@ export default function OutletsPreview() {
       <div className="container-custom">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold font-heading mb-4" style={{ color: '#3D1F0D' }}>
-            Visit Our Koramangala Cafe
+            Find a Big Bean Cafe Near You in Bengaluru
           </h2>
           <p className="text-lg max-w-3xl mx-auto" style={{ color: '#6B3520' }}>
             Find your nearest Big Bean Café and enjoy coffee, food, and café moments.
@@ -76,15 +76,15 @@ export default function OutletsPreview() {
 
         {/* ── Skeleton ── */}
         {loading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 xl:gap-8">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="overflow-hidden rounded-[28px] border border-[#E6C7A8] bg-white animate-pulse shadow-lg">
-                <div className="h-[220px] md:h-[240px] xl:h-[280px] bg-gray-200" />
-                <div className="p-7 space-y-3">
-                  <div className="h-6 bg-gray-200 rounded w-3/4" />
+                <div className="h-[180px] md:h-[195px] xl:h-[215px] bg-gray-200" />
+                <div className="p-5 md:p-6 space-y-2.5">
+                  <div className="h-5 bg-gray-200 rounded w-3/4" />
                   <div className="h-4 bg-gray-100 rounded w-full" />
                   <div className="h-4 bg-gray-100 rounded w-2/3" />
-                  <div className="h-10 bg-gray-200 rounded-full mt-4" />
+                  <div className="h-9 bg-gray-200 rounded-full mt-3" />
                 </div>
               </div>
             ))}
@@ -105,7 +105,7 @@ export default function OutletsPreview() {
 
         {/* ── Cards ── */}
         {!loading && !error && outlets.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 xl:gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 xl:gap-8">
             {outlets.map((outlet) => {
               const imgUrl = getImageUrl(outlet.image)
               return (
@@ -114,7 +114,7 @@ export default function OutletsPreview() {
                   className="group overflow-hidden rounded-[28px] border border-[#E6C7A8] bg-white shadow-[0_18px_50px_rgba(61,31,13,0.10)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_28px_70px_rgba(61,31,13,0.18)]"
                 >
                   {/* Image */}
-                  <div className="relative h-[220px] md:h-[240px] xl:h-[280px] overflow-hidden bg-gradient-to-br from-[#3D1F0D] to-[#1A0D07] flex items-center justify-center">
+                  <div className="relative h-[180px] md:h-[195px] xl:h-[215px] overflow-hidden bg-gradient-to-br from-[#3D1F0D] to-[#1A0D07] flex items-center justify-center">
                     {imgUrl ? (
                       <img
                         src={imgUrl}
@@ -138,11 +138,11 @@ export default function OutletsPreview() {
                   </div>
 
                   {/* Content */}
-                  <div className="p-7 md:p-8">
-                    <h3 className="font-heading text-2xl font-bold mb-4 leading-snug" style={{ color: '#3D1F0D' }}>
+                  <div className="p-5 md:p-6">
+                    <h3 className="font-heading text-xl md:text-[22px] font-bold mb-3 leading-snug" style={{ color: '#3D1F0D' }}>
                       {outlet.name}
                     </h3>
-                    <div className="space-y-3 mb-6">
+                    <div className="space-y-2.5 mb-5">
                       <div className="flex items-start gap-2">
                         <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#C9943A' }} />
                         <span className="text-sm leading-relaxed" style={{ color: '#6B3520' }}>{outlet.address}</span>
@@ -165,7 +165,7 @@ export default function OutletsPreview() {
                         href={`https://www.google.com/maps?q=${outlet.latitude},${outlet.longitude}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold uppercase tracking-wide transition-all duration-200"
+                        className="mt-1.5 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold uppercase tracking-wide transition-all duration-200"
                         style={{ background: '#3D1F0D', color: '#FFF7ED' }}
                         onMouseOver={e => ((e.currentTarget as HTMLAnchorElement).style.background = '#8B5A3C')}
                         onMouseOut={e => ((e.currentTarget as HTMLAnchorElement).style.background = '#3D1F0D')}
@@ -176,7 +176,7 @@ export default function OutletsPreview() {
                     ) : (
                       <a
                         href="/outlets"
-                        className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold uppercase tracking-wide transition-all duration-200"
+                        className="mt-1.5 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold uppercase tracking-wide transition-all duration-200"
                         style={{ background: '#3D1F0D', color: '#FFF7ED' }}
                         onMouseOver={e => ((e.currentTarget as HTMLAnchorElement).style.background = '#8B5A3C')}
                         onMouseOut={e => ((e.currentTarget as HTMLAnchorElement).style.background = '#3D1F0D')}
