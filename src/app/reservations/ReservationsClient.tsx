@@ -230,6 +230,13 @@ export default function Reservations() {
     return `${API_BASE_URL}/${image.replace(/^\/+/, '')}`
   }
 
+  const defaultOpeningHoursMessage = 'Opening hours vary by outlet. Select your cafe to see its current hours.'
+  const unavailableOpeningHoursMessage = 'Opening hours are currently unavailable. Please contact the outlet for the latest timings.'
+  const selectedOutletHours = selectedOutlet?.opening_hours?.trim()
+  const openingHoursText = selectedOutlet
+    ? selectedOutletHours || unavailableOpeningHoursMessage
+    : defaultOpeningHoursMessage
+
   return (
     <>
       <style>{`
@@ -441,6 +448,162 @@ export default function Reservations() {
           font-size: 0.78rem;
         }
 
+        .reservations-help-section {
+          padding: 3.75rem 0 4.25rem;
+        }
+
+        .reservations-help-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 1.25rem;
+          max-width: 980px;
+          margin: 0 auto;
+        }
+
+        .reservations-help-card {
+          display: flex;
+          min-width: 0;
+          min-height: 285px;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-between;
+          padding: 1.65rem;
+          border: 1px solid rgba(230,199,168,0.92);
+          border-radius: 26px;
+          background: linear-gradient(180deg, #FFFFFF 0%, #FFF7ED 100%);
+          box-shadow: 0 18px 46px rgba(61,31,13,0.09);
+          text-align: center;
+          animation: reservations-help-rise 420ms ease both;
+          transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+        }
+
+        .reservations-help-card:nth-child(2) {
+          animation-delay: 80ms;
+        }
+
+        .reservations-help-card:nth-child(3) {
+          animation-delay: 160ms;
+        }
+
+        .reservations-help-card:hover {
+          transform: translateY(-4px);
+          border-color: rgba(201,148,58,0.62);
+          box-shadow: 0 24px 58px rgba(61,31,13,0.14);
+        }
+
+        .reservations-help-icon {
+          width: 3.6rem;
+          height: 3.6rem;
+          border-radius: 999px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 1rem;
+          background: linear-gradient(135deg, #C9943A 0%, #8B4A2F 100%);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 12px 24px rgba(139,74,47,0.22);
+          transition: transform 220ms ease, box-shadow 220ms ease;
+        }
+
+        .reservations-help-card:hover .reservations-help-icon {
+          transform: scale(1.05);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.32), 0 16px 30px rgba(139,74,47,0.28);
+        }
+
+        .reservations-help-value {
+          color: #3D1F0D;
+          font-size: 0.96rem;
+          font-weight: 800;
+          line-height: 1.55;
+          overflow-wrap: anywhere;
+        }
+
+        .reservations-help-copy {
+          color: #6B3520;
+          font-size: 0.86rem;
+          line-height: 1.65;
+        }
+
+        .reservations-help-button {
+          display: inline-flex;
+          min-height: 40px;
+          align-items: center;
+          justify-content: center;
+          border-radius: 999px;
+          padding: 0.6rem 1.25rem;
+          background: linear-gradient(to right, #C9943A, #8B4A2F);
+          color: #FFFFFF;
+          font-size: 0.76rem;
+          font-weight: 800;
+          transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+        }
+
+        .reservations-help-button:hover {
+          transform: translateY(-1px);
+          filter: brightness(0.98);
+          box-shadow: 0 12px 22px rgba(139,74,47,0.18);
+        }
+
+        .reservations-hours-card.is-selected {
+          border-color: rgba(201,148,58,0.78);
+          background: linear-gradient(180deg, #FFFFFF 0%, #FFF4DE 100%);
+        }
+
+        .reservations-hours-label {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.35rem;
+          max-width: 100%;
+          margin-bottom: 0.55rem;
+          padding: 0.28rem 0.7rem;
+          border: 1px solid rgba(201,148,58,0.28);
+          border-radius: 999px;
+          background: rgba(201,148,58,0.1);
+          color: #3D1F0D;
+          font-size: 0.68rem;
+          font-weight: 800;
+          line-height: 1.35;
+        }
+
+        .reservations-hours-text {
+          animation: reservations-hours-change 240ms ease both;
+        }
+
+        @keyframes reservations-help-rise {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes reservations-hours-change {
+          from {
+            opacity: 0;
+            transform: translateY(6px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .reservations-help-card,
+          .reservations-hours-text {
+            animation: none;
+          }
+
+          .reservations-help-card,
+          .reservations-help-icon,
+          .reservations-help-button {
+            transition: none;
+          }
+        }
+
         @media (max-width: 1199px) {
           .reservations-hero {
             min-height: 560px;
@@ -474,6 +637,19 @@ export default function Reservations() {
             min-height: auto;
           }
 
+          .reservations-help-section {
+            padding: 3.25rem 0 3.75rem;
+          }
+
+          .reservations-help-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            max-width: 680px;
+          }
+
+          .reservations-help-card:nth-child(3) {
+            grid-column: 1 / -1;
+          }
+
           .reservations-hero-grid {
             grid-template-columns: minmax(0, 1fr);
             gap: 2.25rem;
@@ -492,6 +668,25 @@ export default function Reservations() {
           .reservations-hero {
             min-height: auto;
             align-items: flex-start !important;
+          }
+
+          .reservations-help-section {
+            padding: 2.75rem 0 3.25rem;
+          }
+
+          .reservations-help-grid {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 1rem;
+          }
+
+          .reservations-help-card:nth-child(3) {
+            grid-column: auto;
+          }
+
+          .reservations-help-card {
+            min-height: 250px;
+            padding: 1.35rem;
+            border-radius: 24px;
           }
 
           .reservations-hero-inner {
@@ -982,53 +1177,60 @@ export default function Reservations() {
         </section>
 
         {/* Contact Help Section */}
-        <section className="py-16" style={{ background: 'transparent' }}>
+        <section className="reservations-help-section" style={{ background: 'transparent' }}>
           <div className="container-custom">
-            <div className="text-center mb-12">
+            <div className="text-center mb-9">
               <h2 className="reservations-section-title mb-3">Need Help with Reservations?</h2>
               <p className="reservations-section-subtitle">Our team is here to assist you with any questions</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-              <div className="bg-white rounded-2xl p-8 text-center shadow-sm border border-[#E6C7A8]">
-                <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'linear-gradient(to right, #C9943A, #8B4A2F)' }}>
-                  <Phone className="w-7 h-7 text-white" />
+            <div className="reservations-help-grid">
+              <div className="reservations-help-card">
+                <div>
+                  <div className="reservations-help-icon">
+                    <Phone className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="reservations-card-title mb-2 uppercase tracking-[0.08em]">Call Us</h3>
+                  <a href={`tel:${formatPhoneForTel(selectedOutlet?.phone || pubSettings.reservations_phone)}`} className="reservations-help-value block mb-4">
+                    {selectedOutlet?.phone || pubSettings.reservations_phone}
+                  </a>
                 </div>
-                <h3 className="reservations-card-title mb-2">Call Us</h3>
-                <p className="reservations-body-text mb-4">{selectedOutlet?.phone || pubSettings.reservations_phone}</p>
-                <a 
-                  href={`tel:${formatPhoneForTel(selectedOutlet?.phone || pubSettings.reservations_phone)}`}
-                  className="reservations-action inline-block px-6 py-2 rounded-full font-semibold text-white transition-all hover:opacity-90"
-                  style={{ background: 'linear-gradient(to right, #C9943A, #8B4A2F)' }}
-                >
+                <a href={`tel:${formatPhoneForTel(selectedOutlet?.phone || pubSettings.reservations_phone)}`} className="reservations-help-button">
                   Call Now
                 </a>
               </div>
-              <div className="bg-white rounded-2xl p-8 text-center shadow-sm border border-[#E6C7A8]">
-                <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'linear-gradient(to right, #C9943A, #8B4A2F)' }}>
-                  <MapPin className="w-7 h-7 text-white" />
+              <div className="reservations-help-card">
+                <div>
+                  <div className="reservations-help-icon">
+                    <MapPin className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="reservations-card-title mb-2 uppercase tracking-[0.08em]">Visit Outlet</h3>
+                  <p className="reservations-help-copy mb-4">Choose from our Big Bean Cafe locations across Bengaluru.</p>
                 </div>
-                <h3 className="reservations-card-title mb-2">Visit Outlet</h3>
-                <p className="reservations-body-text mb-4">Any Big Bean Café location</p>
-                <a 
-                  href="/outlets"
-                  className="reservations-action inline-block px-6 py-2 rounded-full font-semibold text-white transition-all hover:opacity-90"
-                  style={{ background: 'linear-gradient(to right, #C9943A, #8B4A2F)' }}
-                >
+                <a href="/outlets" className="reservations-help-button">
                   View Outlets
                 </a>
               </div>
-              <div className="bg-white rounded-2xl p-8 text-center shadow-sm border border-[#E6C7A8]">
-                <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'linear-gradient(to right, #C9943A, #8B4A2F)' }}>
-                  <Clock className="w-7 h-7 text-white" />
+              <div className={`reservations-help-card reservations-hours-card ${selectedOutlet ? 'is-selected' : ''}`}>
+                <div>
+                  <div className="reservations-help-icon">
+                    <Clock className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="reservations-card-title mb-2">Opening Hours</h3>
+                  {selectedOutlet && (
+                    <div className="reservations-hours-label">
+                      <MapPin className="w-3 h-3" />
+                      <span>{selectedOutlet.name}</span>
+                    </div>
+                  )}
+                  <p key={`${selectedOutlet?.id || 'default'}-${openingHoursText}`} className="reservations-help-copy reservations-hours-text whitespace-pre-line">
+                    {openingHoursText}
+                  </p>
                 </div>
-                <h3 className="reservations-card-title mb-2">Opening Hours</h3>
-                <p className="reservations-body-text mb-4">{selectedOutlet?.opening_hours || '7:00 AM - 11:00 PM'}</p>
-                <a 
+                <a
                   href="https://bigbeancafe.store"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="reservations-action inline-block px-6 py-2 rounded-full font-semibold text-white transition-all hover:opacity-90"
-                  style={{ background: 'linear-gradient(to right, #C9943A, #8B4A2F)' }}
+                  className="reservations-help-button"
                 >
                   Order Online
                 </a>
