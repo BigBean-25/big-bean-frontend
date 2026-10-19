@@ -39,8 +39,17 @@ export default function AdminCareerJobs() {
 
   const handleDelete = async (id: number, title: string) => {
     if (!confirm(`Delete "${title}"?`)) return
-    await apiRequest(`/career-jobs/${id}`, { method: 'DELETE',})
-    fetchJobs()
+    try {
+      const res = await apiRequest(`/career-jobs/${id}`, { method: 'DELETE' })
+      const data = await res.json().catch(() => null)
+      if (!res.ok || !data?.success) {
+        alert(data?.message || `Failed to delete "${title}" (HTTP ${res.status})`)
+        return
+      }
+      fetchJobs()
+    } catch {
+      alert(`Network error while deleting "${title}". Please try again.`)
+    }
   }
 
   return (
