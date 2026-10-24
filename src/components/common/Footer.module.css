@@ -415,19 +415,23 @@
 /* ─── Mobile — below 768 ─────────────────────────────── */
 @media (max-width: 767px) {
   .footerInner {
-    padding-top: 3rem;
-    padding-bottom: 1.5rem;
+    padding-top: 2.75rem;
+    padding-bottom: 1.4rem;
   }
 
+  /* Brand + Business + Contact span full width;
+     Quick Links and Explore sit two-across to keep
+     the footer compact instead of one long column. */
   .footerGrid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.9rem 1.25rem;
     text-align: center;
   }
 
   .brandCol,
   .businessCol,
   .contactCol {
+    grid-column: 1 / -1;
     width: 100%;
     max-width: 100%;
     min-width: 0;
@@ -465,14 +469,20 @@
   }
 
   .footerLinks {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: 100%;
-    max-width: 290px;
-    margin: 0 auto;
-    gap: 0.65rem 1rem;
-    justify-items: center;
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* Business links fit on one wrapped row to save vertical space */
+  .businessCol .footerLinks {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.55rem 1.4rem;
   }
 
   .footerLink {

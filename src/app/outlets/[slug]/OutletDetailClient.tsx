@@ -330,35 +330,54 @@ export default function OutletDetailClient({
         }
         @media(max-width:640px){
           .outlet-hero{align-items:flex-start;}
-          .outlet-hero-inner{padding:3rem 1.25rem 2.5rem;}
+          .outlet-hero-inner{padding:2.9rem 1.25rem 2.4rem;}
           .outlet-hero-eyebrow{font-size:.65rem;}
-          .outlet-hero-title{font-size:clamp(2.15rem,11vw,3rem);line-height:1;letter-spacing:-.02em;}
-          .outlet-hero-subtitle{max-width:100%;margin-bottom:1.5rem;font-size:.9rem;line-height:1.7;}
+          .outlet-hero-title{font-size:clamp(2rem,10vw,2.75rem);line-height:1.02;letter-spacing:-.02em;margin-bottom:.9rem;}
+          .outlet-hero-subtitle{max-width:100%;margin-bottom:1.4rem;font-size:.9rem;line-height:1.7;}
+          .outlet-hero-badges{gap:.45rem;margin-bottom:1.6rem;}
           .outlet-hero-actions{width:100%;gap:.65rem;margin-bottom:1.5rem;}
-          .outlet-hero-btn{width:100%;justify-content:center;}
+          .outlet-hero-btn{width:100%;justify-content:center;min-height:50px;}
           .outlet-hero-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;}
           .outlet-hero-stat{padding:.75rem .35rem !important;}
           .outlet-hero-stat-value{font-size:1.05rem;}
           .outlet-hero-stat-label{font-size:.52rem;letter-spacing:.06em !important;}
           .outlet-section-inner{padding:2.5rem 1rem;}
-          .outlet-pcard{padding:1.4rem 1.25rem;border-radius:22px;}
-          .outlet-pcard-head{gap:.85rem;margin-bottom:1.25rem;}
+          .outlet-h2{font-size:clamp(1.4rem,6.5vw,1.9rem);}
+          .outlet-pcard{padding:1.4rem 1.2rem;border-radius:22px;}
+          .outlet-pcard-head{gap:.85rem;margin-bottom:1.2rem;flex-wrap:wrap;}
           .outlet-pcard-icon{width:46px;height:46px;border-radius:15px;}
-          .outlet-crow{padding:.7rem 0;}
+          .outlet-hours-row{padding:.62rem .1rem;gap:.5rem;}
+          .outlet-crow{padding:.75rem 0;}
           .outlet-crow-icon{width:42px;height:42px;}
-          .outlet-cta{padding:3rem 1rem;}
-          .outlet-cta-title{font-size:clamp(1.6rem,7vw,2.2rem);}
-          .outlet-cta-desc{font-size:.95rem;}
-          .outlet-facility-grid{grid-template-columns:repeat(2,1fr);gap:.8rem;}
+          .outlet-menu-track{padding:.4rem .5rem 1.1rem;scroll-padding-left:.5rem;}
+          .outlet-menu-cta a{width:min(100%,340px);}
+          .outlet-cta{padding:2.6rem 1rem;}
+          .outlet-cta-title{font-size:clamp(1.55rem,7vw,2.1rem);}
+          .outlet-cta-desc{font-size:.93rem;margin-bottom:1.75rem;}
+          .outlet-cta-btns{flex-direction:column;align-items:stretch;width:min(100%,340px);margin:0 auto;}
+          .outlet-cta-btns .outlet-cta-btn{width:100%;}
+          .outlet-facility-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;max-width:460px;}
+          .outlet-facility{min-height:110px;padding:1.1rem .8rem;}
+          .outlet-facility-label{overflow-wrap:break-word;}
           .outlet-gallery-item{min-height:185px;border-radius:18px;}
+          .outlet-gallery-main{min-height:215px;}
           .outlet-gallery-thumb{flex:0 0 160px;height:105px;}
-          .outlet-event{padding:2.5rem 1.25rem;border-radius:24px;}
+          .outlet-event{padding:2.4rem 1.15rem;border-radius:24px;}
         }
         @media(max-width:374px){
           .outlet-hero-inner{padding-left:1rem;padding-right:1rem;}
-          .outlet-hero-title{font-size:2rem;}
+          .outlet-hero-title{font-size:1.95rem;}
+          .outlet-hero-badge{font-size:.62rem;padding:.4rem .7rem;}
           .outlet-section-inner{padding:2.25rem .85rem;}
-          .outlet-cta{padding:2.75rem .85rem;}
+          .outlet-cta{padding:2.4rem .85rem;}
+          .outlet-open-badge{padding:.35rem .7rem;font-size:.55rem;}
+          .outlet-hours-row{flex-direction:column;align-items:flex-start;gap:.15rem;}
+          .outlet-hours-leader{display:none;}
+          .outlet-hours-time{text-align:left;white-space:normal;}
+          .outlet-facility{padding:1rem .6rem;}
+          .outlet-facility-label{font-size:.75rem;}
+          .outlet-event{padding:2rem 1rem;}
+          .outlet-menu-card{flex-basis:80vw;}
         }
       `}</style>
 
@@ -605,7 +624,7 @@ export default function OutletDetailClient({
               <p className="outlet-sub mb-6">Fresh coffee, food and desserts are served at this outlet — explore the full menu for today&apos;s availability.</p>
             )}
 
-            <div className="mt-9 flex justify-center">
+            <div className="outlet-menu-cta mt-9 flex justify-center">
               <a href={menuUrl} className="outlet-btn outlet-btn-primary">
                 View {shortName || outlet.name} Menu <ArrowRight className="w-4 h-4" />
               </a>
