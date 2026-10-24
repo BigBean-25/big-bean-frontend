@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { getSeo, buildMetadata, getFaqSchema } from '@/lib/seo'
+import { getOutlets } from '@/lib/outlets'
 import HomeClient from './HomeClient'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -12,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
-  const [seo] = await Promise.all([getSeo('home')])
+  const [seo, outlets] = await Promise.all([getSeo('home'), getOutlets()])
   const faqSchema = getFaqSchema(seo)
   return (
     <>
@@ -22,7 +23,7 @@ export default async function Page() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
       )}
-      <HomeClient />
+      <HomeClient initialOutlets={outlets} />
     </>
   )
 }

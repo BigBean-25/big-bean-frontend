@@ -1,28 +1,17 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import Header from '@/components/common/Header'
 import Footer from '@/components/common/Footer'
-import { MapPin, Phone, Clock, Mail, Navigation, ArrowLeft } from 'lucide-react'
-
-export interface Outlet {
-  id: number
-  name: string
-  address: string
-  phone: string | null
-  email: string | null
-  opening_hours: string | null
-  latitude: number | null
-  longitude: number | null
-  image: string | null
-  status: string
-  sort_order: number
-  seo_title: string | null
-  seo_description: string | null
-  seo_h1: string | null
-  og_title: string | null
-  og_description: string | null
-}
+import {
+  MapPin, Phone, Clock, Mail, Navigation, ArrowLeft, ChevronLeft, ChevronRight,
+  Wifi, PlugZap, Car, Trees, Laptop, Snowflake, PartyPopper, Users, PawPrint,
+  Music, Building, ParkingSquare, CalendarRange, ArrowRight, Coffee,
+} from 'lucide-react'
+import type {
+  Outlet, OutletGalleryItem, OutletContent, OutletMenuItem,
+} from '@/lib/outlets'
 
 const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '')
 
@@ -32,10 +21,45 @@ const getImageUrl = (image?: string | null): string | null => {
   return `${API_BASE_URL}/${image.replace(/^\/+/, '')}`
 }
 
-export default function OutletDetailClient({ slug, initialOutlet }: { slug: string; initialOutlet?: Outlet | null }) {
+const getShortName = (name?: string | null): string => {
+  if (!name) return ''
+  return name.replace(/^big bean cafe\s*[-–—]?\s*/i, '').trim() || name
+}
+
+const FACILITY_META: Record<string, { label: string; Icon: typeof Wifi }> = {
+  wifi:             { label: 'Wi-Fi',            Icon: Wifi },
+  charging_points:  { label: 'Charging Points',  Icon: PlugZap },
+  parking:          { label: 'Parking',          Icon: ParkingSquare },
+  outdoor_seating:  { label: 'Outdoor Seating',  Icon: Trees },
+  work_friendly:    { label: 'Work Friendly',    Icon: Laptop },
+  air_conditioning: { label: 'Air Conditioning', Icon: Snowflake },
+  event_space:      { label: 'Event Space',      Icon: PartyPopper },
+  family_friendly:  { label: 'Family Friendly',  Icon: Users },
+  pet_friendly:     { label: 'Pet Friendly',     Icon: PawPrint },
+  live_music:       { label: 'Live Music',       Icon: Music },
+  rooftop:          { label: 'Rooftop',          Icon: Building },
+  drive_thru:       { label: 'Drive Thru',       Icon: Car },
+}
+
+interface Props {
+  slug: string
+  initialOutlet?: Outlet | null
+  initialGallery?: OutletGalleryItem[]
+  initialContent?: OutletContent
+  initialMenuItems?: OutletMenuItem[]
+}
+
+export default function OutletDetailClient({
+  slug,
+  initialOutlet,
+  initialGallery = [],
+  initialContent = { facilities: [], event_space_text: '' },
+  initialMenuItems = [],
+}: Props) {
   const [outlet, setOutlet] = useState<Outlet | null>(initialOutlet ?? null)
   const [loading, setLoading] = useState(!initialOutlet)
   const [notFound, setNotFound] = useState(false)
+  const menuTrackRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (initialOutlet || !slug) return
@@ -54,6 +78,14 @@ export default function OutletDetailClient({ slug, initialOutlet }: { slug: stri
     }
     fetchOutlet()
   }, [slug, initialOutlet])
+
+  const scrollMenu = (dir: -1 | 1) => {
+    const track = menuTrackRef.current
+    if (!track) return
+    const card = track.querySelector<HTMLElement>('.outlet-menu-card')
+    const step = card ? card.offsetWidth + 20 : 300
+    track.scrollBy({ left: dir * step, behavior: 'smooth' })
+  }
 
   if (loading) {
     return (
@@ -88,11 +120,22 @@ export default function OutletDetailClient({ slug, initialOutlet }: { slug: stri
   }
 
   const imgUrl = getImageUrl(outlet.image)
+  const shortName = getShortName(outlet.name)
   const mapsHref = outlet.latitude && outlet.longitude
     ? `https://www.google.com/maps?q=${outlet.latitude},${outlet.longitude}`
     : outlet.address
       ? `https://www.google.com/maps/search/${encodeURIComponent(outlet.address)}`
       : null
+
+  const galleryImages = initialGallery
+    .map((g) => ({ id: g.id, src: getImageUrl(g.image), alt: g.title || `${outlet.name} interior` }))
+    .filter((g): g is { id: number; src: string; alt: string } => !!g.src)
+  const featuredImages = galleryImages.slice(0, 3)
+  const extraImages = galleryImages.slice(3)
+
+  const facilities = initialContent.facilities.filter((k) => FACILITY_META[k])
+  const hasEventSpace = facilities.includes('event_space')
+  const menuUrl = `/menu?outlet=${outlet.id}`
 
   return (
     <div className="min-h-screen bg-cream-50">
@@ -125,6 +168,8 @@ export default function OutletDetailClient({ slug, initialOutlet }: { slug: stri
         .outlet-hero-eyebrow{font-size:.72rem;line-height:1;}
         .outlet-hero-title{margin:0 0 1rem;color:#FFF7ED;font-size:clamp(2.5rem,3.8vw,4.25rem);font-weight:900;line-height:.98;letter-spacing:-.025em;text-wrap:balance;text-shadow:0 2px 12px rgba(0,0,0,.5);}
         .outlet-hero-subtitle{max-width:650px;margin-bottom:1.5rem;color:#F5D7BF;font-size:clamp(.92rem,1.1vw,1.05rem);line-height:1.75;text-shadow:0 1px 8px rgba(0,0,0,.5);}
+        .outlet-hero-badges{display:flex;flex-wrap:wrap;gap:.55rem;margin-bottom:1.75rem;}
+        .outlet-hero-badge{display:inline-flex;align-items:center;gap:.45rem;border-radius:100px;padding:.45rem .95rem;font-size:.72rem;font-weight:800;color:#F6D58D;background:rgba(255,247,237,0.10);border:1px solid rgba(201,148,58,0.32);backdrop-filter:blur(6px);}
         .outlet-hero-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:2rem;}
         .outlet-hero-btn{display:inline-flex;align-items:center;gap:.5rem;min-height:46px;font-size:.78rem;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:.08em;border-radius:100px;padding:.75rem 1.5rem;transition:all .22s;}
         .outlet-hero-btn:active{transform:scale(.98);}
@@ -142,24 +187,22 @@ export default function OutletDetailClient({ slug, initialOutlet }: { slug: stri
         .outlet-floating-card-title{font-size:.82rem;font-weight:900;color:#F6D58D;}
         .outlet-floating-card-sub{font-size:.7rem;color:rgba(199,164,137,.85);margin-top:2px;}
         .outlet-floating-card-text{font-size:.72rem;line-height:1.65;color:rgba(245,215,191,.75);margin-top:.6rem;}
-        .outlet-info{position:relative;background:linear-gradient(180deg,#FFFDF9 0%,#FFF7ED 100%);overflow:hidden;}
-        .outlet-info-glow{position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(201,148,58,0.10),transparent 45%),radial-gradient(circle at 80% 70%,rgba(139,74,47,0.08),transparent 40%);}
-        .outlet-info-inner{position:relative;z-index:5;width:100%;max-width:1340px;margin:0 auto;padding:5.5rem 2rem 5rem;}
-        .outlet-info-grid{display:grid;grid-template-columns:1fr;gap:2.5rem;align-items:start;}
-        .outlet-info-card{background:rgba(255,255,255,0.92);border:1px solid rgba(201,148,58,0.22);border-radius:26px;padding:1.75rem 2rem;box-shadow:0 8px 34px rgba(61,31,13,0.07);transition:transform .25s,box-shadow .25s;}
+        .outlet-section{position:relative;background:linear-gradient(180deg,#FFFDF9 0%,#FFF7ED 100%);overflow:hidden;}
+        .outlet-section-glow{position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(201,148,58,0.10),transparent 45%),radial-gradient(circle at 80% 70%,rgba(139,74,47,0.08),transparent 40%);}
+        .outlet-section-inner{position:relative;z-index:5;width:100%;max-width:1340px;margin:0 auto;padding:4.5rem 2rem;}
+        .outlet-section-inner + .outlet-section-inner{padding-top:0;}
+        .outlet-eyebrow{font-size:.65rem;font-weight:900;letter-spacing:.22em;text-transform:uppercase;color:#C9943A;margin-bottom:.65rem;}
+        .outlet-h2{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:900;color:#3D1F0D;line-height:1.1;}
+        .outlet-sub{font-size:.95rem;color:#6B3520;line-height:1.7;}
+        .outlet-info-card{background:rgba(255,255,255,0.92);border:1px solid rgba(201,148,58,0.22);border-radius:26px;padding:1.75rem 2rem;box-shadow:0 8px 34px rgba(61,31,13,0.07);transition:transform .25s,box-shadow .25s;height:100%;}
         .outlet-info-card:hover{transform:translateY(-4px);box-shadow:0 16px 46px rgba(61,31,13,0.11);}
-        .outlet-info-eyebrow{font-size:.65rem;font-weight:900;letter-spacing:.22em;text-transform:uppercase;color:#C9943A;margin-bottom:.65rem;}
-        .outlet-info-title{font-size:1.35rem;font-weight:900;color:#3D1F0D;margin-bottom:1.25rem;line-height:1.1;}
         .outlet-info-iconbox{width:44px;height:44px;border-radius:14px;background:rgba(201,148,58,0.10);border:1px solid rgba(201,148,58,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
         .outlet-info-text{font-size:.93rem;color:#6B3520;line-height:1.65;}
-        .outlet-info-address{max-width:620px;font-size:.93rem;color:#6B3520;line-height:1.65;}
-        .outlet-contact-card{background:rgba(255,247,237,0.94);border:1px solid rgba(201,148,58,0.26);border-radius:30px;padding:2rem;box-shadow:0 10px 38px rgba(61,31,13,0.09);}
-        .outlet-contact-header{font-size:.7rem;font-weight:900;letter-spacing:.2em;text-transform:uppercase;color:#C9943A;margin-bottom:1.5rem;}
         .outlet-contact-row{display:flex;align-items:flex-start;gap:.85rem;font-size:.9rem;color:#5C2E12;line-height:1.55;}
         .outlet-contact-row a{color:#5C2E12;text-decoration:none;transition:color .18s;}
         .outlet-contact-row a:hover{color:#C9943A;}
         .outlet-contact-value{word-break:break-word;}
-        .outlet-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;width:100%;min-height:52px;border-radius:16px;font-size:.82rem;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:.06em;transition:transform .2s,box-shadow .2s,background .2s;}
+        .outlet-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:52px;border-radius:100px;font-size:.82rem;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:.06em;transition:transform .2s,box-shadow .2s,background .2s;padding:.75rem 1.8rem;}
         .outlet-btn:active{transform:scale(.98);}
         .outlet-btn-primary{background:#3D1F0D;color:#FFF7ED;box-shadow:0 6px 18px rgba(61,31,13,0.25);}
         .outlet-btn-primary:hover{transform:translateY(-2px);background:#5C2E12;box-shadow:0 10px 26px rgba(61,31,13,0.32);}
@@ -169,6 +212,51 @@ export default function OutletDetailClient({ slug, initialOutlet }: { slug: stri
         .outlet-back:hover{color:#C9943A;}
         .outlet-back svg{transition:transform .18s;}
         .outlet-back:hover svg{transform:translateX(-3px);}
+
+        /* ── Menu carousel ── */
+        .outlet-menu-track{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:.5rem .25rem 1.25rem;scrollbar-width:none;}
+        .outlet-menu-track::-webkit-scrollbar{display:none;}
+        .outlet-menu-card{scroll-snap-align:start;flex:0 0 min(78vw,270px);background:#fff;border:1px solid #EAD9C2;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(61,31,13,0.08);transition:transform .25s,box-shadow .25s;}
+        .outlet-menu-card:hover{transform:translateY(-5px);box-shadow:0 18px 44px rgba(61,31,13,0.14);}
+        .outlet-menu-card-img{position:relative;width:100%;height:180px;background:linear-gradient(135deg,#3D1F0D,#6B3520);}
+        .outlet-menu-card-body{padding:1rem 1.1rem 1.15rem;}
+        .outlet-menu-cat{font-size:.62rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#C9943A;margin-bottom:.3rem;}
+        .outlet-menu-name{font-size:.95rem;font-weight:800;color:#3D1F0D;line-height:1.3;margin-bottom:.35rem;}
+        .outlet-menu-price{font-size:.9rem;font-weight:900;color:#8B5A3C;}
+        .outlet-menu-arrow{width:44px;height:44px;border-radius:50%;border:1.5px solid #C9943A;background:#FFF7ED;color:#3D1F0D;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;}
+        .outlet-menu-arrow:hover{background:#3D1F0D;color:#F6D58D;}
+
+        /* ── Gallery ── */
+        .outlet-gallery-grid{display:grid;grid-template-columns:1fr;gap:1.25rem;}
+        @media(min-width:768px){
+          .outlet-gallery-grid{grid-template-columns:1.25fr 1fr;grid-template-rows:repeat(2,minmax(200px,260px));}
+          .outlet-gallery-main{grid-row:1 / span 2;}
+          .outlet-gallery-grid.count-1{grid-template-columns:1fr;grid-template-rows:minmax(280px,420px);}
+          .outlet-gallery-grid.count-1 .outlet-gallery-main{grid-row:auto;}
+          .outlet-gallery-grid.count-2{grid-template-columns:1fr 1fr;grid-template-rows:minmax(280px,380px);}
+          .outlet-gallery-grid.count-2 .outlet-gallery-main{grid-row:auto;}
+        }
+        .outlet-gallery-item{position:relative;border-radius:26px;overflow:hidden;background:linear-gradient(135deg,#3D1F0D,#6B3520);border:1px solid rgba(201,148,58,0.25);min-height:220px;}
+        .outlet-gallery-item img{transition:transform .6s ease;}
+        .outlet-gallery-item:hover img{transform:scale(1.04);}
+        .outlet-gallery-strip{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:.5rem .25rem 1rem;scrollbar-width:none;}
+        .outlet-gallery-strip::-webkit-scrollbar{display:none;}
+        .outlet-gallery-thumb{scroll-snap-align:start;flex:0 0 220px;height:150px;position:relative;border-radius:20px;overflow:hidden;border:1px solid rgba(201,148,58,0.25);}
+
+        /* ── Facilities ── */
+        .outlet-facility-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;}
+        .outlet-facility{background:rgba(255,255,255,0.92);border:1px solid rgba(201,148,58,0.24);border-radius:20px;padding:1.1rem 1rem;display:flex;flex-direction:column;align-items:center;gap:.6rem;text-align:center;transition:transform .2s,box-shadow .2s;}
+        .outlet-facility:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(61,31,13,0.10);}
+        .outlet-facility-icon{width:42px;height:42px;border-radius:14px;background:rgba(201,148,58,0.12);border:1px solid rgba(201,148,58,0.28);display:flex;align-items:center;justify-content:center;}
+        .outlet-facility-label{font-size:.8rem;font-weight:800;color:#3D1F0D;line-height:1.3;}
+
+        /* ── Event space ── */
+        .outlet-event{position:relative;overflow:hidden;border-radius:32px;background:linear-gradient(135deg,#120905 0%,#2A120B 50%,#4A2114 100%);padding:3.5rem clamp(1.5rem,5vw,4rem);}
+        .outlet-event-glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 20%,rgba(201,148,58,0.16),transparent 55%);}
+        .outlet-event-dots{position:absolute;inset:0;opacity:.08;pointer-events:none;background-image:radial-gradient(circle,#C9943A 1px,transparent 1px);background-size:32px 32px;}
+        .outlet-event-btn{display:inline-flex;align-items:center;gap:.5rem;border-radius:100px;padding:.85rem 2rem;font-size:.8rem;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:.06em;color:#120905;background:linear-gradient(90deg,#D7A64A,#F0CC83);box-shadow:0 8px 24px rgba(201,148,58,0.32);transition:transform .2s,box-shadow .2s;}
+        .outlet-event-btn:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(201,148,58,0.38);}
+
         .outlet-transition{height:1px;background:linear-gradient(90deg,transparent,rgba(201,148,58,0.35),transparent);max-width:1340px;margin:0 auto;}
         .outlet-cta{position:relative;overflow:hidden;background:linear-gradient(135deg,#120905 0%,#2A120B 45%,#4A2114 100%);padding:5.5rem 2rem;}
         .outlet-cta-glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(201,148,58,0.14),transparent 55%),radial-gradient(circle at 80% 80%,rgba(139,74,47,0.14),transparent 40%);}
@@ -178,15 +266,19 @@ export default function OutletDetailClient({ slug, initialOutlet }: { slug: stri
         .outlet-cta-eyebrow{font-size:.65rem;font-weight:900;letter-spacing:.24em;text-transform:uppercase;color:#C9943A;margin-bottom:.9rem;}
         .outlet-cta-title{font-size:clamp(1.75rem,3.6vw,3.1rem);font-weight:900;color:#FFF7ED;line-height:1.05;margin-bottom:1rem;text-shadow:0 2px 12px rgba(0,0,0,.5);}
         .outlet-cta-desc{font-size:clamp(1rem,1.2vw,1.15rem);line-height:1.7;max-width:700px;margin:0 auto 2.25rem;color:#E6C7A8;}
+        .outlet-cta-btns{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:center;}
         .outlet-cta-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:54px;border-radius:100px;padding:.9rem 2.25rem;font-size:.85rem;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:.06em;color:#120905;background:linear-gradient(90deg,#D7A64A,#F0CC83);box-shadow:0 8px 24px rgba(201,148,58,0.32);transition:transform .2s,box-shadow .2s;}
         .outlet-cta-btn:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(201,148,58,0.38);}
+        .outlet-cta-btn-outline{background:transparent;color:#FFF7ED;border:1.5px solid rgba(255,255,255,.3);box-shadow:none;}
+        .outlet-cta-btn-outline:hover{background:rgba(255,255,255,.08);}
         .outlet-cta-btn:active{transform:scale(.98);}
+
         @media(max-width:1199px){
           .outlet-hero{min-height:560px;}
           .outlet-hero-inner{padding:3.5rem clamp(1.5rem,4vw,3rem) 3rem;}
           .outlet-hero-copy{max-width:720px;}
           .outlet-hero-title{font-size:clamp(2.5rem,5vw,3.75rem);}
-          .outlet-info-inner{padding:4.5rem 1.75rem 4rem;}
+          .outlet-section-inner{padding:4rem 1.75rem;}
           .outlet-cta{padding:4.5rem 1.75rem;}
         }
         @media(max-width:899px){
@@ -194,12 +286,8 @@ export default function OutletDetailClient({ slug, initialOutlet }: { slug: stri
           .outlet-hero-inner{padding-top:4rem;padding-bottom:3rem;}
           .outlet-hero-copy{max-width:680px;}
           .outlet-floating-card{display:none;}
-          .outlet-info-inner{padding:3.5rem 1.5rem 3rem;}
+          .outlet-section-inner{padding:3rem 1.5rem;}
           .outlet-cta{padding:3.5rem 1.5rem;}
-          .outlet-info-grid{gap:2rem;}
-        }
-        @media(min-width:1024px){
-          .outlet-info-grid{grid-template-columns:1.1fr .9fr;gap:3.5rem;}
         }
         @media(max-width:640px){
           .outlet-hero{align-items:flex-start;}
@@ -213,24 +301,24 @@ export default function OutletDetailClient({ slug, initialOutlet }: { slug: stri
           .outlet-hero-stat{padding:.75rem .35rem !important;}
           .outlet-hero-stat-value{font-size:1.05rem;}
           .outlet-hero-stat-label{font-size:.52rem;letter-spacing:.06em !important;}
-          .outlet-info-inner{padding:2.5rem 1rem 2.25rem;}
+          .outlet-section-inner{padding:2.5rem 1rem;}
           .outlet-info-card{padding:1.35rem 1.25rem;border-radius:22px;}
-          .outlet-contact-card{padding:1.5rem;border-radius:24px;}
-          .outlet-info-title{font-size:1.15rem;}
           .outlet-cta{padding:3rem 1rem;}
           .outlet-cta-title{font-size:clamp(1.6rem,7vw,2.2rem);}
           .outlet-cta-desc{font-size:.95rem;}
+          .outlet-facility-grid{grid-template-columns:repeat(2,1fr);}
+          .outlet-event{padding:2.5rem 1.25rem;border-radius:24px;}
         }
         @media(max-width:374px){
           .outlet-hero-inner{padding-left:1rem;padding-right:1rem;}
           .outlet-hero-title{font-size:2rem;}
-          .outlet-info-inner{padding:2.25rem .85rem 2rem;}
+          .outlet-section-inner{padding:2.25rem .85rem;}
           .outlet-cta{padding:2.75rem .85rem;}
         }
       `}</style>
 
       <main>
-        {/* Hero */}
+        {/* ── HERO ─────────────────────────────────────────────── */}
         <section className="outlet-hero">
           <div className="absolute inset-0 bg-gradient-to-br from-[#120905] via-[#2A120B] to-[#5C2E12]" />
           {imgUrl && <img src={imgUrl} alt={outlet.seo_h1 || outlet.name} className="outlet-hero-bg" />}
@@ -243,12 +331,26 @@ export default function OutletDetailClient({ slug, initialOutlet }: { slug: stri
             <div className="outlet-hero-copy">
               <div className="outlet-fade-up inline-flex items-center gap-2 rounded-full border border-[#C9943A]/35 bg-[#C9943A]/12 px-4 py-1.5 mb-6">
                 <MapPin style={{ width: 13, height: 13, color: '#C9943A' }} />
-                <span className="outlet-hero-eyebrow font-black tracking-[0.22em] uppercase" style={{ color: '#F7D891' }}>Big Bean Café Outlet</span>
+                <span className="outlet-hero-eyebrow font-black tracking-[0.22em] uppercase" style={{ color: '#F7D891' }}>
+                  Big Bean Café {shortName ? `– ${shortName}` : 'Outlet'}
+                </span>
               </div>
 
-              <h1 className="font-heading outlet-hero-title outlet-fade-up outlet-stagger-1">{outlet.seo_h1 || outlet.name}</h1>
+              <h1 className="font-heading outlet-hero-title outlet-fade-up outlet-stagger-1">
+                {outlet.seo_h1 || (shortName ? `Big Bean Cafe – ${shortName}` : outlet.name)}
+              </h1>
 
               <p className="outlet-hero-subtitle outlet-fade-up outlet-stagger-2">{outlet.address}</p>
+
+              <div className="outlet-hero-badges outlet-fade-up outlet-stagger-2">
+                <span className="outlet-hero-badge"><MapPin style={{ width: 12, height: 12 }} /> Bengaluru</span>
+                {outlet.opening_hours && (
+                  <span className="outlet-hero-badge"><Clock style={{ width: 12, height: 12 }} /> {outlet.opening_hours}</span>
+                )}
+                {outlet.phone && (
+                  <span className="outlet-hero-badge"><Phone style={{ width: 12, height: 12 }} /> {outlet.phone}</span>
+                )}
+              </div>
 
               <div className="outlet-hero-actions outlet-fade-up outlet-stagger-3">
                 {mapsHref && (
@@ -298,109 +400,207 @@ export default function OutletDetailClient({ slug, initialOutlet }: { slug: stri
           </div>
         </section>
 
-        {/* Info */}
-        <section className="outlet-info">
-          <div className="outlet-info-glow" />
-          <div className="outlet-info-inner">
-            <div className="outlet-info-grid">
-
-              {/* Left */}
-              <div className="space-y-8">
-                {outlet.opening_hours && (
-                  <div className="outlet-info-card outlet-fade-up">
-                    <p className="outlet-info-eyebrow">Opening Hours</p>
-                    <h2 className="font-heading outlet-info-title">When We&apos;re Open</h2>
-                    <div className="flex items-start gap-4">
-                      <div className="outlet-info-iconbox">
-                        <Clock className="w-5 h-5 text-[#C9943A]" />
-                      </div>
-                      <p className="outlet-info-text whitespace-pre-line">{outlet.opening_hours}</p>
-                    </div>
+        {/* ── HOURS + CONTACT CARDS ────────────────────────────── */}
+        <section className="outlet-section">
+          <div className="outlet-section-glow" />
+          <div className="outlet-section-inner">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+              <div className="outlet-info-card outlet-fade-up">
+                <p className="outlet-eyebrow">Opening Hours</p>
+                <h2 className="font-heading outlet-h2 mb-5">When We&apos;re Open</h2>
+                <div className="flex items-start gap-4">
+                  <div className="outlet-info-iconbox">
+                    <Clock className="w-5 h-5 text-[#C9943A]" />
                   </div>
-                )}
-
-                <div className="outlet-info-card outlet-fade-up outlet-stagger-1">
-                  <p className="outlet-info-eyebrow">Location</p>
-                  <h2 className="font-heading outlet-info-title">Find Us Here</h2>
-                  <div className="flex items-start gap-4 mb-5">
-                    <div className="outlet-info-iconbox">
-                      <MapPin className="w-5 h-5 text-[#C9943A]" />
-                    </div>
-                    <p className="outlet-info-address">{outlet.address}</p>
-                  </div>
-                  {outlet.latitude && outlet.longitude && (
-                    <a
-                      href={`https://www.google.com/maps?q=${outlet.latitude},${outlet.longitude}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="outlet-btn outlet-btn-primary"
-                    >
-                      <Navigation className="w-4 h-4" />
-                      Open in Google Maps
-                    </a>
-                  )}
+                  <p className="outlet-info-text whitespace-pre-line">
+                    {outlet.opening_hours || 'Hours vary — please call the outlet to confirm.'}
+                  </p>
                 </div>
               </div>
 
-              {/* Right */}
-              <div className="space-y-6">
-                <div className="outlet-contact-card outlet-fade-up outlet-stagger-2">
-                  <p className="outlet-contact-header">Contact This Outlet</p>
-                  <div className="space-y-4">
-                    {outlet.phone && (
-                      <div className="outlet-contact-row">
-                        <div className="outlet-info-iconbox">
-                          <Phone className="w-4 h-4 text-[#C9943A]" />
-                        </div>
-                        <a href={`tel:${outlet.phone}`} className="outlet-contact-value">{outlet.phone}</a>
-                      </div>
-                    )}
-                    {outlet.email && (
-                      <div className="outlet-contact-row">
-                        <div className="outlet-info-iconbox">
-                          <Mail className="w-4 h-4 text-[#C9943A]" />
-                        </div>
-                        <a href={`mailto:${outlet.email}`} className="outlet-contact-value">{outlet.email}</a>
-                      </div>
-                    )}
+              <div className="outlet-info-card outlet-fade-up outlet-stagger-1">
+                <p className="outlet-eyebrow">Contact</p>
+                <h2 className="font-heading outlet-h2 mb-5">Contact This Outlet</h2>
+                <div className="space-y-4 mb-6">
+                  {outlet.phone && (
                     <div className="outlet-contact-row">
                       <div className="outlet-info-iconbox">
-                        <MapPin className="w-4 h-4 text-[#C9943A]" />
+                        <Phone className="w-4 h-4 text-[#C9943A]" />
                       </div>
-                      <span className="outlet-contact-value">{outlet.address}</span>
+                      <a href={`tel:${outlet.phone}`} className="outlet-contact-value">{outlet.phone}</a>
                     </div>
+                  )}
+                  {outlet.email && (
+                    <div className="outlet-contact-row">
+                      <div className="outlet-info-iconbox">
+                        <Mail className="w-4 h-4 text-[#C9943A]" />
+                      </div>
+                      <a href={`mailto:${outlet.email}`} className="outlet-contact-value">{outlet.email}</a>
+                    </div>
+                  )}
+                  <div className="outlet-contact-row">
+                    <div className="outlet-info-iconbox">
+                      <MapPin className="w-4 h-4 text-[#C9943A]" />
+                    </div>
+                    <span className="outlet-contact-value">{outlet.address}</span>
                   </div>
                 </div>
-
-                <div className="space-y-3 outlet-fade-up outlet-stagger-3">
-                  {outlet.latitude && outlet.longitude && (
-                    <a
-                      href={`https://www.google.com/maps?q=${outlet.latitude},${outlet.longitude}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="outlet-btn outlet-btn-primary"
-                    >
-                      <Navigation className="w-4 h-4" />
-                      Get Directions
-                    </a>
-                  )}
-                  {outlet.phone && (
-                    <a href={`tel:${outlet.phone}`} className="outlet-btn outlet-btn-secondary">
-                      <Phone className="w-4 h-4" />
-                      Call Now
-                    </a>
-                  )}
-                </div>
-
-                <a href="/outlets" className="outlet-back justify-center outlet-fade-up outlet-stagger-4">
-                  <ArrowLeft className="w-4 h-4" /> Back to All Outlets
-                </a>
+                {mapsHref && (
+                  <a href={mapsHref} target="_blank" rel="noopener noreferrer" className="outlet-btn outlet-btn-primary w-full">
+                    <Navigation className="w-4 h-4" /> Open in Google Maps
+                  </a>
+                )}
               </div>
             </div>
           </div>
         </section>
 
-        {/* CTA */}
+        {/* ── OUTLET MENU ──────────────────────────────────────── */}
+        <section className="outlet-section">
+          <div className="outlet-section-glow" />
+          <div className="outlet-section-inner">
+            <div className="flex flex-wrap items-end justify-between gap-5 mb-8">
+              <div>
+                <p className="outlet-eyebrow">Menu Preview</p>
+                <h2 className="font-heading outlet-h2">Coffee, Food &amp; Your Favourites</h2>
+                <p className="outlet-sub mt-3">Explore the {shortName || outlet.name} menu</p>
+              </div>
+              {initialMenuItems.length > 1 && (
+                <div className="hidden md:flex gap-3">
+                  <button type="button" aria-label="Scroll menu left" className="outlet-menu-arrow" onClick={() => scrollMenu(-1)}>
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button type="button" aria-label="Scroll menu right" className="outlet-menu-arrow" onClick={() => scrollMenu(1)}>
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {initialMenuItems.length > 0 ? (
+              <div ref={menuTrackRef} className="outlet-menu-track">
+                {initialMenuItems.map((item) => (
+                  <a key={item.id} href={menuUrl} className="outlet-menu-card" style={{ textDecoration: 'none' }}>
+                    <div className="outlet-menu-card-img">
+                      {item.image_url ? (
+                        <Image
+                          src={item.image_url}
+                          alt={item.name}
+                          fill
+                          sizes="(max-width: 768px) 78vw, 270px"
+                          style={{ objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Coffee className="w-10 h-10" style={{ color: 'rgba(201,148,58,0.5)' }} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="outlet-menu-card-body">
+                      <p className="outlet-menu-cat">{item.category_name}</p>
+                      <p className="outlet-menu-name">{item.name}</p>
+                      {item.display_price && <p className="outlet-menu-price">{item.display_price}</p>}
+                    </div>
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <p className="outlet-sub mb-6">Fresh coffee, food and desserts are served at this outlet — explore the full menu for today&apos;s availability.</p>
+            )}
+
+            <div className="mt-7">
+              <a href={menuUrl} className="outlet-btn outlet-btn-primary">
+                View {shortName || outlet.name} Menu <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* ── STEP INSIDE GALLERY ──────────────────────────────── */}
+        {galleryImages.length > 0 && (
+          <section className="outlet-section">
+            <div className="outlet-section-glow" />
+            <div className="outlet-section-inner">
+              <p className="outlet-eyebrow">Inside the Outlet</p>
+              <h2 className="font-heading outlet-h2 mb-8">Step Inside Our {shortName || outlet.name} Cafe</h2>
+
+              <div className={`outlet-gallery-grid count-${Math.min(featuredImages.length, 3)}`}>
+                {featuredImages.map((img, i) => (
+                  <div key={img.id} className={`outlet-gallery-item ${i === 0 ? 'outlet-gallery-main' : ''}`}>
+                    <Image
+                      src={img.src}
+                      alt={img.alt}
+                      fill
+                      sizes={i === 0 ? '(max-width: 768px) 100vw, 55vw' : '(max-width: 768px) 100vw, 40vw'}
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {extraImages.length > 0 && (
+                <div className="outlet-gallery-strip mt-5">
+                  {extraImages.map((img) => (
+                    <div key={img.id} className="outlet-gallery-thumb">
+                      <Image src={img.src} alt={img.alt} fill sizes="220px" style={{ objectFit: 'cover' }} />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* ── FACILITIES & COMFORT ─────────────────────────────── */}
+        {facilities.length > 0 && (
+          <section className="outlet-section">
+            <div className="outlet-section-glow" />
+            <div className="outlet-section-inner">
+              <p className="outlet-eyebrow">At This Outlet</p>
+              <h2 className="font-heading outlet-h2 mb-8">Facilities &amp; Comfort</h2>
+              <div className="outlet-facility-grid">
+                {facilities.map((key) => {
+                  const { label, Icon } = FACILITY_META[key]
+                  return (
+                    <div key={key} className="outlet-facility">
+                      <div className="outlet-facility-icon">
+                        <Icon style={{ width: 18, height: 18, color: '#C9943A' }} />
+                      </div>
+                      <span className="outlet-facility-label">{label}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ── EVENT SPACE (only when enabled for this outlet) ──── */}
+        {hasEventSpace && (
+          <section className="outlet-section">
+            <div className="outlet-section-glow" />
+            <div className="outlet-section-inner">
+              <div className="outlet-event outlet-fade-up">
+                <div className="outlet-event-glow" />
+                <div className="outlet-event-dots" />
+                <div className="relative z-10 text-center max-w-2xl mx-auto">
+                  <p className="outlet-eyebrow mb-4" style={{ color: '#C9943A' }}>Private Events</p>
+                  <h2 className="font-heading" style={{ fontSize: 'clamp(1.6rem,3.4vw,2.6rem)', fontWeight: 900, color: '#FFF7ED', lineHeight: 1.1, marginBottom: '1rem' }}>
+                    Space for Your Next Gathering
+                  </h2>
+                  {initialContent.event_space_text && (
+                    <p style={{ color: '#E6C7A8', lineHeight: 1.7, marginBottom: '1.75rem' }}>{initialContent.event_space_text}</p>
+                  )}
+                  <a href="/contact" className="outlet-event-btn">
+                    <CalendarRange className="w-4 h-4" /> Enquire About Events
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ── BOTTOM CTA ───────────────────────────────────────── */}
         <div className="outlet-transition" />
         <section className="outlet-cta">
           <div className="outlet-cta-glow" />
@@ -409,22 +609,28 @@ export default function OutletDetailClient({ slug, initialOutlet }: { slug: stri
           <div className="outlet-cta-inner">
             <p className="outlet-cta-eyebrow outlet-fade-up">Visit Us Today</p>
             <h2 className="font-heading outlet-cta-title outlet-fade-up outlet-stagger-1">
-              Visit {outlet.name} Today
+              Visit Big Bean Cafe {shortName}
             </h2>
             <p className="outlet-cta-desc outlet-fade-up outlet-stagger-2">
-              Experience the perfect blend of coffee and ambiance at our {outlet.name} outlet
+              {outlet.address}
             </p>
-            {outlet.latitude && outlet.longitude && (
-              <a
-                href={`https://www.google.com/maps?q=${outlet.latitude},${outlet.longitude}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="outlet-cta-btn outlet-fade-up outlet-stagger-3"
-              >
-                <Navigation className="w-4 h-4" />
-                Get Directions
+            <div className="outlet-cta-btns outlet-fade-up outlet-stagger-3">
+              {mapsHref && (
+                <a href={mapsHref} target="_blank" rel="noopener noreferrer" className="outlet-cta-btn">
+                  <Navigation className="w-4 h-4" /> Get Directions
+                </a>
+              )}
+              {outlet.phone && (
+                <a href={`tel:${outlet.phone}`} className="outlet-cta-btn outlet-cta-btn-outline">
+                  <Phone className="w-4 h-4" /> Call Now
+                </a>
+              )}
+            </div>
+            <div className="mt-8 outlet-fade-up outlet-stagger-4">
+              <a href="/outlets" className="outlet-back justify-center" style={{ color: '#C7A489' }}>
+                <ArrowLeft className="w-4 h-4" /> Back to All Outlets
               </a>
-            )}
+            </div>
           </div>
         </section>
       </main>

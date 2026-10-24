@@ -3,10 +3,24 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, MapPin, Phone, Mail, Clock, ImageIcon } from 'lucide-react'
+import { ArrowLeft, Save, MapPin, Phone, Mail, Clock, ImageIcon, Trash2, Plus } from 'lucide-react'
 import apiRequest from '@/utils/api'
+import { OUTLET_FACILITIES, outletGalleryCategory } from '@/lib/outlets'
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '')
+
+interface AdminGalleryItem {
+  id: number
+  title: string
+  category: string
+  media_type: string
+  image: string | null
+  description: string | null
+  tags: string | null
+  status: string
+  is_featured: number
+  sort_order: number
+}
 
 function getImageUrl(p: string | null | undefined): string | null {
   if (!p) return null
@@ -65,6 +79,19 @@ export default function EditOutlet() {
   const [isLoading, setIsLoading] = useState(true)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
+  // Facilities & event space (outlet_content)
+  const [facilityKeys, setFacilityKeys] = useState<string[]>([])
+  const [eventSpaceText, setEventSpaceText] = useState('')
+  const [contentSaving, setContentSaving] = useState(false)
+  const [contentMsg, setContentMsg] = useState('')
+
+  // Step Inside gallery (gallery_items with category 'outlet-{slug}')
+  const [galleryItems, setGalleryItems] = useState<AdminGalleryItem[]>([])
+  const [galleryBusy, setGalleryBusy] = useState<number | 'new' | null>(null)
+  const [newPhoto, setNewPhoto] = useState<{ title: string; sort_order: string; file: File | null }>({
+    title: '', sort_order: '0', file: null
+  })
+
   useEffect(() => { fetchOutlet() }, [id])
 
   const fetchOutlet = async () => {
@@ -92,6 +119,8 @@ export default function EditOutlet() {
           og_title:         o.og_title         || '',
           og_description:   o.og_description   || ''
         })
+        fetchContent()
+        if (o.slug) fetchGallery(o.slug)
       } else {
         alert('Failed to fetch outlet')
         router.push('/admin/outlets')
@@ -103,6 +132,106 @@ export default function EditOutlet() {
       setIsLoading(false)
     }
   }
+
+  const fetchContent = async () => {
+    try {
+      const res = await apiRequest(`/outlets/${id}/content`, {})
+      const json = await res.json()
+      if (json?.success && json.data) {
+        setFacilityKeys(Array.isArray(json.data.facilities) ? json.data.facilities : [])
+        setEventSpaceText(json.data.event_space_text || '')
+      }
+    } catch { /* content optional — leave empty */ }
+  }
+
+  const fetchGallery = async (slug: string) => {
+    if (!slug) return
+    try {
+      const res = await apiRequest(`/gallery-items?category=${encodeURIComponent(outletGalleryCategory(slug))}`, {})
+      const json = await res.json()
+      if (json?.success) {
+        const items: AdminGalleryItem[] = (json.data || []).filter((i: AdminGalleryItem) => i.media_type === 'image')
+        items.sort((a, b) => a.sort_order - b.sort_order || b.id - a.id)
+        setGalleryItems(items)
+      }
+    } catch { /* gallery optional */ }
+  }
+
+  const toggleFacility = (key: string) =>
+    setFacilityKeys((prev) => prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key])
+
+  const saveContent = async () => {
+    setContentSaving(true); setContentMsg('')
+    try {
+      const res = await apiRequest(`/outlets/${id}/content`, {
+        method: 'PUT',
+        body: JSON.stringify({ facilities: facilityKeys, event_space_text: eventSpaceText }),
+      })
+      const json = await res.json()
+      setContentMsg(res.ok && json?.success ? 'Saved!' : (json?.message || 'Save failed'))
+    } catch {
+      setContentMsg('Network error. Please try again.')
+    } finally {
+      setContentSaving(false)
+    }
+  }
+
+  const uploadGalleryPhoto = async () => {
+    if (!newPhoto.file || !newPhoto.title.trim()) { alert('Image file and alt text are required'); return }
+    if (!formData.slug.trim()) { alert('Save the outlet with a slug first'); return }
+    setGalleryBusy('new')
+    try {
+      const fd = new FormData()
+      fd.append('title', newPhoto.title.trim())
+      fd.append('category', outletGalleryCategory(formData.slug.trim()))
+      fd.append('media_type', 'image')
+      fd.append('status', 'active')
+      fd.append('sort_order', newPhoto.sort_order || '0')
+      fd.append('image', newPhoto.file)
+      const res = await apiRequest('/gallery-items', { method: 'POST', body: fd })
+      const json = await res.json()
+      if (res.ok && json?.success) {
+        setNewPhoto({ title: '', sort_order: '0', file: null })
+        fetchGallery(formData.slug.trim())
+      } else {
+        alert(json?.message || 'Failed to upload photo')
+      }
+    } catch { alert('Network error. Please try again.') }
+    finally { setGalleryBusy(null) }
+  }
+
+  const updateGalleryItem = async (item: AdminGalleryItem) => {
+    setGalleryBusy(item.id)
+    try {
+      const fd = new FormData()
+      fd.append('title', item.title)
+      fd.append('category', item.category)
+      fd.append('media_type', item.media_type || 'image')
+      fd.append('instagram_url', '')
+      fd.append('description', item.description || '')
+      fd.append('tags', item.tags || '')
+      fd.append('status', item.status)
+      fd.append('is_featured', String(item.is_featured ? 1 : 0))
+      fd.append('sort_order', String(item.sort_order ?? 0))
+      const res = await apiRequest(`/gallery-items/${item.id}`, { method: 'PUT', body: fd })
+      if (!res.ok) alert('Failed to update photo')
+    } catch { alert('Network error. Please try again.') }
+    finally { setGalleryBusy(null) }
+  }
+
+  const deleteGalleryItem = async (itemId: number) => {
+    if (!confirm('Remove this photo from the outlet gallery?')) return
+    setGalleryBusy(itemId)
+    try {
+      const res = await apiRequest(`/gallery-items/${itemId}`, { method: 'DELETE' })
+      if (res.ok) fetchGallery(formData.slug.trim())
+      else alert('Failed to delete photo')
+    } catch { alert('Network error. Please try again.') }
+    finally { setGalleryBusy(null) }
+  }
+
+  const patchGalleryItem = (itemId: number, patch: Partial<AdminGalleryItem>) =>
+    setGalleryItems((prev) => prev.map((i) => (i.id === itemId ? { ...i, ...patch } : i)))
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
@@ -370,6 +499,137 @@ export default function EditOutlet() {
               className="input-field" placeholder="e.g. 12" min="1" />
             <p className="text-xs text-gray-500 mt-1">
               Store branch ID used for outlet-specific menu pricing and availability. Leave empty to remove menu integration.
+            </p>
+          </div>
+        </div>
+
+        {/* Facilities & Comfort */}
+        <div className="card p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Facilities &amp; Comfort</h2>
+          <p className="text-sm text-gray-500 mb-6">
+            Tick only the facilities confirmed for this outlet. They appear on the public
+            &quot;Facilities &amp; Comfort&quot; section — unticked facilities are never shown.
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {OUTLET_FACILITIES.map(({ key, label }) => (
+              <label key={key} className={`flex items-center gap-2.5 rounded-xl border px-4 py-3 cursor-pointer transition-colors text-sm font-medium ${
+                facilityKeys.includes(key) ? 'border-[#C9943A] bg-[#FFF7ED] text-gray-900' : 'border-gray-200 text-gray-600 hover:border-gray-300'
+              }`}>
+                <input
+                  type="checkbox"
+                  checked={facilityKeys.includes(key)}
+                  onChange={() => toggleFacility(key)}
+                  className="w-4 h-4 accent-[#C9943A]"
+                />
+                {label}
+              </label>
+            ))}
+          </div>
+
+          {facilityKeys.includes('event_space') && (
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Event Space Details <span className="text-gray-400 font-normal">(optional)</span>
+              </label>
+              <textarea
+                value={eventSpaceText}
+                onChange={(e) => setEventSpaceText(e.target.value)}
+                rows={3}
+                className="input-field"
+                placeholder="e.g. Dedicated event space for gatherings, workshops and celebrations. Contact the outlet for capacity and availability."
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Shown in the &quot;Space for Your Next Gathering&quot; section. Only state confirmed details — no estimated capacities.
+              </p>
+            </div>
+          )}
+
+          <div className="mt-6 flex items-center gap-4">
+            <button type="button" onClick={saveContent} disabled={contentSaving}
+              className="px-6 py-2 bg-[#3D1F0D] text-white rounded-lg hover:bg-[#5C2E12] disabled:opacity-50 flex items-center gap-2">
+              <Save className="w-4 h-4" />
+              {contentSaving ? 'Saving…' : 'Save Facilities'}
+            </button>
+            {contentMsg && <span className="text-sm text-gray-600">{contentMsg}</span>}
+          </div>
+        </div>
+
+        {/* Outlet Gallery — Step Inside */}
+        <div className="card p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Outlet Gallery — Step Inside</h2>
+          <p className="text-sm text-gray-500 mb-6">
+            Interior and location photos shown in &quot;Step Inside Our Cafe&quot; on the public outlet page.
+            Stored under gallery category <code className="text-xs bg-gray-100 px-1.5 py-0.5 rounded">outlet-{formData.slug || 'slug'}</code>.
+            Recommended: 3–6 photos.
+          </p>
+
+          {/* Existing photos */}
+          {galleryItems.length > 0 ? (
+            <div className="space-y-3 mb-6">
+              {galleryItems.map((item) => (
+                <div key={item.id} className="flex items-center gap-4 border border-gray-200 rounded-xl p-3">
+                  {item.image && (
+                    <img src={getImageUrl(item.image) || ''} alt={item.title}
+                      className="w-20 h-14 object-cover rounded-lg flex-shrink-0 bg-gray-100" />
+                  )}
+                  <div className="flex-1 grid grid-cols-1 md:grid-cols-[1fr_90px_120px] gap-3 items-center min-w-0">
+                    <input type="text" value={item.title}
+                      onChange={(e) => patchGalleryItem(item.id, { title: e.target.value })}
+                      className="input-field !py-2 text-sm" placeholder="Alt text / photo title" />
+                    <input type="number" value={item.sort_order} min={0}
+                      onChange={(e) => patchGalleryItem(item.id, { sort_order: parseInt(e.target.value, 10) || 0 })}
+                      className="input-field !py-2 text-sm" placeholder="Order" title="Display order" />
+                    <select value={item.status}
+                      onChange={(e) => patchGalleryItem(item.id, { status: e.target.value })}
+                      className="input-field !py-2 text-sm">
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </div>
+                  <button type="button" onClick={() => updateGalleryItem(item)}
+                    disabled={galleryBusy === item.id}
+                    className="px-4 py-2 text-sm font-semibold text-[#3D1F0D] border border-[#C9943A] rounded-lg hover:bg-[#FFF7ED] disabled:opacity-50 whitespace-nowrap">
+                    {galleryBusy === item.id ? 'Saving…' : 'Save'}
+                  </button>
+                  <button type="button" onClick={() => deleteGalleryItem(item.id)}
+                    disabled={galleryBusy === item.id}
+                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg disabled:opacity-50" title="Delete photo">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-400 mb-6">No gallery photos yet — upload the first one below.</p>
+          )}
+
+          {/* Upload new photo */}
+          <div className="border-2 border-dashed border-gray-200 rounded-xl p-5">
+            <p className="text-sm font-semibold text-gray-700 mb-4">Add Photo</p>
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_110px] gap-4 items-start">
+              <div className="space-y-3">
+                <input type="text" value={newPhoto.title}
+                  onChange={(e) => setNewPhoto((p) => ({ ...p, title: e.target.value }))}
+                  className="input-field" placeholder="Alt text, e.g. Koramangala cafe interior seating" />
+                <input
+                  type="file" accept="image/png,image/jpeg,image/jpg,image/webp"
+                  onChange={(e) => setNewPhoto((p) => ({ ...p, file: e.target.files?.[0] || null }))}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#FFF7ED] file:text-[#3D1F0D] hover:file:bg-[#F6E6D1] file:cursor-pointer" />
+              </div>
+              <div>
+                <input type="number" value={newPhoto.sort_order} min={0}
+                  onChange={(e) => setNewPhoto((p) => ({ ...p, sort_order: e.target.value }))}
+                  className="input-field" placeholder="Order" title="Display order" />
+                <button type="button" onClick={uploadGalleryPhoto}
+                  disabled={galleryBusy === 'new'}
+                  className="mt-3 w-full px-4 py-2 bg-[#3D1F0D] text-white rounded-lg hover:bg-[#5C2E12] disabled:opacity-50 flex items-center justify-center gap-2 text-sm font-semibold">
+                  <Plus className="w-4 h-4" />
+                  {galleryBusy === 'new' ? 'Uploading…' : 'Upload'}
+                </button>
+              </div>
+            </div>
+            <p className="text-xs text-gray-400 mt-3">
+              Tip: if you rename the outlet slug, re-upload or update these photos — their category is tied to the slug.
             </p>
           </div>
         </div>

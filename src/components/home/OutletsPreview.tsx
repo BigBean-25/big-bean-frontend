@@ -2,21 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { MapPin, Phone, Clock, Navigation } from 'lucide-react'
-
-interface Outlet {
-  id: number
-  name: string
-  address: string
-  phone: string | null
-  email: string | null
-  opening_hours: string | null
-  latitude: number | null
-  longitude: number | null
-  image: string | null
-  status: string
-  sort_order: number
-  slug?: string | null
-}
+import { sortOutlets, type Outlet } from '@/lib/outlets'
 
 const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '')
 
@@ -26,10 +12,12 @@ const getImageUrl = (image?: string | null): string | null => {
   return `${API_BASE_URL}/${image.replace(/^\/+/, '')}`
 }
 
-export default function OutletsPreview() {
-  const [outlets, setOutlets] = useState<Outlet[]>([])
-  const [loading, setLoading] = useState(true)
+export default function OutletsPreview({ initialOutlets = [] }: { initialOutlets?: Outlet[] }) {
+  const [allOutlets, setAllOutlets] = useState<Outlet[]>(() => sortOutlets(initialOutlets))
+  const [loading, setLoading] = useState(initialOutlets.length === 0)
   const [error, setError] = useState(false)
+
+  const outlets = allOutlets.slice(0, 3)
 
   useEffect(() => {
     const fetchOutlets = async () => {
@@ -39,28 +27,15 @@ export default function OutletsPreview() {
         const data = await res.json()
         console.log('Loaded outlets:', data)
         const rawOutlets: Outlet[] = Array.isArray(data) ? data : Array.isArray(data.data) ? data.data : []
-        const getOutletPriority = (o: Outlet) => {
-          const name = (o.name || '').toLowerCase()
-          const slug = (o.slug || '').toLowerCase()
-          return name.includes('koramangala') || slug.includes('koramangala') ? 0 : 1
-        }
-        const active = rawOutlets
-          .filter((o: Outlet) => o.status === 'active')
-          .sort((a: Outlet, b: Outlet) => {
-            const pd = getOutletPriority(a) - getOutletPriority(b)
-            if (pd !== 0) return pd
-            return a.sort_order - b.sort_order || b.id - a.id
-          })
-          .slice(0, 3)
-        setOutlets(active)
+        setAllOutlets(sortOutlets(rawOutlets.filter((o: Outlet) => o.status === 'active')))
       } catch {
-        setError(true)
+        if (initialOutlets.length === 0) setError(true)
       } finally {
         setLoading(false)
       }
     }
     fetchOutlets()
-  }, [])
+  }, [initialOutlets])
 
   return (
     <section className="section-padding bg-cream-50">
@@ -189,6 +164,25 @@ export default function OutletsPreview() {
               )
             })}
           </div>
+        )}
+
+        {/* ── All outlet links (SSR-visible for SEO) ── */}
+        {!loading && !error && allOutlets.length > 0 && (
+          <nav aria-label="All Big Bean Cafe outlets" className="mt-8">
+            <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+              {allOutlets.map((outlet) => (
+                <li key={outlet.id}>
+                  <a
+                    href={outlet.slug ? `/outlets/${outlet.slug}` : '/outlets'}
+                    className="text-sm font-semibold underline-offset-4 transition-colors hover:underline"
+                    style={{ color: '#8B5A3C' }}
+                  >
+                    {outlet.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
         )}
 
         <div className="mt-14 text-center">

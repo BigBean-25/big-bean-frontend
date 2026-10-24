@@ -18,6 +18,16 @@ const nextConfig = {
         hostname: 'bigbeancafe.in',
         pathname: '/uploads/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'api.bigbeancafe.in',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'admin.bigbeancafe.store',
+        pathname: '/storage/**',
+      },
     ],
   },
   env: {

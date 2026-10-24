@@ -6,6 +6,7 @@ import Footer from '@/components/common/Footer'
 import Link from 'next/link'
 import { MapPin, Phone, Clock, Navigation, Search, Store, ArrowRight, Coffee, X, ExternalLink, Sparkles, BadgeCheck } from 'lucide-react'
 import OutletMapLocator from '@/components/outlets/OutletMapLocator'
+import { sortOutlets, type Outlet } from '@/lib/outlets'
 import s from './OutletsClient.module.css'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
@@ -15,21 +16,6 @@ const getImageUrl = (image?: string | null): string | null => {
   if (!image) return null
   if (image.startsWith('http')) return image
   return `${API_BASE_URL}/${image.replace(/^\/+/, '')}`
-}
-
-interface Outlet {
-  id: number
-  name: string
-  address: string
-  phone: string | null
-  email: string | null
-  opening_hours: string | null
-  latitude: number | null
-  longitude: number | null
-  image: string | null
-  status: string
-  sort_order: number
-  slug?: string | null
 }
 
 interface OutletHero {
@@ -59,9 +45,9 @@ const FILTER_CHIPS = [
   { label: 'Work Friendly', value: 'work' },
 ]
 
-export default function Outlets() {
-  const [outlets, setOutlets] = useState<Outlet[]>([])
-  const [loading, setLoading] = useState(true)
+export default function Outlets({ initialOutlets = [] }: { initialOutlets?: Outlet[] }) {
+  const [outlets, setOutlets] = useState<Outlet[]>(() => sortOutlets(initialOutlets))
+  const [loading, setLoading] = useState(initialOutlets.length === 0)
   const [error, setError] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [activeChip, setActiveChip] = useState('all')
@@ -72,7 +58,7 @@ export default function Outlets() {
     const controller = new AbortController()
 
     const load = async () => {
-      setLoading(true)
+      if (initialOutlets.length === 0) setLoading(true)
       try {
         const [heroRes, outletsRes] = await Promise.all([
           fetch(`${API_URL}/outlet-hero/active`, { signal: controller.signal }),
@@ -94,24 +80,9 @@ export default function Outlets() {
           ? outletsJson.data
           : []
 
-        const getOutletPriority = (outlet: Outlet) => {
-          const name = (outlet.name || '').toLowerCase()
-          const slug = (outlet.slug || '').toLowerCase()
-          if (slug.includes('koramangala') || name.includes('koramangala')) return 0
-          return 1
-        }
-
-        const active = list
-          .filter((o) => o.status === 'active')
-          .sort((a, b) => {
-            const priorityDiff = getOutletPriority(a) - getOutletPriority(b)
-            if (priorityDiff !== 0) return priorityDiff
-            return a.sort_order - b.sort_order || b.id - a.id
-          })
-
-        setOutlets(active)
+        setOutlets(sortOutlets(list.filter((o) => o.status === 'active')))
       } catch (err) {
-        if ((err as Error).name !== 'AbortError') setError(true)
+        if ((err as Error).name !== 'AbortError' && initialOutlets.length === 0) setError(true)
       } finally {
         if (mounted) setLoading(false)
       }
@@ -119,7 +90,7 @@ export default function Outlets() {
 
     load()
     return () => { mounted = false; controller.abort() }
-  }, [])
+  }, [initialOutlets])
 
   const filteredOutlets = outlets.filter(outlet => {
     const q = searchTerm.toLowerCase()

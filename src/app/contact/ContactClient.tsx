@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { getPublicSettings, formatPhoneForTel, CONTACT_DEFAULTS, type PublicContactSettings } from '@/lib/publicSettings'
+import type { Outlet } from '@/lib/outlets'
 import Header from '@/components/common/Header'
 import Footer from '@/components/common/Footer'
 import {
@@ -26,20 +27,6 @@ interface ContactHero {
   stat_2_label: string
   stat_3_value: string
   stat_3_label: string
-}
-
-interface Outlet {
-  id: number
-  name: string
-  address: string
-  phone: string | null
-  email: string | null
-  opening_hours: string | null
-  latitude: string | number | null
-  longitude: string | number | null
-  image: string | null
-  status: string
-  sort_order: number
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
@@ -120,11 +107,11 @@ const faqs = [
   }
 ]
 
-export default function ContactPage() {
+export default function ContactPage({ initialOutlets = [] }: { initialOutlets?: Outlet[] }) {
   const [hero, setHero] = useState<ContactHero>(DEFAULT_HERO)
-  const [outlets, setOutlets] = useState<Outlet[]>([])
+  const [outlets, setOutlets] = useState<Outlet[]>(initialOutlets)
   const [loadingHero, setLoadingHero] = useState(true)
-  const [loadingOutlets, setLoadingOutlets] = useState(true)
+  const [loadingOutlets, setLoadingOutlets] = useState(initialOutlets.length === 0)
   const [pubSettings, setPubSettings] = useState<PublicContactSettings>(CONTACT_DEFAULTS)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [form, setForm] = useState({
@@ -153,7 +140,7 @@ export default function ContactPage() {
         const res = await fetch(`${API_URL}/outlets?status=active`)
         const data = await res.json()
         const list = (data.data || []).filter((o: Outlet) => o.status !== 'inactive')
-        setOutlets(list.slice(0, 6))
+        setOutlets(prev => (list.length ? list : prev))
       } catch { }
       setLoadingOutlets(false)
     }
@@ -525,7 +512,9 @@ export default function ContactPage() {
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-[#120905]/70 to-transparent" />
-                    <h3 className="absolute bottom-4 left-4 font-heading font-black text-[1.2rem] text-white">{o.name}</h3>
+                    <h3 className="absolute bottom-4 left-4 font-heading font-black text-[1.2rem] text-white">
+                      <a href={o.slug ? `/outlets/${o.slug}` : '/outlets'} className="hover:underline">{o.name}</a>
+                    </h3>
                   </div>
                   <div className="p-5">
                     <p className="contact-supporting-text mb-3" style={{ color: '#6B3520' }}>{o.address}</p>

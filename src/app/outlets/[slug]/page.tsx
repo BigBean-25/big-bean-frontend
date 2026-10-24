@@ -1,20 +1,17 @@
 import { Metadata } from 'next'
+import {
+  getOutletBySlug,
+  getOutletGallery,
+  getOutletContent,
+  getOutletMenuPreview,
+} from '@/lib/outlets'
 import OutletDetailClient from './OutletDetailClient'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 const API_BASE_URL = API_URL.replace(/\/api$/, '')
 const SITE_URL = 'https://www.bigbeancafe.in'
 
-async function getOutlet(slug: string) {
-  try {
-    const res = await fetch(`${API_URL}/outlets/slug/${slug}`, { cache: 'no-store' })
-    if (!res.ok) return null
-    const data = await res.json()
-    return data?.data || null
-  } catch {
-    return null
-  }
-}
+const getOutlet = getOutletBySlug
 
 const getOutletImageUrl = (image?: string | null): string | undefined => {
   if (!image) return undefined
@@ -73,6 +70,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const outlet = await getOutlet(params.slug)
+  const [gallery, content, menuItems] = outlet
+    ? await Promise.all([
+        getOutletGallery(params.slug),
+        getOutletContent(params.slug),
+        getOutletMenuPreview(outlet.id),
+      ])
+    : [[], { facilities: [], event_space_text: '' }, []]
   const canonical = `${SITE_URL}/outlets/${params.slug}`
   const imageUrl = getOutletImageUrl(outlet?.image)
 
@@ -114,7 +118,13 @@ export default async function Page({ params }: { params: { slug: string } }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(outletSchema) }}
         />
       )}
-      <OutletDetailClient slug={params.slug} initialOutlet={outlet} />
+      <OutletDetailClient
+        slug={params.slug}
+        initialOutlet={outlet}
+        initialGallery={gallery}
+        initialContent={content}
+        initialMenuItems={menuItems}
+      />
     </>
   )
 }

@@ -14,6 +14,7 @@ import FranchiseCTA from '@/components/home/FranchiseCTA'
 import Header from '@/components/common/Header'
 import Footer from '@/components/common/Footer'
 import { getApiUrl } from '@/lib/api'
+import type { Outlet } from '@/lib/outlets'
 
 interface HeroBannerData {
   id: number
@@ -35,7 +36,7 @@ interface HeroBannerData {
   sort_order: number
 }
 
-export default function Home() {
+export default function Home({ initialOutlets = [] }: { initialOutlets?: Outlet[] }) {
   const [heroBanners, setHeroBanners] = useState<HeroBannerData[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -73,7 +74,7 @@ export default function Home() {
           <OrderingInfo />
         </div>
         <div className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
-          <OutletsPreview />
+          <OutletsPreview initialOutlets={initialOutlets} />
         </div>
         <div className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
           <OffersPreview />

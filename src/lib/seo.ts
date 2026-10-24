@@ -34,7 +34,10 @@ export function buildMetadata(seo: SeoData, fallback: {
 
   const title       = str(seo?.meta_title)       ?? fallback.title
   const description = str(seo?.meta_description) ?? fallback.description
-  const canonical   = str(seo?.canonical_url)    ?? `https://www.bigbeancafe.in${fallback.path}`
+  const rawCanonical = str(seo?.canonical_url)
+  const canonical   = rawCanonical && /^https?:\/\//i.test(rawCanonical)
+    ? rawCanonical
+    : `https://www.bigbeancafe.in${fallback.path}`
   const keywords    = str(seo?.meta_keywords)
   const ogImage     = getImageUrl(str(seo?.og_image || seo?.twitter_image) ?? null)
 
