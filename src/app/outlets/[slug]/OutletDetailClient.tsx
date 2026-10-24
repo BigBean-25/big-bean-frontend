@@ -137,6 +137,21 @@ export default function OutletDetailClient({
   const hasEventSpace = facilities.includes('event_space')
   const menuUrl = `/menu?outlet=${outlet.id}`
 
+  // Presentation-only parsing of the free-text opening_hours field —
+  // split each line into "days" and "time" so hours render as a
+  // structured schedule rather than a plain paragraph.
+  const hoursRows = (outlet.opening_hours || '')
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const i = line.indexOf(':')
+      return i > 0
+        ? { days: line.slice(0, i).trim(), time: line.slice(i + 1).trim() }
+        : { days: '', time: line }
+    })
+  const isDaily = /daily|every\s*day|mon(?:day)?\s*[-–—]\s*sun(?:day)?/i.test(outlet.opening_hours || '')
+
   return (
     <div className="min-h-screen bg-cream-50">
       <Header />
@@ -194,14 +209,37 @@ export default function OutletDetailClient({
         .outlet-eyebrow{font-size:.65rem;font-weight:900;letter-spacing:.22em;text-transform:uppercase;color:#C9943A;margin-bottom:.65rem;}
         .outlet-h2{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:900;color:#3D1F0D;line-height:1.1;}
         .outlet-sub{font-size:.95rem;color:#6B3520;line-height:1.7;}
-        .outlet-info-card{background:rgba(255,255,255,0.92);border:1px solid rgba(201,148,58,0.22);border-radius:26px;padding:1.75rem 2rem;box-shadow:0 8px 34px rgba(61,31,13,0.07);transition:transform .25s,box-shadow .25s;height:100%;}
-        .outlet-info-card:hover{transform:translateY(-4px);box-shadow:0 16px 46px rgba(61,31,13,0.11);}
-        .outlet-info-iconbox{width:44px;height:44px;border-radius:14px;background:rgba(201,148,58,0.10);border:1px solid rgba(201,148,58,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-        .outlet-info-text{font-size:.93rem;color:#6B3520;line-height:1.65;}
-        .outlet-contact-row{display:flex;align-items:flex-start;gap:.85rem;font-size:.9rem;color:#5C2E12;line-height:1.55;}
-        .outlet-contact-row a{color:#5C2E12;text-decoration:none;transition:color .18s;}
-        .outlet-contact-row a:hover{color:#C9943A;}
-        .outlet-contact-value{word-break:break-word;}
+        .outlet-center-head{text-align:center;max-width:760px;margin:0 auto 2.75rem;}
+        .outlet-center-head .outlet-sub{margin-top:.85rem;}
+        .outlet-menu-head{position:relative;display:flex;align-items:flex-end;justify-content:center;}
+        .outlet-menu-arrows{position:absolute;right:0;bottom:.4rem;display:flex;gap:.7rem;}
+        .outlet-pair{display:grid;grid-template-columns:1fr;gap:1.5rem;align-items:stretch;}
+        @media(min-width:1024px){.outlet-pair{grid-template-columns:1fr 1fr;gap:2rem;}}
+        .outlet-pcard{position:relative;display:flex;flex-direction:column;height:100%;background:linear-gradient(180deg,#FFFFFF 0%,#FFFDF9 100%);border:1px solid rgba(201,148,58,0.24);border-radius:26px;padding:clamp(1.6rem,2.6vw,2.4rem);box-shadow:0 14px 44px rgba(61,31,13,0.09);overflow:hidden;transition:transform .25s,box-shadow .25s;}
+        .outlet-pcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,rgba(201,148,58,0) 0%,rgba(201,148,58,0.55) 50%,rgba(201,148,58,0) 100%);}
+        .outlet-pcard:hover{transform:translateY(-4px);box-shadow:0 22px 56px rgba(61,31,13,0.13);}
+        .outlet-pcard-head{display:flex;align-items:center;gap:1rem;margin-bottom:1.6rem;}
+        .outlet-pcard-icon{width:54px;height:54px;border-radius:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(201,148,58,0.18),rgba(201,148,58,0.07));border:1px solid rgba(201,148,58,0.32);box-shadow:0 6px 16px rgba(201,148,58,0.15);}
+        .outlet-open-badge{margin-left:auto;display:inline-flex;align-items:center;gap:.45rem;border-radius:100px;padding:.45rem .95rem;background:rgba(201,148,58,0.12);border:1px solid rgba(201,148,58,0.35);font-size:.62rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#8B5A3C;white-space:nowrap;}
+        .outlet-open-dot{width:7px;height:7px;border-radius:50%;background:#4CAF50;box-shadow:0 0 0 3px rgba(76,175,80,0.18);flex-shrink:0;}
+        .outlet-hours-list{display:flex;flex-direction:column;margin-bottom:1.4rem;}
+        .outlet-hours-row{display:flex;align-items:baseline;gap:.75rem;padding:.72rem .15rem;border-bottom:1px dashed rgba(139,74,47,0.18);}
+        .outlet-hours-row:last-child{border-bottom:none;}
+        .outlet-hours-days{font-size:.95rem;font-weight:800;color:#3D1F0D;}
+        .outlet-hours-leader{flex:1;min-width:12px;}
+        .outlet-hours-time{font-size:.95rem;font-weight:900;color:#A97B2F;letter-spacing:.02em;white-space:nowrap;text-align:right;}
+        .outlet-hours-foot{margin-top:auto;padding-top:1.2rem;border-top:1px solid rgba(201,148,58,0.2);display:flex;align-items:center;gap:.6rem;font-size:.83rem;color:#8B5A3C;font-weight:600;}
+        .outlet-hours-foot a{color:#3D1F0D;font-weight:800;text-decoration:none;transition:color .18s;}
+        .outlet-hours-foot a:hover{color:#C9943A;}
+        .outlet-crow{display:flex;align-items:center;gap:.95rem;padding:.85rem 0;border-bottom:1px solid rgba(201,148,58,0.15);}
+        .outlet-crow:last-of-type{border-bottom:none;}
+        .outlet-crow-icon{width:46px;height:46px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(201,148,58,0.10);border:1px solid rgba(201,148,58,0.28);}
+        .outlet-crow-label{display:block;font-size:.6rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#A97B2F;margin-bottom:.2rem;}
+        .outlet-crow-value{display:block;font-size:.98rem;font-weight:700;color:#3D1F0D;line-height:1.5;word-break:break-word;text-decoration:none;transition:color .18s;}
+        a.outlet-crow-value:hover{color:#C9943A;}
+        .outlet-maps-btn{margin-top:1.6rem;display:inline-flex;align-items:center;justify-content:center;gap:.6rem;width:100%;min-height:54px;border-radius:16px;background:linear-gradient(135deg,#3D1F0D,#5C2E12);color:#FFF7ED;font-size:.8rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;text-decoration:none;box-shadow:0 10px 26px rgba(61,31,13,0.25);transition:transform .2s,box-shadow .2s,filter .2s;}
+        .outlet-maps-btn:hover{transform:translateY(-2px);box-shadow:0 16px 36px rgba(61,31,13,0.32);filter:brightness(1.12);}
+        .outlet-maps-btn:active{transform:scale(.98);}
         .outlet-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:52px;border-radius:100px;font-size:.82rem;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:.06em;transition:transform .2s,box-shadow .2s,background .2s;padding:.75rem 1.8rem;}
         .outlet-btn:active{transform:scale(.98);}
         .outlet-btn-primary{background:#3D1F0D;color:#FFF7ED;box-shadow:0 6px 18px rgba(61,31,13,0.25);}
@@ -226,32 +264,33 @@ export default function OutletDetailClient({
         .outlet-menu-arrow{width:44px;height:44px;border-radius:50%;border:1.5px solid #C9943A;background:#FFF7ED;color:#3D1F0D;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;}
         .outlet-menu-arrow:hover{background:#3D1F0D;color:#F6D58D;}
 
-        /* ── Gallery ── */
-        .outlet-gallery-grid{display:grid;grid-template-columns:1fr;gap:1.25rem;}
+        /* ── Gallery (compact editorial) ── */
+        .outlet-gallery-grid{display:grid;grid-template-columns:1fr;gap:1rem;max-width:1060px;margin:0 auto;}
         @media(min-width:768px){
-          .outlet-gallery-grid{grid-template-columns:1.25fr 1fr;grid-template-rows:repeat(2,minmax(200px,260px));}
+          .outlet-gallery-grid{grid-template-columns:1.25fr 1fr;grid-template-rows:repeat(2,minmax(150px,195px));}
           .outlet-gallery-main{grid-row:1 / span 2;}
-          .outlet-gallery-grid.count-1{grid-template-columns:1fr;grid-template-rows:minmax(280px,420px);}
+          .outlet-gallery-grid.count-1{grid-template-columns:1fr;grid-template-rows:minmax(220px,320px);max-width:720px;}
           .outlet-gallery-grid.count-1 .outlet-gallery-main{grid-row:auto;}
-          .outlet-gallery-grid.count-2{grid-template-columns:1fr 1fr;grid-template-rows:minmax(280px,380px);}
+          .outlet-gallery-grid.count-2{grid-template-columns:1fr 1fr;grid-template-rows:minmax(200px,290px);}
           .outlet-gallery-grid.count-2 .outlet-gallery-main{grid-row:auto;}
         }
-        .outlet-gallery-item{position:relative;border-radius:26px;overflow:hidden;background:linear-gradient(135deg,#3D1F0D,#6B3520);border:1px solid rgba(201,148,58,0.25);min-height:220px;}
+        .outlet-gallery-item{position:relative;border-radius:22px;overflow:hidden;background:linear-gradient(135deg,#3D1F0D,#6B3520);border:1px solid rgba(201,148,58,0.25);min-height:200px;}
         .outlet-gallery-item img{transition:transform .6s ease;}
         .outlet-gallery-item:hover img{transform:scale(1.04);}
-        .outlet-gallery-strip{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:.5rem .25rem 1rem;scrollbar-width:none;}
+        .outlet-gallery-strip{display:flex;gap:.9rem;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:.5rem .25rem 1rem;scrollbar-width:none;max-width:1060px;margin:0 auto;}
         .outlet-gallery-strip::-webkit-scrollbar{display:none;}
-        .outlet-gallery-thumb{scroll-snap-align:start;flex:0 0 220px;height:150px;position:relative;border-radius:20px;overflow:hidden;border:1px solid rgba(201,148,58,0.25);}
+        .outlet-gallery-thumb{scroll-snap-align:start;flex:0 0 180px;height:120px;position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(201,148,58,0.25);}
 
         /* ── Facilities ── */
-        .outlet-facility-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;}
-        .outlet-facility{background:rgba(255,255,255,0.92);border:1px solid rgba(201,148,58,0.24);border-radius:20px;padding:1.1rem 1rem;display:flex;flex-direction:column;align-items:center;gap:.6rem;text-align:center;transition:transform .2s,box-shadow .2s;}
+        .outlet-facility-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1.1rem;max-width:980px;margin:0 auto;}
+        .outlet-facility{height:100%;background:rgba(255,255,255,0.92);border:1px solid rgba(201,148,58,0.24);border-radius:20px;padding:1.25rem 1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.7rem;text-align:center;transition:transform .2s,box-shadow .2s;}
         .outlet-facility:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(61,31,13,0.10);}
-        .outlet-facility-icon{width:42px;height:42px;border-radius:14px;background:rgba(201,148,58,0.12);border:1px solid rgba(201,148,58,0.28);display:flex;align-items:center;justify-content:center;}
-        .outlet-facility-label{font-size:.8rem;font-weight:800;color:#3D1F0D;line-height:1.3;}
+        .outlet-facility-icon{width:46px;height:46px;border-radius:15px;background:rgba(201,148,58,0.12);border:1px solid rgba(201,148,58,0.28);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .outlet-facility-label{font-size:.82rem;font-weight:800;color:#3D1F0D;line-height:1.3;}
 
         /* ── Event space ── */
-        .outlet-event{position:relative;overflow:hidden;border-radius:32px;background:linear-gradient(135deg,#120905 0%,#2A120B 50%,#4A2114 100%);padding:3.5rem clamp(1.5rem,5vw,4rem);}
+        .outlet-event{position:relative;overflow:hidden;border-radius:32px;background:linear-gradient(135deg,#120905 0%,#2A120B 50%,#4A2114 100%);padding:3.75rem clamp(1.5rem,5vw,4rem);}
+        .outlet-event-inner{display:flex;flex-direction:column;align-items:center;text-align:center;gap:0;}
         .outlet-event-glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 20%,rgba(201,148,58,0.16),transparent 55%);}
         .outlet-event-dots{position:absolute;inset:0;opacity:.08;pointer-events:none;background-image:radial-gradient(circle,#C9943A 1px,transparent 1px);background-size:32px 32px;}
         .outlet-event-btn{display:inline-flex;align-items:center;gap:.5rem;border-radius:100px;padding:.85rem 2rem;font-size:.8rem;font-weight:900;text-decoration:none;text-transform:uppercase;letter-spacing:.06em;color:#120905;background:linear-gradient(90deg,#D7A64A,#F0CC83);box-shadow:0 8px 24px rgba(201,148,58,0.32);transition:transform .2s,box-shadow .2s;}
@@ -302,11 +341,17 @@ export default function OutletDetailClient({
           .outlet-hero-stat-value{font-size:1.05rem;}
           .outlet-hero-stat-label{font-size:.52rem;letter-spacing:.06em !important;}
           .outlet-section-inner{padding:2.5rem 1rem;}
-          .outlet-info-card{padding:1.35rem 1.25rem;border-radius:22px;}
+          .outlet-pcard{padding:1.4rem 1.25rem;border-radius:22px;}
+          .outlet-pcard-head{gap:.85rem;margin-bottom:1.25rem;}
+          .outlet-pcard-icon{width:46px;height:46px;border-radius:15px;}
+          .outlet-crow{padding:.7rem 0;}
+          .outlet-crow-icon{width:42px;height:42px;}
           .outlet-cta{padding:3rem 1rem;}
           .outlet-cta-title{font-size:clamp(1.6rem,7vw,2.2rem);}
           .outlet-cta-desc{font-size:.95rem;}
-          .outlet-facility-grid{grid-template-columns:repeat(2,1fr);}
+          .outlet-facility-grid{grid-template-columns:repeat(2,1fr);gap:.8rem;}
+          .outlet-gallery-item{min-height:185px;border-radius:18px;}
+          .outlet-gallery-thumb{flex:0 0 160px;height:105px;}
           .outlet-event{padding:2.5rem 1.25rem;border-radius:24px;}
         }
         @media(max-width:374px){
@@ -404,50 +449,102 @@ export default function OutletDetailClient({
         <section className="outlet-section">
           <div className="outlet-section-glow" />
           <div className="outlet-section-inner">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-              <div className="outlet-info-card outlet-fade-up">
-                <p className="outlet-eyebrow">Opening Hours</p>
-                <h2 className="font-heading outlet-h2 mb-5">When We&apos;re Open</h2>
-                <div className="flex items-start gap-4">
-                  <div className="outlet-info-iconbox">
-                    <Clock className="w-5 h-5 text-[#C9943A]" />
+            <div className="outlet-pair">
+              {/* When We're Open */}
+              <div className="outlet-pcard outlet-fade-up">
+                <div className="outlet-pcard-head">
+                  <div className="outlet-pcard-icon">
+                    <Clock style={{ width: 24, height: 24, color: '#C9943A' }} />
                   </div>
-                  <p className="outlet-info-text whitespace-pre-line">
-                    {outlet.opening_hours || 'Hours vary — please call the outlet to confirm.'}
-                  </p>
+                  <div>
+                    <p className="outlet-eyebrow" style={{ marginBottom: '.3rem' }}>Opening Hours</p>
+                    <h2 className="font-heading outlet-h2">When We&apos;re Open</h2>
+                  </div>
+                  {isDaily && (
+                    <span className="outlet-open-badge">
+                      <span className="outlet-open-dot" /> Open Daily
+                    </span>
+                  )}
                 </div>
+
+                <div className="outlet-hours-list">
+                  {hoursRows.length > 0 ? (
+                    hoursRows.map((row, i) => (
+                      <div key={i} className="outlet-hours-row">
+                        <span className="outlet-hours-days">{row.days || 'Opening Hours'}</span>
+                        <span className="outlet-hours-leader" />
+                        <span className="outlet-hours-time">{row.time}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="outlet-hours-row">
+                      <span className="outlet-hours-days">Hours vary</span>
+                      <span className="outlet-hours-leader" />
+                      <span className="outlet-hours-time">Call to confirm</span>
+                    </div>
+                  )}
+                </div>
+
+                {outlet.phone && (
+                  <div className="outlet-hours-foot">
+                    <Phone style={{ width: 15, height: 15, color: '#C9943A', flexShrink: 0 }} />
+                    <span>
+                      Prefer to call? <a href={`tel:${outlet.phone}`}>{outlet.phone}</a>
+                    </span>
+                  </div>
+                )}
               </div>
 
-              <div className="outlet-info-card outlet-fade-up outlet-stagger-1">
-                <p className="outlet-eyebrow">Contact</p>
-                <h2 className="font-heading outlet-h2 mb-5">Contact This Outlet</h2>
-                <div className="space-y-4 mb-6">
+              {/* Contact This Outlet */}
+              <div className="outlet-pcard outlet-fade-up outlet-stagger-1">
+                <div className="outlet-pcard-head">
+                  <div className="outlet-pcard-icon">
+                    <Phone style={{ width: 24, height: 24, color: '#C9943A' }} />
+                  </div>
+                  <div>
+                    <p className="outlet-eyebrow" style={{ marginBottom: '.3rem' }}>Contact</p>
+                    <h2 className="font-heading outlet-h2">Contact This Outlet</h2>
+                  </div>
+                </div>
+
+                <div>
                   {outlet.phone && (
-                    <div className="outlet-contact-row">
-                      <div className="outlet-info-iconbox">
-                        <Phone className="w-4 h-4 text-[#C9943A]" />
+                    <div className="outlet-crow">
+                      <div className="outlet-crow-icon">
+                        <Phone style={{ width: 18, height: 18, color: '#C9943A' }} />
                       </div>
-                      <a href={`tel:${outlet.phone}`} className="outlet-contact-value">{outlet.phone}</a>
+                      <div className="min-w-0">
+                        <span className="outlet-crow-label">Phone</span>
+                        <a href={`tel:${outlet.phone}`} className="outlet-crow-value">{outlet.phone}</a>
+                      </div>
                     </div>
                   )}
                   {outlet.email && (
-                    <div className="outlet-contact-row">
-                      <div className="outlet-info-iconbox">
-                        <Mail className="w-4 h-4 text-[#C9943A]" />
+                    <div className="outlet-crow">
+                      <div className="outlet-crow-icon">
+                        <Mail style={{ width: 18, height: 18, color: '#C9943A' }} />
                       </div>
-                      <a href={`mailto:${outlet.email}`} className="outlet-contact-value">{outlet.email}</a>
+                      <div className="min-w-0">
+                        <span className="outlet-crow-label">Email</span>
+                        <a href={`mailto:${outlet.email}`} className="outlet-crow-value">{outlet.email}</a>
+                      </div>
                     </div>
                   )}
-                  <div className="outlet-contact-row">
-                    <div className="outlet-info-iconbox">
-                      <MapPin className="w-4 h-4 text-[#C9943A]" />
+                  <div className="outlet-crow">
+                    <div className="outlet-crow-icon">
+                      <MapPin style={{ width: 18, height: 18, color: '#C9943A' }} />
                     </div>
-                    <span className="outlet-contact-value">{outlet.address}</span>
+                    <div className="min-w-0">
+                      <span className="outlet-crow-label">Address</span>
+                      <span className="outlet-crow-value">{outlet.address}</span>
+                    </div>
                   </div>
                 </div>
+
                 {mapsHref && (
-                  <a href={mapsHref} target="_blank" rel="noopener noreferrer" className="outlet-btn outlet-btn-primary w-full">
-                    <Navigation className="w-4 h-4" /> Open in Google Maps
+                  <a href={mapsHref} target="_blank" rel="noopener noreferrer" className="outlet-maps-btn">
+                    <Navigation style={{ width: 15, height: 15, color: '#C9943A' }} />
+                    Open in Google Maps
                   </a>
                 )}
               </div>
@@ -459,14 +556,14 @@ export default function OutletDetailClient({
         <section className="outlet-section">
           <div className="outlet-section-glow" />
           <div className="outlet-section-inner">
-            <div className="flex flex-wrap items-end justify-between gap-5 mb-8">
-              <div>
+            <div className="outlet-menu-head mb-9">
+              <div className="outlet-center-head" style={{ marginBottom: 0 }}>
                 <p className="outlet-eyebrow">Menu Preview</p>
                 <h2 className="font-heading outlet-h2">Coffee, Food &amp; Your Favourites</h2>
-                <p className="outlet-sub mt-3">Explore the {shortName || outlet.name} menu</p>
+                <p className="outlet-sub">Explore the {shortName || outlet.name} menu</p>
               </div>
               {initialMenuItems.length > 1 && (
-                <div className="hidden md:flex gap-3">
+                <div className="outlet-menu-arrows hidden md:flex">
                   <button type="button" aria-label="Scroll menu left" className="outlet-menu-arrow" onClick={() => scrollMenu(-1)}>
                     <ChevronLeft className="w-5 h-5" />
                   </button>
@@ -508,7 +605,7 @@ export default function OutletDetailClient({
               <p className="outlet-sub mb-6">Fresh coffee, food and desserts are served at this outlet — explore the full menu for today&apos;s availability.</p>
             )}
 
-            <div className="mt-7">
+            <div className="mt-9 flex justify-center">
               <a href={menuUrl} className="outlet-btn outlet-btn-primary">
                 View {shortName || outlet.name} Menu <ArrowRight className="w-4 h-4" />
               </a>
@@ -521,8 +618,10 @@ export default function OutletDetailClient({
           <section className="outlet-section">
             <div className="outlet-section-glow" />
             <div className="outlet-section-inner">
-              <p className="outlet-eyebrow">Inside the Outlet</p>
-              <h2 className="font-heading outlet-h2 mb-8">Step Inside Our {shortName || outlet.name} Cafe</h2>
+              <div className="outlet-center-head">
+                <p className="outlet-eyebrow">Inside the Outlet</p>
+                <h2 className="font-heading outlet-h2">Step Inside Our {shortName || outlet.name} Cafe</h2>
+              </div>
 
               <div className={`outlet-gallery-grid count-${Math.min(featuredImages.length, 3)}`}>
                 {featuredImages.map((img, i) => (
@@ -556,8 +655,10 @@ export default function OutletDetailClient({
           <section className="outlet-section">
             <div className="outlet-section-glow" />
             <div className="outlet-section-inner">
-              <p className="outlet-eyebrow">At This Outlet</p>
-              <h2 className="font-heading outlet-h2 mb-8">Facilities &amp; Comfort</h2>
+              <div className="outlet-center-head">
+                <p className="outlet-eyebrow">At This Outlet</p>
+                <h2 className="font-heading outlet-h2">Facilities &amp; Comfort</h2>
+              </div>
               <div className="outlet-facility-grid">
                 {facilities.map((key) => {
                   const { label, Icon } = FACILITY_META[key]
@@ -583,15 +684,15 @@ export default function OutletDetailClient({
               <div className="outlet-event outlet-fade-up">
                 <div className="outlet-event-glow" />
                 <div className="outlet-event-dots" />
-                <div className="relative z-10 text-center max-w-2xl mx-auto">
-                  <p className="outlet-eyebrow mb-4" style={{ color: '#C9943A' }}>Private Events</p>
-                  <h2 className="font-heading" style={{ fontSize: 'clamp(1.6rem,3.4vw,2.6rem)', fontWeight: 900, color: '#FFF7ED', lineHeight: 1.1, marginBottom: '1rem' }}>
+                <div className="outlet-event-inner relative z-10 max-w-2xl mx-auto">
+                  <p className="outlet-eyebrow" style={{ color: '#C9943A', marginBottom: '1rem' }}>Private Events</p>
+                  <h2 className="font-heading" style={{ fontSize: 'clamp(1.6rem,3.4vw,2.6rem)', fontWeight: 900, color: '#FFF7ED', lineHeight: 1.1, marginBottom: '1.15rem' }}>
                     Space for Your Next Gathering
                   </h2>
                   {initialContent.event_space_text && (
-                    <p style={{ color: '#E6C7A8', lineHeight: 1.7, marginBottom: '1.75rem' }}>{initialContent.event_space_text}</p>
+                    <p style={{ color: '#E6C7A8', lineHeight: 1.7, marginBottom: '2rem' }}>{initialContent.event_space_text}</p>
                   )}
-                  <a href="/contact" className="outlet-event-btn">
+                  <a href="/contact" className="outlet-event-btn" style={initialContent.event_space_text ? undefined : { marginTop: '1.1rem' }}>
                     <CalendarRange className="w-4 h-4" /> Enquire About Events
                   </a>
                 </div>
