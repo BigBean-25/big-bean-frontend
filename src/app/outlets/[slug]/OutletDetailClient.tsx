@@ -145,18 +145,23 @@ export default function OutletDetailClient({
     .map((line) => line.trim())
     .filter(Boolean)
     .map((line) => {
-      const i = line.indexOf(':')
-      return i > 0
-        ? { days: line.slice(0, i).trim(), time: line.slice(i + 1).trim() }
+      // Only split on a colon that follows a day-range label (letters/spaces
+      // only) — never a colon inside the time itself ("MON ... 08:00 AM").
+      const m = line.match(/^([A-Za-z][A-Za-z\s\-–—,&]*?)\s*:\s*([0-9][\s\S]*)$/)
+      return m
+        ? { days: m[1].trim(), time: m[2].trim() }
         : { days: '', time: line }
     })
-  const isDaily = /daily|every\s*day|mon(?:day)?\s*[-–—]\s*sun(?:day)?/i.test(outlet.opening_hours || '')
+  const isDaily = /daily|every\s*day|mon(?:day)?\s*[-–—]\s*sun(?:day)?|mon(?:day)?\s+to\s+sun(?:day)?/i.test(outlet.opening_hours || '')
 
   return (
     <div className="min-h-screen bg-cream-50">
       <Header />
 
-      <style>{`
+      {/* dangerouslySetInnerHTML keeps <style> text identical between SSR and
+          client render — React SSR escapes quotes in style children ('' → &#x27;)
+          which otherwise triggers a hydration text mismatch. */}
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes outletFadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         .outlet-fade-up{animation:outletFadeUp .55s ease-out both}
         .outlet-fade-in{animation:outletFadeIn .6s ease-out both}
@@ -213,9 +218,9 @@ export default function OutletDetailClient({
         .outlet-center-head .outlet-sub{margin-top:.85rem;}
         .outlet-menu-head{position:relative;display:flex;align-items:flex-end;justify-content:center;}
         .outlet-menu-arrows{position:absolute;right:0;bottom:.4rem;display:flex;gap:.7rem;}
-        .outlet-pair{display:grid;grid-template-columns:1fr;gap:1.5rem;align-items:stretch;}
+        .outlet-pair{display:grid;grid-template-columns:1fr;gap:1.5rem;align-items:start;}
         @media(min-width:1024px){.outlet-pair{grid-template-columns:1fr 1fr;gap:2rem;}}
-        .outlet-pcard{position:relative;display:flex;flex-direction:column;height:100%;background:linear-gradient(180deg,#FFFFFF 0%,#FFFDF9 100%);border:1px solid rgba(201,148,58,0.24);border-radius:26px;padding:clamp(1.6rem,2.6vw,2.4rem);box-shadow:0 14px 44px rgba(61,31,13,0.09);overflow:hidden;transition:transform .25s,box-shadow .25s;}
+        .outlet-pcard{position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,#FFFFFF 0%,#FFFDF9 100%);border:1px solid rgba(201,148,58,0.24);border-radius:26px;padding:clamp(1.6rem,2.6vw,2.4rem);box-shadow:0 14px 44px rgba(61,31,13,0.09);overflow:hidden;transition:transform .25s,box-shadow .25s;}
         .outlet-pcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,rgba(201,148,58,0) 0%,rgba(201,148,58,0.55) 50%,rgba(201,148,58,0) 100%);}
         .outlet-pcard:hover{transform:translateY(-4px);box-shadow:0 22px 56px rgba(61,31,13,0.13);}
         .outlet-pcard-head{display:flex;align-items:center;gap:1rem;margin-bottom:1.6rem;}
@@ -228,7 +233,7 @@ export default function OutletDetailClient({
         .outlet-hours-days{font-size:.95rem;font-weight:800;color:#3D1F0D;}
         .outlet-hours-leader{flex:1;min-width:12px;}
         .outlet-hours-time{font-size:.95rem;font-weight:900;color:#A97B2F;letter-spacing:.02em;white-space:nowrap;text-align:right;}
-        .outlet-hours-foot{margin-top:auto;padding-top:1.2rem;border-top:1px solid rgba(201,148,58,0.2);display:flex;align-items:center;gap:.6rem;font-size:.83rem;color:#8B5A3C;font-weight:600;}
+        .outlet-hours-foot{padding-top:1.15rem;border-top:1px solid rgba(201,148,58,0.2);display:flex;align-items:center;gap:.6rem;font-size:.83rem;color:#8B5A3C;font-weight:600;}
         .outlet-hours-foot a{color:#3D1F0D;font-weight:800;text-decoration:none;transition:color .18s;}
         .outlet-hours-foot a:hover{color:#C9943A;}
         .outlet-crow{display:flex;align-items:center;gap:.95rem;padding:.85rem 0;border-bottom:1px solid rgba(201,148,58,0.15);}
@@ -379,7 +384,7 @@ export default function OutletDetailClient({
           .outlet-event{padding:2rem 1rem;}
           .outlet-menu-card{flex-basis:80vw;}
         }
-      `}</style>
+      ` }} />
 
       <main>
         {/* ── HERO ─────────────────────────────────────────────── */}
@@ -490,9 +495,15 @@ export default function OutletDetailClient({
                   {hoursRows.length > 0 ? (
                     hoursRows.map((row, i) => (
                       <div key={i} className="outlet-hours-row">
-                        <span className="outlet-hours-days">{row.days || 'Opening Hours'}</span>
-                        <span className="outlet-hours-leader" />
-                        <span className="outlet-hours-time">{row.time}</span>
+                        {row.days ? (
+                          <>
+                            <span className="outlet-hours-days">{row.days}</span>
+                            <span className="outlet-hours-leader" />
+                            <span className="outlet-hours-time">{row.time}</span>
+                          </>
+                        ) : (
+                          <span className="outlet-hours-days" style={{ fontWeight: 700 }}>{row.time}</span>
+                        )}
                       </div>
                     ))
                   ) : (

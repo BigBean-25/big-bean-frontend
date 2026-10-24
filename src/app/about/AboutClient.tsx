@@ -281,7 +281,7 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen" style={{ background: '#FBF4EC' }}>
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         /* ── HERO LAYOUT & TYPOGRAPHY ── */
         .about-hero { min-height: 620px; }
 
@@ -537,7 +537,7 @@ export default function AboutPage() {
           .app-cta-sub-links { align-items: flex-start !important; flex-direction: column; gap: 0.75rem !important; }
           .app-cta-sub-links-divider { display: none; }
         }
-      `}</style>
+      ` }} />
       <Header />
       <main>
 

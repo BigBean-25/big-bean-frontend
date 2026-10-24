@@ -625,7 +625,7 @@ export default function Menu() {
 
       <main>
         {/* ── HERO ──────────────────────────────────────────────── */}
-        <style>{`
+        <style dangerouslySetInnerHTML={{ __html: `
           /* ── MENU HERO LAYOUT & TYPOGRAPHY ── */
           .menu-hero { min-height: 620px; }
 
@@ -724,7 +724,7 @@ export default function Menu() {
             .menu-hero-title { font-size: 2rem; }
             .menu-hero-highlight { font-size: 1.75rem; }
           }
-        `}</style>
+        ` }} />
         {/* ── HERO ────────────────────────────────────────────────── */}
         <section className="menu-hero" style={{ position: 'relative', display: 'flex', alignItems: 'center', background: 'linear-gradient(135deg,#120905 0%,#2A120B 50%,#5C2E12 100%)', overflow: 'hidden' }}>
           {/* Background image from admin */}

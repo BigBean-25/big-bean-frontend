@@ -436,7 +436,7 @@ export default function Offers() {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
         {/* ── HERO ── */}
-        <style>{`
+        <style dangerouslySetInnerHTML={{ __html: `
           /* ── OFFERS HERO LAYOUT & TYPOGRAPHY ── */
           .offers-hero { min-height: 620px; padding: 0; }
 
@@ -526,7 +526,7 @@ export default function Offers() {
             .offers-hero-title { font-size: 2rem; }
             .offers-hero-highlight { font-size: 1.75rem; }
           }
-        `}</style>
+        ` }} />
         <section className="offers-hero relative flex items-center overflow-hidden">
           {/* Fallback / base gradient */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#120905] via-[#2A120B] to-[#5C2E12]" />

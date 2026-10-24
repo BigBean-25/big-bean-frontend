@@ -109,7 +109,7 @@ export default function Outlets({ initialOutlets = [] }: { initialOutlets?: Outl
 
       <main>
         {/* ── HERO ─────────────────────────────────────────────────── */}
-        <style>{`
+        <style dangerouslySetInnerHTML={{ __html: `
           /* ── OUTLETS HERO LAYOUT & TYPOGRAPHY ── */
           .outlets-hero { min-height: 620px; }
 
@@ -206,7 +206,7 @@ export default function Outlets({ initialOutlets = [] }: { initialOutlets?: Outl
             .outlets-hero-title { font-size: 2rem; }
             .outlets-hero-highlight { font-size: 1.75rem; }
           }
-        `}</style>
+        ` }} />
         <section className="outlets-hero" style={{ position: 'relative', display: 'flex', alignItems: 'center', background: 'linear-gradient(135deg,#120905 0%,#2A120B 55%,#5C2E12 100%)', overflow: 'hidden' }}>
           {/* Dot pattern */}
           <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle,rgba(201,148,58,0.08) 1px,transparent 1px)', backgroundSize: '36px 36px', pointerEvents: 'none', zIndex: 1 }} />
