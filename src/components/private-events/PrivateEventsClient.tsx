@@ -146,6 +146,7 @@ export default function PrivateEventsClient({
   const [formVisible, setFormVisible] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [lightbox, setLightbox] = useState<GalleryItem | null>(null)
+  const [storyImgErr, setStoryImgErr] = useState(false)
   const sectionRefs = useRef<HTMLDivElement>(null)
 
   const heroImg = imgUrl(hero?.image)
@@ -429,13 +430,21 @@ export default function PrivateEventsClient({
         <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-20">
           <div className="grid items-center gap-10 lg:grid-cols-2">
             <div className="pe-reveal relative overflow-hidden rounded-[32px] border border-[#EADCC8] bg-[#EFE3D2]">
-              {/* Dedicated static asset — never sourced from Hero or Gallery CMS */}
-              <img
-                src="/images/highlights/delicious-food.webp"
-                alt="Big Bean Cafe dishes and drinks served for a group gathering"
-                loading="lazy"
-                className="aspect-[4/3] w-full object-cover"
-              />
+              {/* Dedicated static asset — never sourced from Hero or Gallery CMS.
+                  Falls back to the branded placeholder instead of broken-image alt text. */}
+              {storyImgErr ? (
+                <div className="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-[#3D1F0D] to-[#8B4A2F]">
+                  <UtensilsCrossed className="h-14 w-14 text-[#F6D58D]/50" />
+                </div>
+              ) : (
+                <img
+                  src="/images/highlights/delicious-food.webp"
+                  alt="Big Bean Cafe dishes and drinks served for a group gathering"
+                  loading="lazy"
+                  onError={() => setStoryImgErr(true)}
+                  className="aspect-[4/3] w-full object-cover"
+                />
+              )}
             </div>
             <div>
               <p className="pe-reveal text-[11px] font-black uppercase tracking-[0.24em] text-[#C9943A]">Food</p>
