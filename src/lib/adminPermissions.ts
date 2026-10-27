@@ -8,10 +8,10 @@ export const ADMIN_MENU_ACCESS_KEY = 'admin_menu_access'
 
 export const ADMIN_PERMISSION_MODULES = [
   { group: 'Main', modules: ['dashboard', 'notifications', 'reports', 'settings', 'site_settings', 'admin_users', 'roles_permissions', 'customers'] },
-  { group: 'Website Content', modules: ['home_banners', 'about_hero', 'about_founders', 'menu_hero', 'offers_hero', 'outlet_hero', 'reservation_hero', 'career_hero', 'corporate_hero', 'franchise_hero', 'gallery_hero', 'blog_hero', 'contact_hero'] },
+  { group: 'Website Content', modules: ['home_banners', 'about_hero', 'about_founders', 'menu_hero', 'offers_hero', 'outlet_hero', 'reservation_hero', 'career_hero', 'corporate_hero', 'franchise_hero', 'gallery_hero', 'blog_hero', 'contact_hero', 'private_events'] },
   { group: 'Menu', modules: ['menu_items', 'menu_combos', 'categories'] },
   { group: 'Merchandise', modules: ['merchandise', 'merchandise_categories', 'merchandise_banners', 'merchandise_orders', 'merchandise_reviews'] },
-  { group: 'Enquiries', modules: ['contact_enquiries', 'corporate_enquiries', 'franchise_enquiries', 'career_applications', 'career_jobs', 'reservations', 'support_tickets'] },
+  { group: 'Enquiries', modules: ['contact_enquiries', 'corporate_enquiries', 'franchise_enquiries', 'career_applications', 'career_jobs', 'reservations', 'support_tickets', 'private_event_enquiries'] },
   { group: 'Marketing', modules: ['offers', 'blog_posts', 'blog', 'gallery', 'events', 'event_bookings', 'instagram_media', 'newsletter_subscribers', 'app_promos', 'testimonials', 'seo_pages', 'seo', 'legal_pages', 'website_popups'] },
 ]
 
@@ -185,6 +185,8 @@ export const ROUTE_MODULE_MAP: Record<string, string> = {
   '/admin/blog-hero':                  'blog_hero',
   '/admin/contact-hero':               'contact_hero',
   '/admin/events-hero':                'events',
+  '/admin/private-events':             'private_events',
+  '/admin/private-event-enquiries':    'private_event_enquiries',
 
   // Menu
   '/admin/menu-categories':            'categories',

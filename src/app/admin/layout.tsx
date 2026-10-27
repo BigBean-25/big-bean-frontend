@@ -9,7 +9,8 @@ import {
   Settings, Globe, LogOut, Menu, X, Bell, Search, ChevronDown,
   User, BookOpen, MapPin, Image as ImageIcon, Phone, Calendar,
   UserCheck, Mail, Smartphone, Home, TrendingUp, Star, Instagram, Headphones as HeadphonesIcon,
-  CreditCard, AlertTriangle, MessageCircle, Building2, Send, AlertCircle, Shield, Ticket, QrCode, Megaphone
+  CreditCard, AlertTriangle, MessageCircle, Building2, Send, AlertCircle, Shield, Ticket, QrCode, Megaphone,
+  PartyPopper, CalendarRange
 } from 'lucide-react'
 import { formatTimeAgo } from '@/lib/timeAgo'
 import { apiRequest } from '@/lib/api'
@@ -53,6 +54,7 @@ const NAV = [
       { href: '/admin/career-hero',        icon: Briefcase,  label: 'Career Hero'        },
       { href: '/admin/contact-hero',       icon: Phone,      label: 'Contact Hero'       },
       { href: '/admin/events-hero',        icon: Calendar,   label: 'Events Hero'        },
+      { href: '/admin/private-events',     icon: PartyPopper, label: 'Private Events'    },
       { href: '/admin/franchise-hero',     icon: Store,      label: 'Franchise Hero'     },
       { href: '/admin/corporate-hero',     icon: Briefcase,  label: 'Corporate Hero'     },
       { href: '/admin/page-heroes',        icon: Globe,      label: 'Page Heroes'        },
@@ -72,6 +74,7 @@ const NAV = [
       { href: '/admin/career-jobs',              icon: Briefcase,     label: 'Career Jobs'           },
       { href: '/admin/career-applications',      icon: UserCheck,     label: 'Applications'          },
       { href: '/admin/contact-enquiries',        icon: MessageSquare, label: 'Contact Enquiries'     },
+      { href: '/admin/private-event-enquiries',  icon: CalendarRange, label: 'Private Event Enquiries' },
       { href: '/admin/support-tickets',          icon: HeadphonesIcon, label: 'Support Tickets'      },
       { href: '/admin/newsletter-subscribers',   icon: Mail,          label: 'Newsletter'            },
       { href: '/admin/testimonials',             icon: Star,          label: 'Testimonials'          },

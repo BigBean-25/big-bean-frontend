@@ -7,7 +7,7 @@ import Header from '@/components/common/Header'
 import Footer from '@/components/common/Footer'
 import {
   Phone, Mail, MapPin, Clock, MessageCircle, CheckCircle, Headphones, Building2, Store,
-  Calendar, ChevronDown, ChevronUp, ArrowRight, Send, Navigation, ExternalLink
+  Calendar, ChevronDown, ChevronUp, ArrowRight, Send, Navigation, ExternalLink, PartyPopper
 } from 'lucide-react'
 
 interface ContactHero {
@@ -85,6 +85,13 @@ const contactCards = [
     text: 'For café events, workshops and brand tie-ups',
     btn: 'Contact Team',
     href: '#contact-form'
+  },
+  {
+    icon: PartyPopper,
+    title: 'Private Events & Group Bookings',
+    text: 'Birthdays, team gatherings and group bookings at our outlets',
+    btn: 'Plan a Gathering',
+    href: '/private-events'
   }
 ]
 

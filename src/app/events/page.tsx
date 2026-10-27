@@ -576,6 +576,22 @@ export default function EventsPage() {
             )}
           </div>
         </section>
+
+        {/* Private events promo */}
+        <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
+          <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#2A120B] via-[#3D1F0D] to-[#5A2D1D] px-6 py-12 text-center sm:px-12">
+            <h2 className="font-heading text-2xl font-black text-[#FFF7ED] sm:text-3xl">Planning Your Own Event?</h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-[#F6D58D]/85">
+              Looking for a cafe setting for a birthday, team gathering or group meal? Explore our outlet locations and enquire about the arrangements for your occasion.
+            </p>
+            <Link
+              href="/private-events"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#C9943A] px-7 py-3 text-xs font-black uppercase tracking-[0.14em] text-[#3D1F0D] transition hover:-translate-y-0.5 hover:bg-[#DBA851]"
+            >
+              Plan a Private Gathering <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>

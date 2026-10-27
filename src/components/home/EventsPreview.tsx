@@ -182,12 +182,18 @@ export default function EventsPreview() {
               Join our café experiences, workshops and community events.
             </p>
           </div>
-          <a href="/events"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', background: '#3D1F0D', color: '#FFF7ED', border: '1.5px solid #3D1F0D', borderRadius: '100px', padding: '0.7rem 1.8rem', fontSize: '0.8rem', fontWeight: 800, textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase', transition: 'all 0.22s', whiteSpace: 'nowrap' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#3D1F0D' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#3D1F0D'; (e.currentTarget as HTMLElement).style.color = '#FFF7ED' }}>
-            View All <ArrowRight style={{ width: 14, height: 14 }} />
-          </a>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.6rem' }}>
+            <a href="/events"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', background: '#3D1F0D', color: '#FFF7ED', border: '1.5px solid #3D1F0D', borderRadius: '100px', padding: '0.7rem 1.8rem', fontSize: '0.8rem', fontWeight: 800, textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase', transition: 'all 0.22s', whiteSpace: 'nowrap' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#3D1F0D' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#3D1F0D'; (e.currentTarget as HTMLElement).style.color = '#FFF7ED' }}>
+              View All <ArrowRight style={{ width: 14, height: 14 }} />
+            </a>
+            <a href="/private-events"
+              style={{ fontSize: '0.72rem', fontWeight: 700, color: '#8B4A2F', textDecoration: 'none', letterSpacing: '0.04em', borderBottom: '1px solid rgba(201,148,58,0.5)', paddingBottom: '1px' }}>
+              Planning a Gathering in Bengaluru?
+            </a>
+          </div>
         </div>
 
         {/* ── Carousel ── */}

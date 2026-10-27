@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Header from '@/components/common/Header'
 import Footer from '@/components/common/Footer'
-import { Calendar, Clock, Users, MapPin, CheckCircle, Phone, Loader2, Navigation } from 'lucide-react'
+import { Calendar, Clock, Users, MapPin, CheckCircle, Phone, Loader2, Navigation, PartyPopper } from 'lucide-react'
 import { getPublicSettings, formatPhoneForTel, CONTACT_DEFAULTS, type PublicContactSettings } from '@/lib/publicSettings'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
@@ -1208,6 +1208,18 @@ export default function Reservations() {
                 </div>
                 <a href="/outlets" className="reservations-help-button">
                   View Outlets
+                </a>
+              </div>
+              <div className="reservations-help-card">
+                <div>
+                  <div className="reservations-help-icon">
+                    <PartyPopper className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="reservations-card-title mb-2 uppercase tracking-[0.08em]">Private Events</h3>
+                  <p className="reservations-help-copy mb-4">Planning a birthday, team gathering or group booking? Enquire about our event spaces.</p>
+                </div>
+                <a href="/private-events" className="reservations-help-button">
+                  Plan a Gathering
                 </a>
               </div>
               <div className={`reservations-help-card reservations-hours-card ${selectedOutlet ? 'is-selected' : ''}`}>

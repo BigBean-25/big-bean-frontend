@@ -43,6 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: BASE + '/franchise',            priority: 0.7, changeFrequency: 'monthly', lastModified: now },
     { url: BASE + '/corporate-orders',     priority: 0.7, changeFrequency: 'monthly', lastModified: now },
     { url: BASE + '/reservations',         priority: 0.8, changeFrequency: 'weekly',  lastModified: now },
+    { url: BASE + '/private-events',       priority: 0.8, changeFrequency: 'weekly',  lastModified: now },
     { url: BASE + '/merchandise',          priority: 0.7, changeFrequency: 'weekly',  lastModified: now },
     { url: BASE + '/privacy-policy',       priority: 0.3, changeFrequency: 'yearly',  lastModified: now },
     { url: BASE + '/terms-and-conditions', priority: 0.3, changeFrequency: 'yearly',  lastModified: now },

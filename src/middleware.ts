@@ -24,8 +24,38 @@ function notFound() {
   return new NextResponse('Not Found', { status: 404 })
 }
 
-export function middleware(request: NextRequest) {
+// Outlet slugs are validated so unknown /outlets/<slug> URLs return a real
+// HTTP 404 (the list is cached briefly per warm middleware instance; the
+// check fails open if the API is unreachable).
+let outletSlugsCache: { slugs: Set<string>; fetchedAt: number } | null = null
+
+async function isKnownOutletSlug(slug: string): Promise<boolean> {
+  try {
+    if (!outletSlugsCache || Date.now() - outletSlugsCache.fetchedAt > 300_000) {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+      const res = await fetch(`${apiUrl}/outlets/active`)
+      const json = await res.json()
+      const slugs = new Set<string>(
+        (Array.isArray(json?.data) ? json.data : []).map((o: any) => o.slug).filter(Boolean)
+      )
+      outletSlugsCache = { slugs, fetchedAt: Date.now() }
+    }
+    return outletSlugsCache.slugs.has(slug)
+  } catch (e) {
+    console.error('[middleware] outlet slug check failed', e)
+    return true
+  }
+}
+
+export async function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl
+
+  const outletMatch = pathname.match(/^\/outlets\/([^/]+)\/?$/)
+  if (outletMatch && !(await isKnownOutletSlug(decodeURIComponent(outletMatch[1])))) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/__unknown-outlet__'
+    return NextResponse.rewrite(url, { status: 404 })
+  }
 
   if (pathname === '/index.php') {
     return redirect301(request, '/')
@@ -157,6 +187,7 @@ export const config = {
     '/best-coffee-shop-electronic-city.php',
     '/best-coffee-shop-rajarajeshwari-nagar.php',
     '/outlet-detail.php',
+    '/outlets/:path+',
     '/cafe-locations.php',
     '/product.php',
     '/product/X18',

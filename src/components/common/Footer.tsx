@@ -155,6 +155,7 @@ export default function Footer() {
             <ul className={s.footerLinks}>
               {[
                 { label: 'Events', href: '/events' },
+                { label: 'Private Events & Group Bookings', href: '/private-events' },
                 { label: 'Reservations', href: '/reservations' },
                 { label: 'Gallery', href: '/gallery' },
                 { label: 'Blog', href: '/blog' },

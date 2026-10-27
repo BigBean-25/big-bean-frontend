@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import {
   getOutletBySlug,
   getOutletGallery,
@@ -28,14 +29,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const canonical = `${SITE_URL}/outlets/${params.slug}`
   const outlet = await getOutlet(params.slug)
 
-  if (!outlet) {
-    return {
-      title: 'Outlet Not Found | Big Bean Café',
-      description: 'The outlet you are looking for could not be found.',
-      robots: { index: false, follow: false },
-      alternates: { canonical },
-    }
-  }
+  // Unknown slugs must return a real HTTP 404 — throwing here (metadata
+  // resolves before the streaming shell) guarantees the status commits.
+  if (!outlet) notFound()
 
   const shortName = getShortName(outlet.name)
   const title = outlet.seo_title || `Big Bean Cafe ${shortName} | Bengaluru`
@@ -70,6 +66,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const outlet = await getOutlet(params.slug)
+
+  // Unknown slugs must return a real HTTP 404 — not a 200 "not found" page
+  if (!outlet) notFound()
   const [gallery, content, menuItems] = outlet
     ? await Promise.all([
         getOutletGallery(params.slug),

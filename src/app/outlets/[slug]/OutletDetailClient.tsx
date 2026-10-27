@@ -706,30 +706,32 @@ export default function OutletDetailClient({
           </section>
         )}
 
-        {/* ── EVENT SPACE (only when enabled for this outlet) ──── */}
-        {hasEventSpace && (
-          <section className="outlet-section">
-            <div className="outlet-section-glow" />
-            <div className="outlet-section-inner">
-              <div className="outlet-event outlet-fade-up">
-                <div className="outlet-event-glow" />
-                <div className="outlet-event-dots" />
-                <div className="outlet-event-inner relative z-10 max-w-2xl mx-auto">
-                  <p className="outlet-eyebrow" style={{ color: '#C9943A', marginBottom: '1rem' }}>Private Events</p>
-                  <h2 className="font-heading" style={{ fontSize: 'clamp(1.6rem,3.4vw,2.6rem)', fontWeight: 900, color: '#FFF7ED', lineHeight: 1.1, marginBottom: '1.15rem' }}>
-                    Space for Your Next Gathering
-                  </h2>
-                  {initialContent.event_space_text && (
-                    <p style={{ color: '#E6C7A8', lineHeight: 1.7, marginBottom: '2rem' }}>{initialContent.event_space_text}</p>
-                  )}
-                  <a href="/contact" className="outlet-event-btn" style={initialContent.event_space_text ? undefined : { marginTop: '1.1rem' }}>
-                    <CalendarRange className="w-4 h-4" /> Enquire About Events
-                  </a>
-                </div>
+        {/* ── PRIVATE EVENTS insert — all outlet pages ─────────── */}
+        <section className="outlet-section">
+          <div className="outlet-section-glow" />
+          <div className="outlet-section-inner">
+            <div className="outlet-event outlet-fade-up">
+              <div className="outlet-event-glow" />
+              <div className="outlet-event-dots" />
+              <div className="outlet-event-inner relative z-10 max-w-2xl mx-auto">
+                <p className="outlet-eyebrow" style={{ color: '#C9943A', marginBottom: '1rem' }}>Private Events</p>
+                <h2 className="font-heading" style={{ fontSize: 'clamp(1.6rem,3.4vw,2.6rem)', fontWeight: 900, color: '#FFF7ED', lineHeight: 1.1, marginBottom: '1.15rem' }}>
+                  Space for Your Next Gathering
+                </h2>
+                <p style={{ color: '#E6C7A8', lineHeight: 1.7, marginBottom: '2rem' }}>
+                  {initialContent.event_space_text
+                    ? initialContent.event_space_text
+                    : slug === 'koramangala'
+                      ? 'Planning a birthday, team gathering or celebration in Koramangala? Explore our dedicated first-floor event space with a 100-seat capacity and discuss the arrangements for your date.'
+                      : `Planning a gathering at our ${shortName} cafe? Share your preferred date, group size and occasion to discuss the seating and arrangements available at this location.`}
+                </p>
+                <a href={`/private-events#${slug}`} className="outlet-event-btn">
+                  <CalendarRange className="w-4 h-4" /> {slug === 'koramangala' ? 'Explore Koramangala Event Space' : 'Enquire About Events'}
+                </a>
               </div>
             </div>
-          </section>
-        )}
+          </div>
+        </section>
 
         {/* ── BOTTOM CTA ───────────────────────────────────────── */}
         <div className="outlet-transition" />

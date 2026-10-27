@@ -5,7 +5,7 @@ import Link from 'next/link'
 import {
   Home, BookOpen, User, Coffee, Tag, MapPin, CalendarDays, FileText,
   Image as ImageIcon, Briefcase, Phone, Calendar, Store, Building2,
-  Globe, ScrollText, ChevronLeft, ChevronRight, ArrowUpRight
+  Globe, ScrollText, ChevronLeft, ChevronRight, ArrowUpRight, PartyPopper
 } from 'lucide-react'
 import { canAccessRoute } from '@/lib/adminPermissions'
 
@@ -32,6 +32,7 @@ const WEBSITE_CONTENT: ContentLink[] = [
   { href: '/admin/career-hero',       label: 'Career Hero',        desc: 'Careers page banner',   tag: 'Hero', icon: Briefcase,    tint: 'bg-[#E8F1FB]', ink: 'text-[#3D7FBF]' },
   { href: '/admin/contact-hero',      label: 'Contact Hero',       desc: 'Contact page banner',   tag: 'Hero', icon: Phone,        tint: 'bg-[#E8F6F0]', ink: 'text-[#167E68]' },
   { href: '/admin/events-hero',       label: 'Events Hero',        desc: 'Events page banner',    tag: 'Hero', icon: Calendar,     tint: 'bg-[#FBE9E7]', ink: 'text-[#B4552D]' },
+  { href: '/admin/private-events',    label: 'Private Events',     desc: 'Private events page',   tag: 'Page', icon: PartyPopper,  tint: 'bg-[#FDF1DC]', ink: 'text-[#8B4A2F]' },
   { href: '/admin/franchise-hero',    label: 'Franchise Hero',     desc: 'Franchise page banner', tag: 'Hero', icon: Store,        tint: 'bg-[#FDF1DC]', ink: 'text-[#8B4A2F]' },
   { href: '/admin/corporate-hero',    label: 'Corporate Hero',     desc: 'Corporate page banner', tag: 'Hero', icon: Building2,    tint: 'bg-[#EEF1FA]', ink: 'text-[#4A5FA5]' },
   { href: '/admin/page-heroes',       label: 'Page Heroes',        desc: 'All hero sections',     tag: 'Page', icon: Globe,        tint: 'bg-[#F7E9E2]', ink: 'text-[#8B4A2F]' },

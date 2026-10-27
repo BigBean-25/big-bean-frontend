@@ -7,7 +7,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import {
   Menu, X, Search, User, ShoppingBag, ChevronDown,
   Home, UtensilsCrossed, MapPin, Tag, Image as ImageIcon,
-  BookOpen, Briefcase, Building2, Package, Phone, Calendar,
+  BookOpen, Briefcase, Building2, Package, Phone, Calendar, PartyPopper,
 } from 'lucide-react'
 import { cartCount } from '@/lib/cart'
 import { getCustomer, clearCustomerSession, isCustomerLoggedIn } from '@/lib/customerAuth'
@@ -57,6 +57,7 @@ const NAV_MORE = [
   { name: 'Corporate Orders', href: '/corporate-orders', icon: UtensilsCrossed },
   { name: 'Merchandise',      href: '/merchandise',      icon: Package },
   { name: 'Reservations',     href: '/reservations',     icon: Calendar },
+  { name: 'Private Events',   href: '/private-events',   icon: PartyPopper },
 ]
 
 const SEARCH_ITEMS = [
@@ -73,6 +74,7 @@ const SEARCH_ITEMS = [
   { title: 'Corporate Orders', href: '/corporate-orders',type: 'Business' },
   { title: 'Merchandise',      href: '/merchandise',     type: 'Shop' },
   { title: 'Reservations',     href: '/reservations',    type: 'Booking' },
+  { title: 'Private Events',   href: '/private-events',  type: 'Booking' },
   { title: 'Contact',          href: '/contact',         type: 'Support' },
 ]
 
