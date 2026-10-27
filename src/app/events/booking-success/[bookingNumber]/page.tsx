@@ -81,6 +81,7 @@ export default function BookingSuccessPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
+  const [eventLive, setEventLive] = useState<boolean | null>(null)
 
   useEffect(() => {
     if (!bookingNumber) return
@@ -99,6 +100,28 @@ export default function BookingSuccessPage() {
       .catch(() => setError(true))
       .finally(() => setLoading(false))
   }, [bookingNumber])
+
+  // Check whether the booked event is still publicly viewable before
+  // rendering a link to it — avoids stale links/prefetches to removed events.
+  useEffect(() => {
+    const slug = booking?.event?.slug
+    if (!slug) return
+    let cancelled = false
+    apiRequest(`/events/${slug}`)
+      .then(async res => {
+        if (!res.ok) {
+          if (!cancelled) setEventLive(false)
+          return
+        }
+        const data = await res.json()
+        const live = !!data?.success && !!data?.data && data.data.display_status !== 'closed'
+        if (!cancelled) setEventLive(live)
+      })
+      .catch(() => {
+        if (!cancelled) setEventLive(false)
+      })
+    return () => { cancelled = true }
+  }, [booking])
 
   if (loading) {
     return (
@@ -301,12 +324,30 @@ export default function BookingSuccessPage() {
             >
               Back to Events
             </Link>
-            <Link
-              href={`/events/${booking.event.slug}`}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#3D1F0D] px-6 py-3 text-sm font-bold text-[#3D1F0D] hover:bg-[#E8D8C8]"
-            >
-              View Event <ArrowRight className="h-4 w-4" />
-            </Link>
+            {eventLive === true && (
+              <Link
+                href={`/events/${booking.event.slug}`}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#3D1F0D] px-6 py-3 text-sm font-bold text-[#3D1F0D] hover:bg-[#E8D8C8]"
+              >
+                View Event <ArrowRight className="h-4 w-4" />
+              </Link>
+            )}
+            {eventLive === false && (
+              <>
+                <Link
+                  href="/events"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#3D1F0D] px-6 py-3 text-sm font-bold text-[#3D1F0D] hover:bg-[#E8D8C8]"
+                >
+                  Browse Upcoming Events <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#3D1F0D] px-6 py-3 text-sm font-bold text-[#3D1F0D] hover:bg-[#E8D8C8]"
+                >
+                  Back to Home
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </main>
