@@ -306,12 +306,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.push('/admin/login', { scroll: false })
   }
 
+  // Derive a friendly page title from the nav (longest matching href wins)
+  const pageTitle = (() => {
+    const items = filteredNav.flatMap(g => g.items)
+    const match = items
+      .slice()
+      .sort((a, b) => b.href.length - a.href.length)
+      .find(i => pathname === i.href || pathname.startsWith(i.href + '/'))
+    return match?.label || (pathname === '/admin/dashboard' ? 'Dashboard' : 'Admin')
+  })()
+
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F3F8F6]">
+      <div className="flex min-h-screen items-center justify-center bg-[#F6F3EE]">
         <div className="flex flex-col items-center gap-4">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#2FBF9B] border-t-transparent" />
-          <p className="text-sm text-[#5F6F68]">Loading…</p>
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#C9943A] border-t-transparent" />
+          <p className="text-sm text-[#8A7B6C]">Loading…</p>
         </div>
       </div>
     )
@@ -319,10 +329,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#F3F8F6] text-[#0F1F1A]">
+    <div className="flex h-screen overflow-hidden bg-[#F6F3EE] text-[#241A10]">
 
       {/* ── Desktop sidebar ── */}
-      <aside className="fixed left-0 top-0 z-50 hidden h-screen w-[280px] overflow-hidden border-r border-[#DCE8E3] bg-white lg:block">
+      <aside className="fixed left-0 top-0 z-50 hidden h-screen w-[280px] overflow-hidden border-r border-[#EAE2D6] bg-white lg:block">
         <AdminSidebar nav={filteredNav} pathname={pathname} user={user} onLogout={handleLogout} />
       </aside>
 
@@ -333,11 +343,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       )}
 
       {/* ── Mobile drawer ── */}
-      <aside className={`fixed left-0 top-0 z-50 h-screen w-[280px] border-r border-[#DCE8E3] bg-white shadow-2xl
+      <aside className={`fixed left-0 top-0 z-50 h-screen w-[280px] border-r border-[#EAE2D6] bg-white shadow-2xl
         transition-transform duration-300 lg:hidden
         ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <button onClick={() => setDrawerOpen(false)}
-          className="absolute right-3 top-3 z-10 rounded-full p-2 text-[#5F6F68] hover:bg-[#F3F8F6]">
+          className="absolute right-3 top-3 z-10 rounded-full p-2 text-[#8A7B6C] hover:bg-[#F6F3EE]">
           <X className="h-5 w-5" />
         </button>
         <AdminSidebar nav={filteredNav} pathname={pathname} user={user} onLogout={handleLogout} onNav={() => setDrawerOpen(false)} />
@@ -348,17 +358,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex-1 overflow-y-auto">
 
           {/* Topbar */}
-          <header className="sticky top-0 z-40 flex h-[68px] items-center justify-between border-b border-[#DCE8E3] bg-white/90 px-5 backdrop-blur-xl lg:px-8">
-            <div className="flex items-center gap-4">
+          <header className="sticky top-0 z-40 flex h-[68px] items-center justify-between gap-4 border-b border-[#EAE2D6] bg-white/85 px-5 backdrop-blur-xl lg:px-8">
+            <div className="flex min-w-0 items-center gap-3.5">
               <button onClick={() => setDrawerOpen(true)}
-                className="rounded-xl p-2 text-[#5F6F68] hover:bg-[#F3F8F6] lg:hidden">
+                className="rounded-xl p-2 text-[#8A7B6C] hover:bg-[#F6F3EE] lg:hidden">
                 <Menu className="h-5 w-5" />
               </button>
-              <div className="hidden items-center gap-2.5 rounded-full border border-[#DCE8E3] bg-[#EEF5F2] px-4 py-2.5 md:flex w-full max-w-xs lg:max-w-sm">
-                <Search className="h-4 w-4 shrink-0 text-[#9CB3AC]" />
+              <div className="min-w-0">
+                <h1 className="font-heading truncate text-lg font-black leading-tight text-[#241A10]">{pageTitle}</h1>
+                <p className="hidden text-[10px] font-bold uppercase tracking-[0.18em] text-[#B3A491] sm:block">Big Bean Café · Admin</p>
+              </div>
+              <div className="ml-2 hidden items-center gap-2.5 rounded-full border border-[#EAE2D6] bg-[#F6F3EE] px-4 py-2.5 lg:flex w-full max-w-xs">
+                <Search className="h-4 w-4 shrink-0 text-[#B3A491]" />
                 <input type="text" placeholder="Search anything…"
                   onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault() }}
-                  className="w-full bg-transparent text-sm text-[#0F1F1A] outline-none placeholder:text-[#9CB3AC]" />
+                  className="w-full bg-transparent text-sm text-[#241A10] outline-none placeholder:text-[#B3A491]" />
               </div>
             </div>
 
@@ -368,7 +382,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               {/* Notification bell */}
               <div ref={notifRef} className="relative">
                 <button onClick={() => setNotifOpen(v => !v)}
-                  className="relative rounded-full p-2.5 text-[#5F6F68] hover:bg-[#EEF5F2]">
+                  className="relative rounded-full p-2.5 text-[#6B5B49] hover:bg-[#F6F3EE]">
                   <Bell className="h-5 w-5" />
                   {unreadCount > 0 && (
                     <span className="absolute right-2 top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full border-2 border-white bg-[#C9943A] px-1 text-[10px] font-black text-white">
@@ -379,18 +393,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
                 {/* Notification dropdown */}
                 {notifOpen && (
-                  <div className="absolute right-0 top-full z-50 mt-2 w-[380px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[#E8D8C7] bg-white shadow-xl">
-                    <div className="flex items-center justify-between border-b border-[#F7EFE7] px-4 py-3">
-                      <h3 className="font-heading text-sm font-black text-[#3D1F0D]">Notifications</h3>
+                  <div className="absolute right-0 top-full z-50 mt-2 w-[380px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[#EAE2D6] bg-white shadow-xl">
+                    <div className="flex items-center justify-between border-b border-[#F1EAE0] px-4 py-3">
+                      <h3 className="font-heading text-sm font-black text-[#3B1C12]">Notifications</h3>
                       <button onClick={markAllAsRead}
-                        className="text-xs font-black text-[#C9943A] hover:text-[#6B3520]">
+                        className="text-xs font-black text-[#C9943A] hover:text-[#8B4A2F]">
                         Mark all read
                       </button>
                     </div>
 
                     <div className="max-h-[320px] overflow-y-auto">
                       {notifications.length === 0 ? (
-                        <div className="px-4 py-8 text-center font-nav text-sm text-[#7A6A60]">
+                        <div className="px-4 py-8 text-center font-nav text-sm text-[#8A7B6C]">
                           No notifications
                         </div>
                       ) : (
@@ -400,17 +414,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             <button
                               key={notif.id}
                               onClick={() => markAsRead(notif.id, notif.action_url)}
-                              className={`flex w-full gap-3 border-b border-[#F3F8F6] px-4 py-3 text-left transition hover:bg-[#F3F8F6] ${
-                                !notif.is_read ? 'bg-[#F9FEFB]' : ''
+                              className={`flex w-full gap-3 border-b border-[#F7F2EA] px-4 py-3 text-left transition hover:bg-[#F8F5EF] ${
+                                !notif.is_read ? 'bg-[#FDF9F1]' : ''
                               }`}
                             >
                               <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${getNotificationColor(notif.type)} bg-opacity-10`}>
                                 <Icon className="h-4 w-4" />
                               </div>
                               <div className="min-w-0 flex-1">
-                                <p className="text-xs font-bold text-[#0F1F1A]">{notif.title}</p>
-                                <p className="mt-0.5 truncate text-[11px] text-[#5F6F68]">{notif.message}</p>
-                                <p className="mt-1 text-[10px] text-[#8AA89F]">{formatTimeAgo(notif.created_at)}</p>
+                                <p className="text-xs font-bold text-[#241A10]">{notif.title}</p>
+                                <p className="mt-0.5 truncate text-[11px] text-[#8A7B6C]">{notif.message}</p>
+                                <p className="mt-1 text-[10px] text-[#B3A491]">{formatTimeAgo(notif.created_at)}</p>
                               </div>
                               {!notif.is_read && (
                                 <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#C9943A]" />
@@ -421,9 +435,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       )}
                     </div>
 
-                    <div className="border-t border-[#DCE8E3] px-4 py-2">
+                    <div className="border-t border-[#EAE2D6] px-4 py-2">
                       <Link href="/admin/notifications" scroll={false} onClick={() => setNotifOpen(false)}
-                        className="flex items-center justify-center rounded-xl px-4 py-2 text-sm font-bold text-[#2FBF9B] hover:bg-[#EAF8F3]">
+                        className="flex items-center justify-center rounded-xl px-4 py-2 text-sm font-bold text-[#8B4A2F] hover:bg-[#FDF1DC]">
                         View All Notifications
                       </Link>
                     </div>
@@ -431,34 +445,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 )}
               </div>
 
-              <Link href="/admin/settings" scroll={false} className="rounded-full p-2.5 text-[#5F6F68] hover:bg-[#EEF5F2]">
+              <Link href="/admin/settings" scroll={false} className="rounded-full p-2.5 text-[#6B5B49] hover:bg-[#F6F3EE]">
                 <Settings className="h-5 w-5" />
               </Link>
 
               {/* profile dropdown */}
               <div ref={profileRef} className="relative ml-1">
                 <button onClick={() => setProfileOpen(v => !v)}
-                  className="flex items-center gap-2.5 rounded-full border border-[#DCE8E3] bg-white py-1.5 pl-1.5 pr-3 shadow-sm hover:bg-[#F3F8F6]">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#C9943A] to-[#8B4513] text-xs font-black text-white">
+                  className="flex items-center gap-2.5 rounded-full border border-[#EAE2D6] bg-white py-1.5 pl-1.5 pr-3 shadow-sm hover:bg-[#F8F5EF]">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#C9943A] to-[#5A2D1D] text-xs font-black text-white">
                     {(user?.username || user?.name || 'A')[0].toUpperCase()}
                   </div>
-                  <span className="hidden text-sm font-bold text-[#0F1F1A] sm:block">
+                  <span className="hidden text-sm font-bold text-[#241A10] sm:block">
                     {user?.username || user?.name || 'Admin'}
                   </span>
-                  <ChevronDown className="h-3.5 w-3.5 text-[#5F6F68]" />
+                  <ChevronDown className="h-3.5 w-3.5 text-[#8A7B6C]" />
                 </button>
 
                 {profileOpen && (
-                  <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-2xl border border-[#DCE8E3] bg-white py-1.5 shadow-xl">
+                  <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-2xl border border-[#EAE2D6] bg-white py-1.5 shadow-xl">
                     <Link href="/admin/settings" scroll={false} onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#0F1F1A] hover:bg-[#F3F8F6]">
-                      <User className="h-4 w-4 text-[#8AA89F]" /> Profile
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#241A10] hover:bg-[#F8F5EF]">
+                      <User className="h-4 w-4 text-[#B3A491]" /> Profile
                     </Link>
                     <a href="/" target="_blank" rel="noopener noreferrer" onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#0F1F1A] hover:bg-[#F3F8F6]">
-                      <Globe className="h-4 w-4 text-[#8AA89F]" /> Visit Website
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#241A10] hover:bg-[#F8F5EF]">
+                      <Globe className="h-4 w-4 text-[#B3A491]" /> Visit Website
                     </a>
-                    <div className="my-1 border-t border-[#DCE8E3]" />
+                    <div className="my-1 border-t border-[#EAE2D6]" />
                     <button onClick={handleLogout}
                       className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50">
                       <LogOut className="h-4 w-4" /> Logout
