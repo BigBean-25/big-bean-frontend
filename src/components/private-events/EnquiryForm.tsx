@@ -100,7 +100,7 @@ export default function EnquiryForm({
     const e: Record<string, string> = {}
     if (form.full_name.trim().length < 2) e.full_name = 'Enter your name.'
     if (!/^[+]?[\d\s()-]{8,20}$/.test(form.phone.trim())) e.phone = 'Enter a valid phone number with country code.'
-    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) e.email = 'Enter a valid email address.'
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) e.email = 'Enter a valid email address.'
     if (!form.outlet_slug) e.outlet_slug = 'Choose an outlet or Help me choose.'
     if (!form.occasion) e.occasion = 'Choose what you are planning.'
     if (!form.date_not_decided && !form.event_date) e.event_date = 'Choose a date or Date not decided.'
@@ -132,7 +132,7 @@ export default function EnquiryForm({
         body: JSON.stringify({
           full_name: form.full_name,
           phone: form.phone,
-          email: form.email || undefined,
+          email: form.email.trim(),
           outlet_slug: form.outlet_slug,
           occasion: form.occasion,
           event_date: form.date_not_decided ? undefined : form.event_date,
@@ -241,9 +241,9 @@ export default function EnquiryForm({
         </div>
 
         <div data-error={!!errors.email || undefined}>
-          <label htmlFor="pe-email" className={labelCls}>Email</label>
+          <label htmlFor="pe-email" className={labelCls}>Email *</label>
           <input
-            id="pe-email" type="email" autoComplete="email"
+            id="pe-email" type="email" autoComplete="email" required
             value={form.email} onChange={(e) => set('email', e.target.value)}
             className={`${inputCls} ${errors.email ? fieldErr : ''}`} placeholder="you@example.com"
           />

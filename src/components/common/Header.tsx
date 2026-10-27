@@ -7,7 +7,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import {
   Menu, X, Search, User, ShoppingBag, ChevronDown,
   Home, UtensilsCrossed, MapPin, Tag, Image as ImageIcon,
-  BookOpen, Briefcase, Building2, Package, Phone, Calendar, PartyPopper,
+  BookOpen, Briefcase, Building2, Package, Phone, Calendar,
 } from 'lucide-react'
 import { cartCount } from '@/lib/cart'
 import { getCustomer, clearCustomerSession, isCustomerLoggedIn } from '@/lib/customerAuth'
@@ -45,7 +45,7 @@ const NAV_PRIMARY = [
   { name: 'MENU',      href: '/menu' },
   { name: 'OUTLETS',   href: '/outlets' },
   { name: 'EVENTS',    href: '/events' },
-  { name: 'CONTACT',   href: '/contact' },
+  { name: 'PRIVATE EVENTS', href: '/private-events' },
 ]
 
 const NAV_MORE = [
@@ -57,7 +57,6 @@ const NAV_MORE = [
   { name: 'Corporate Orders', href: '/corporate-orders', icon: UtensilsCrossed },
   { name: 'Merchandise',      href: '/merchandise',      icon: Package },
   { name: 'Reservations',     href: '/reservations',     icon: Calendar },
-  { name: 'Private Events',   href: '/private-events',   icon: PartyPopper },
 ]
 
 const SEARCH_ITEMS = [
@@ -172,7 +171,7 @@ export default function Header() {
     router.prefetch('/offers')
     router.prefetch('/outlets')
     router.prefetch('/events')
-    router.prefetch('/contact')
+    router.prefetch('/private-events')
   }, [router])
 
   const isActive = useCallback((href: string) =>
@@ -228,7 +227,7 @@ export default function Header() {
                   key={item.name}
                   href={item.href}
                   prefetch
-                  className={`font-nav relative rounded-full px-3.5 py-2 text-[12px] xl:text-[13px] font-extrabold uppercase tracking-[0.16em] leading-none transition-all duration-200 ${
+                  className={`font-nav relative rounded-full px-2.5 xl:px-3.5 py-2 text-[12px] xl:text-[13px] font-extrabold uppercase tracking-[0.16em] leading-none transition-all duration-200 ${
                     active
                       ? 'bg-[#3D1F0D] text-[#FFF7ED] shadow-[0_8px_20px_rgba(59,27,13,0.22)]'
                       : 'text-[#32180c] hover:bg-[#F5E6D3] hover:text-[#9b5b1d]'
@@ -244,7 +243,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={() => setIsMoreOpen((o) => !o)}
-                className={`font-nav flex items-center gap-1 rounded-full px-3.5 py-2 text-[12px] xl:text-[13px] font-extrabold uppercase tracking-[0.16em] leading-none transition-all duration-200 ${
+                className={`font-nav flex items-center gap-1 rounded-full px-2.5 xl:px-3.5 py-2 text-[12px] xl:text-[13px] font-extrabold uppercase tracking-[0.16em] leading-none transition-all duration-200 ${
                   allNavActive || isMoreOpen
                     ? 'bg-[#3D1F0D] text-[#FFF7ED]'
                     : 'text-[#3D1F0D] hover:bg-[#F5E6D3]'

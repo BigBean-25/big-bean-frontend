@@ -49,7 +49,7 @@ interface GalleryItem {
   sort_order?: number | null
 }
 
-type PageOutlet = Outlet & { _label?: string; _verified?: boolean }
+type PageOutlet = Outlet & { _label?: string }
 
 /* ── Event types — approved PDF copy ─────────────────────────────── */
 const EVENT_TYPES: { key: string; label: string; desc: string; Icon: any }[] = [
@@ -85,23 +85,15 @@ const OUTLET_NOTES: Record<string, string> = {
     'Planning a birthday party, a family get-together or a team event in JP Nagar? Choose our JP Nagar outlet and share your preferred date, guest count and food preferences. Discuss the seating and event arrangements for your group directly with the team.',
 }
 
-const OUTLET_SHORT: Record<string, string> = {
-  koramangala: 'Koramangala',
-  'hsr-layout': 'HSR Layout',
-  indiranagar: 'Indiranagar',
-  jayanagar: 'Jayanagar',
-  kammanahalli: 'Kammanahalli',
-  'rajarajeshwari-nagar': 'RR Nagar',
-  'electronic-city': 'Electronic City',
-  'jp-nagar': 'JP Nagar',
-}
-
 const KORAMANGALA_SLUG = 'koramangala'
+
+const outletDisplayName = (o: PageOutlet) =>
+  (o._label ?? o.name ?? '').replace(/^Big Bean Cafe\s*[-–—]\s*/i, '') || 'This outlet'
 
 const FAQ_ITEMS: { q: string; a: string; link?: string }[] = [
   {
     q: 'Which Big Bean Cafe locations can I enquire about?',
-    a: 'You can enquire for all eight locations: Koramangala, HSR Layout, Indiranagar, Jayanagar, Kammanahalli / HRBR Layout, RR Nagar, Electronic City / M5 and JP Nagar. Select the outlet that works for your guests, or choose Help me choose.',
+    a: 'You can enquire for any active Big Bean Cafe outlet listed on this page. Select the location that works best for your guests, or choose Help me choose.',
   },
   {
     q: 'What is the seating capacity for events?',
@@ -229,7 +221,7 @@ export default function PrivateEventsClient({
               {(hero?.supporting_text || !hero) && (
                 <p className="pe-reveal pe-in mt-4 max-w-md text-sm leading-relaxed text-[#8A7059]" style={{ transitionDelay: '.22s' }}>
                   {hero?.supporting_text ||
-                    'Explore our eight outlet locations across Bengaluru and tell us your preferred date, group size and occasion. Our team will help you check the arrangements available at your chosen outlet.'}
+                    'Explore our Big Bean Cafe locations across Bengaluru and tell us your preferred date, group size and occasion. Our team will help you check the arrangements available at your chosen outlet.'}
                 </p>
               )}
               <div className="pe-reveal pe-in mt-9 flex flex-col gap-3 sm:flex-row" style={{ transitionDelay: '.3s' }}>
@@ -283,7 +275,7 @@ export default function PrivateEventsClient({
           <div className="mx-auto max-w-7xl px-6 py-10 sm:px-10">
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {[
-                { big: '8 outlet locations', small: "Across Bengaluru's neighbourhoods" },
+                { big: `${outlets.length || '—'} outlet locations`, small: "Across Bengaluru's neighbourhoods" },
                 { big: '50–100 seats', small: 'Depending on outlet' },
                 { big: 'Parties & celebrations', small: 'Birthdays, anniversaries & more' },
                 { big: 'Corporate events & get-togethers', small: 'Team gatherings & meetings' },
@@ -352,17 +344,18 @@ export default function PrivateEventsClient({
           <div className="mx-auto max-w-7xl px-6 sm:px-10">
             <div className="pe-reveal mb-10 text-center">
               <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#C9943A]">Locations</p>
-              <h2 className="font-heading mt-3 text-3xl font-black text-[#3D1F0D] sm:text-4xl">Explore Our 8 Bengaluru Outlet Locations</h2>
+              <h2 className="font-heading mt-3 text-3xl font-black text-[#3D1F0D] sm:text-4xl">Explore Our Bengaluru Outlet Locations</h2>
               <p className="mx-auto mt-3 max-w-xl text-sm text-[#8A7059]">
                 Choose your preferred neighbourhood below. Outlet seating capacities range from 50 to 100; the team
                 will confirm the exact capacity and arrangement at your selected location. Exclusive use is discussed
                 separately.
               </p>
             </div>
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {outlets.map((o, i) => {
                 const img = imgUrl(o.image)
                 const isKoram = o.slug === KORAMANGALA_SLUG
+                const label = outletDisplayName(o)
                 return (
                   <article
                     key={o.slug || `outlet-${i}`}
@@ -372,7 +365,7 @@ export default function PrivateEventsClient({
                   >
                     <div className="relative h-36 overflow-hidden bg-[#EFE3D2]">
                       {img ? (
-                        <img src={img} alt={`${o._label || o.name} — Big Bean Cafe`} loading="lazy" className="h-full w-full object-cover" />
+                        <img src={img} alt={`${label} — Big Bean Cafe`} loading="lazy" className="h-full w-full object-cover" />
                       ) : (
                         <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#5A2D1D] to-[#8B4A2F]">
                           <MapPin className="h-8 w-8 text-[#F6D58D]/60" />
@@ -385,7 +378,7 @@ export default function PrivateEventsClient({
                       )}
                     </div>
                     <div className="flex flex-1 flex-col p-5">
-                      <h3 className="font-heading text-lg font-black text-[#3D1F0D]">{o._label || o.name}</h3>
+                      <h3 className="font-heading text-lg font-black text-[#3D1F0D]">{label}</h3>
                       {isKoram && (
                         <p className="mt-1 text-xs font-bold text-[#8B4A2F]">
                           Dedicated first-floor event space · 100-seat capacity
@@ -403,21 +396,24 @@ export default function PrivateEventsClient({
                           {o.phone}
                         </p>
                       )}
-                      <p className="mt-2 text-xs leading-relaxed text-[#8A7059]">{OUTLET_NOTES[o.slug || ''] || ''}</p>
+                      {OUTLET_NOTES[o.slug || ''] && (
+                        <p className="mt-2 text-xs leading-relaxed text-[#8A7059]">{OUTLET_NOTES[o.slug || '']}</p>
+                      )}
+                      <div className="flex-1" />
                       <div className="mt-4 flex gap-2 border-t border-[#F1E6D6] pt-4">
                         <button
                           type="button"
                           onClick={() => { gtag('event', 'outlet_select', { outlet: o.slug }); enquire({ outlet: o.slug || undefined }) }}
-                          className="inline-flex h-10 flex-1 items-center justify-center rounded-full bg-[#3D1F0D] text-[11px] font-black uppercase tracking-[0.1em] text-[#FFF7ED] transition hover:bg-[#5A2D1D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9943A]"
+                          className="inline-flex h-11 flex-1 items-center justify-center whitespace-nowrap rounded-full bg-[#3D1F0D] px-3 text-[11px] font-black uppercase tracking-[0.1em] text-[#FFF7ED] transition hover:bg-[#5A2D1D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9943A]"
                         >
-                          Enquire for {OUTLET_SHORT[o.slug || ''] || o._label || 'This Outlet'}
+                          Enquire
                         </button>
-                        {o._verified && o.slug && (
+                        {o.slug && (
                           <Link
                             href={`/outlets/${o.slug}`}
-                            className="inline-flex h-10 flex-1 items-center justify-center rounded-full border border-[#C9943A] text-[11px] font-black uppercase tracking-[0.1em] text-[#8B4A2F] transition hover:bg-[#C9943A]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9943A]"
+                            className="inline-flex h-11 flex-1 items-center justify-center whitespace-nowrap rounded-full border border-[#C9943A] px-3 text-[11px] font-black uppercase tracking-[0.1em] text-[#8B4A2F] transition hover:bg-[#C9943A]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9943A]"
                           >
-                            View {OUTLET_SHORT[o.slug] || o._label} Outlet
+                            View Outlet
                           </Link>
                         )}
                       </div>
