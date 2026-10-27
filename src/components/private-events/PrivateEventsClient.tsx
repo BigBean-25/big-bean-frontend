@@ -45,6 +45,8 @@ interface GalleryItem {
   outlet_name: string | null
   caption: string | null
   alt_text: string | null
+  status?: string | null
+  sort_order?: number | null
 }
 
 type PageOutlet = Outlet & { _label?: string; _verified?: boolean }
@@ -157,6 +159,11 @@ export default function PrivateEventsClient({
   const heroImg = imgUrl(hero?.image)
   const heroMobileImg = imgUrl(hero?.mobile_image) || heroImg
 
+  // Only ever show active CMS gallery images, honouring admin sort order.
+  const galleryItems = [...gallery]
+    .filter((g) => g.image && g.status !== 'inactive')
+    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.id - b.id)
+
   /* Scroll-reveal: unobtrusive IntersectionObserver */
   useEffect(() => {
     const els = sectionRefs.current?.querySelectorAll('.pe-reveal') || []
@@ -207,25 +214,25 @@ export default function PrivateEventsClient({
       <main>
         {/* ── SECTION 1 · HERO ─────────────────────────────────── */}
         <section className="relative overflow-hidden">
-          <div className="mx-auto grid max-w-7xl lg:min-h-[620px] lg:grid-cols-[45%_55%]">
-            <div className="flex flex-col justify-center px-6 py-14 sm:px-10 lg:py-20 lg:pl-8 lg:pr-14">
+          <div className="mx-auto grid max-w-7xl items-center lg:min-h-[560px] lg:grid-cols-[47%_53%]">
+            <div className="flex flex-col justify-center px-6 py-12 sm:px-10 lg:py-16 lg:pl-8 lg:pr-14">
               <p className="pe-reveal pe-in text-[11px] font-black uppercase tracking-[0.24em] text-[#C9943A]">
                 {hero?.eyebrow || 'Birthdays. Team gatherings. Time together.'}
               </p>
-              <h1 className="pe-reveal pe-in font-heading mt-5 text-4xl font-black leading-[1.08] text-[#3D1F0D] sm:text-5xl" style={{ transitionDelay: '.08s' }}>
+              <h1 className="pe-reveal pe-in font-heading mt-6 text-4xl font-black leading-[1.08] text-[#3D1F0D] sm:text-5xl" style={{ transitionDelay: '.08s' }}>
                 {hero?.heading || 'Event Spaces & Group Bookings in Bengaluru'}
               </h1>
-              <p className="pe-reveal pe-in mt-5 max-w-md text-base leading-relaxed text-[#6B4F3A]" style={{ transitionDelay: '.16s' }}>
+              <p className="pe-reveal pe-in mt-6 max-w-md text-base leading-relaxed text-[#6B4F3A]" style={{ transitionDelay: '.16s' }}>
                 {hero?.description ||
                   'Bring your people together for a birthday party, a family celebration, a team event or a get-together at Big Bean Cafe. Choose a Bengaluru location that works for your guests, with outlet seating capacities ranging from 50 to 100.'}
               </p>
               {(hero?.supporting_text || !hero) && (
-                <p className="pe-reveal pe-in mt-3 max-w-md text-sm leading-relaxed text-[#8A7059]" style={{ transitionDelay: '.22s' }}>
+                <p className="pe-reveal pe-in mt-4 max-w-md text-sm leading-relaxed text-[#8A7059]" style={{ transitionDelay: '.22s' }}>
                   {hero?.supporting_text ||
                     'Explore our eight outlet locations across Bengaluru and tell us your preferred date, group size and occasion. Our team will help you check the arrangements available at your chosen outlet.'}
                 </p>
               )}
-              <div className="pe-reveal pe-in mt-8 flex flex-col gap-3 sm:flex-row" style={{ transitionDelay: '.3s' }}>
+              <div className="pe-reveal pe-in mt-9 flex flex-col gap-3 sm:flex-row" style={{ transitionDelay: '.3s' }}>
                 <button
                   type="button"
                   onClick={() => { gtag('event', 'event_enquiry_click', { location: 'hero' }); enquire({ intent: 'general' }) }}
@@ -243,9 +250,9 @@ export default function PrivateEventsClient({
               </div>
             </div>
 
-            <div className="relative min-h-[280px] sm:min-h-[380px] lg:min-h-full">
-              {heroImg ? (
-                <>
+            <div className="relative px-6 pb-12 sm:px-10 lg:h-full lg:py-10 lg:pl-0 lg:pr-10">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[26px] bg-[#EFE3D2] shadow-[0_28px_64px_rgba(61,31,13,0.16)] ring-1 ring-[#EADCC8]/70 sm:aspect-[16/10] lg:aspect-auto lg:h-full">
+                {heroImg ? (
                   <picture>
                     {heroMobileImg && heroMobileImg !== heroImg && (
                       <source media="(max-width: 768px)" srcSet={heroMobileImg} />
@@ -253,21 +260,20 @@ export default function PrivateEventsClient({
                     <img
                       src={heroImg}
                       alt={hero?.image_alt || 'Big Bean Cafe event space set for a private gathering'}
-                      className="pe-hero-img absolute inset-0 h-full w-full object-cover"
+                      className="pe-hero-img absolute inset-0 h-full w-full object-cover object-[50%_38%]"
                       loading="eager"
                       fetchPriority="high"
                     />
                   </picture>
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#FDF8F1]/30 via-transparent to-transparent lg:bg-gradient-to-r lg:from-[#FDF8F1] lg:via-[#FDF8F1]/10 lg:to-transparent" />
-                </>
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#3D1F0D] via-[#5A2D1D] to-[#8B4A2F]">
-                  <div className="text-center">
-                    <CalendarRange className="mx-auto h-14 w-14 text-[#C9943A]/60" />
-                    <p className="mt-4 text-xs font-black uppercase tracking-[0.3em] text-[#F6D58D]/70">Big Bean Cafe</p>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#3D1F0D] via-[#5A2D1D] to-[#8B4A2F]">
+                    <div className="text-center">
+                      <CalendarRange className="mx-auto h-14 w-14 text-[#C9943A]/60" />
+                      <p className="mt-4 text-xs font-black uppercase tracking-[0.3em] text-[#F6D58D]/70">Big Bean Cafe</p>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </section>
@@ -427,21 +433,13 @@ export default function PrivateEventsClient({
         <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-20">
           <div className="grid items-center gap-10 lg:grid-cols-2">
             <div className="pe-reveal relative overflow-hidden rounded-[32px] border border-[#EADCC8] bg-[#EFE3D2]">
-              {(() => {
-                const storyImg = imgUrl(gallery[0]?.image) || heroImg
-                return storyImg ? (
-                  <img
-                    src={storyImg}
-                    alt={gallery[0]?.alt_text || 'Warm Big Bean Cafe interior set for a gathering'}
-                    loading="lazy"
-                    className="aspect-[4/3] w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-[#3D1F0D] to-[#8B4A2F]">
-                    <UtensilsCrossed className="h-14 w-14 text-[#F6D58D]/50" />
-                  </div>
-                )
-              })()}
+              {/* Dedicated static asset — never sourced from Hero or Gallery CMS */}
+              <img
+                src="/images/highlights/delicious-food.webp"
+                alt="Big Bean Cafe dishes and drinks served for a group gathering"
+                loading="lazy"
+                className="aspect-[4/3] w-full object-cover"
+              />
             </div>
             <div>
               <p className="pe-reveal text-[11px] font-black uppercase tracking-[0.24em] text-[#C9943A]">Food</p>
@@ -489,17 +487,27 @@ export default function PrivateEventsClient({
                   Enquire About a Venue Visit
                 </button>
               </div>
-            {gallery.length > 0 && (
-              <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
-                {gallery.map((g, i) => {
+            {galleryItems.length > 0 && (
+              <div className={
+                galleryItems.length === 1
+                  ? 'mx-auto max-w-4xl'
+                  : galleryItems.length === 2
+                    ? 'mx-auto grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2'
+                    : 'grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4'
+              }>
+                {galleryItems.map((g, i) => {
                   const src = imgUrl(g.image)
                   if (!src) return null
+                  const aspect =
+                    galleryItems.length === 1 ? 'aspect-[16/10]'
+                    : galleryItems.length === 2 ? 'aspect-[4/3]'
+                    : i % 3 === 0 ? 'aspect-[3/4]' : 'aspect-square'
                   return (
                     <button
                       key={g.id}
                       type="button"
                       onClick={() => setLightbox(g)}
-                      className="pe-card pe-reveal group relative block overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9943A]"
+                      className="pe-card pe-reveal group relative block w-full overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9943A]"
                       style={{ transitionDelay: `${(i % 4) * 0.06}s` }}
                       aria-label={g.alt_text || g.caption || `Gallery image ${i + 1}`}
                     >
@@ -507,7 +515,7 @@ export default function PrivateEventsClient({
                         src={src}
                         alt={g.alt_text || g.caption || 'Big Bean Cafe space'}
                         loading="lazy"
-                        className={`w-full object-cover transition-transform duration-500 group-hover:scale-[1.05] ${i % 3 === 0 ? 'aspect-[3/4]' : 'aspect-square'}`}
+                        className={`w-full object-cover transition-transform duration-500 group-hover:scale-[1.05] ${aspect}`}
                       />
                       {(g.caption || g.outlet_name) && (
                         <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#120905]/80 to-transparent p-3 pt-8 text-left">

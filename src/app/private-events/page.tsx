@@ -32,6 +32,8 @@ interface PrivateEventsGalleryItem {
   outlet_name: string | null
   caption: string | null
   alt_text: string | null
+  status: string | null
+  sort_order: number | null
 }
 
 interface PrivateEventsContent {
@@ -50,10 +52,11 @@ async function getContent(): Promise<PrivateEventsContent> {
     const res = await fetch(`${API_URL}/private-events/content`, { next: { revalidate: 60 } })
     if (!res.ok) return { hero: null, gallery: [] }
     const json = await res.json()
-    return {
-      hero: json?.data?.hero || null,
-      gallery: Array.isArray(json?.data?.gallery) ? json.data.gallery : [],
-    }
+    const raw = Array.isArray(json?.data?.gallery) ? json.data.gallery : []
+    const gallery: PrivateEventsGalleryItem[] = raw
+      .filter((g: any) => g && g.image && g.status !== 'inactive')
+      .sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.id - b.id)
+    return { hero: json?.data?.hero || null, gallery }
   } catch {
     return { hero: null, gallery: [] }
   }
