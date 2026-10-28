@@ -1,9 +1,12 @@
+import { cache } from 'react'
 import { generateFaqSchema } from './schema'
 
 const API_URL      = process.env.NEXT_PUBLIC_API_URL      || 'http://localhost:5000/api'
 const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '')
 
-export async function getSeo(pageKey: string) {
+// React cache() dedupes the call within a single request — generateMetadata
+// and the page component both ask for the same page key.
+export const getSeo = cache(async (pageKey: string) => {
   try {
     const res = await fetch(`${API_URL}/seo-pages/page/${pageKey}`, { cache: 'no-store' })
     if (!res.ok) return null
@@ -12,7 +15,7 @@ export async function getSeo(pageKey: string) {
   } catch {
     return null
   }
-}
+})
 
 export const getImageUrl = (image?: string | null): string | undefined => {
   if (!image) return undefined

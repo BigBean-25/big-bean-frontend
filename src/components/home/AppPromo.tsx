@@ -234,6 +234,8 @@ export default function AppPromo() {
                     <img
                       src={mockupUrl}
                       alt="Big Bean Café App"
+                      loading="lazy"
+                      decoding="async"
                       style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'top center', display: 'block' }}
                     />
                   ) : (

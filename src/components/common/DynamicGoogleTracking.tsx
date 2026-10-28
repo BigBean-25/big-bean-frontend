@@ -9,10 +9,13 @@ const PUBLIC_SETTINGS_URL = `${API_URL}/seo-pages/settings/public`
 
 type SiteSettings = Record<string, string | null>
 
-export default function DynamicGoogleTracking() {
-  const [settings, setSettings] = useState<SiteSettings | null>(null)
+export default function DynamicGoogleTracking({ initialSettings }: { initialSettings?: SiteSettings | null }) {
+  // Settings are normally provided by the server-rendered GlobalSeoScripts —
+  // the client fetch below only runs as a fallback when they're absent.
+  const [settings, setSettings] = useState<SiteSettings | null>(initialSettings ?? null)
 
   useEffect(() => {
+    if (initialSettings) return
     let cancelled = false
     fetch(PUBLIC_SETTINGS_URL)
       .then(r => (r.ok ? r.json() : null))
@@ -21,7 +24,7 @@ export default function DynamicGoogleTracking() {
       })
       .catch(() => {})
     return () => { cancelled = true }
-  }, [])
+  }, [initialSettings])
 
   if (!settings) return null
 

@@ -20,6 +20,8 @@ export default function OutletsPreview({ initialOutlets = [] }: { initialOutlets
   const outlets = allOutlets.slice(0, 3)
 
   useEffect(() => {
+    // Server already seeded outlets — no duplicate client-side fetch needed.
+    if (initialOutlets.length > 0) return
     const fetchOutlets = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/outlets`)
@@ -29,7 +31,7 @@ export default function OutletsPreview({ initialOutlets = [] }: { initialOutlets
         const rawOutlets: Outlet[] = Array.isArray(data) ? data : Array.isArray(data.data) ? data.data : []
         setAllOutlets(sortOutlets(rawOutlets.filter((o: Outlet) => o.status === 'active')))
       } catch {
-        if (initialOutlets.length === 0) setError(true)
+        setError(true)
       } finally {
         setLoading(false)
       }

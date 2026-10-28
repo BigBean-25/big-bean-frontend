@@ -10,7 +10,7 @@ export default function ForgotPassword() {
 
       {/* Background */}
       <img
-        src="/images/auth/customer-auth-bg.png"
+        src="/images/auth/customer-auth-bg.webp"
         alt="Big Bean Café"
         className="fixed inset-0 h-full w-full object-cover object-right"
       />

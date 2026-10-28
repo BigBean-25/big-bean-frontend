@@ -2,6 +2,7 @@ import {
   generateOrganizationSchema,
   websiteSchema,
 } from '@/lib/schema'
+import DynamicGoogleTracking from './DynamicGoogleTracking'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 
@@ -45,6 +46,9 @@ export default async function GlobalSeoScripts() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
       />
+
+      {/* ── Analytics — reuses this same settings fetch (no duplicate call) ── */}
+      <DynamicGoogleTracking initialSettings={settings} />
     </>
   )
 }

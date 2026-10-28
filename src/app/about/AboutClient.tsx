@@ -128,7 +128,7 @@ function ValuesBackground() {
   }
   return (
     <img
-      src="/images/about/values-bg.png"
+      src="/images/about/values-bg.webp"
       alt=""
       aria-hidden
       onError={() => setFailed(true)}
@@ -148,7 +148,7 @@ function CommunityImage() {
   }
   return (
     <img
-      src="/images/about/values-community.png"
+      src="/images/about/values-community.webp"
       alt="Community at Big Bean Café"
       onError={() => setFailed(true)}
       style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
@@ -157,7 +157,7 @@ function CommunityImage() {
 }
 
 function StoryImage() {
-  const [src, setSrc] = useState('/images/about/about-story-girl-cafe.png')
+  const [src, setSrc] = useState('/images/about/about-story-girl-cafe.webp')
   const [fallback, setFallback] = useState(false)
   const [failed, setFailed] = useState(false)
 

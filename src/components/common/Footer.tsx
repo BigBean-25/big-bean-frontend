@@ -3,10 +3,15 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { MapPin, Mail, Phone, Globe, Send, ArrowRight } from 'lucide-react'
 import { FaInstagram, FaFacebook, FaLinkedin, FaEnvelope, FaPhone, FaGlobe, FaWhatsapp } from 'react-icons/fa'
 import s from './Footer.module.css'
-import SocialFlipButton, { SocialItem } from '@/components/ui/social-flip-button'
+import type { SocialItem } from '@/components/ui/social-flip-button'
+
+// framer-motion powers this widget — split it out of the initial bundle;
+// its HTML is still server-rendered and it hydrates lazily.
+const SocialFlipButton = dynamic(() => import('@/components/ui/social-flip-button'))
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 
@@ -110,7 +115,6 @@ export default function Footer() {
                 width={160}
                 height={83}
                 className={s.footerLogo}
-                priority
               />
             </Link>
             <p className={s.footerDescription}>{g('footer_description')}</p>

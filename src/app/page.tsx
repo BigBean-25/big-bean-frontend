@@ -1,7 +1,22 @@
 import { Metadata } from 'next'
 import { getSeo, buildMetadata, getFaqSchema } from '@/lib/seo'
 import { getOutlets } from '@/lib/outlets'
-import HomeClient from './HomeClient'
+import HomeClient, { type HeroBannerData } from './HomeClient'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+
+// Hero banners are fetched on the server so the LCP media is present in the
+// initial HTML instead of being discovered after hydration + a client fetch.
+async function getHomeBanners(): Promise<HeroBannerData[]> {
+  try {
+    const res = await fetch(`${API_URL}/home-banners/active`, { next: { revalidate: 60 } })
+    if (!res.ok) return []
+    const json = await res.json()
+    return Array.isArray(json?.data) ? json.data : []
+  } catch {
+    return []
+  }
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSeo('home')
@@ -13,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
-  const [seo, outlets] = await Promise.all([getSeo('home'), getOutlets()])
+  const [seo, outlets, heroBanners] = await Promise.all([getSeo('home'), getOutlets(), getHomeBanners()])
   const faqSchema = getFaqSchema(seo)
   return (
     <>
@@ -23,7 +38,7 @@ export default async function Page() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
       )}
-      <HomeClient initialOutlets={outlets} />
+      <HomeClient initialOutlets={outlets} initialBanners={heroBanners} />
     </>
   )
 }

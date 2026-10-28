@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Outlet } from '@/lib/outlets'
+import { todayInBengaluru } from '@/lib/dates'
 import { CheckCircle2, Loader2, Send } from 'lucide-react'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
@@ -79,6 +80,8 @@ export default function EnquiryForm({
   const [success, setSuccess] = useState<string | null>(null)
   const [serverError, setServerError] = useState<string | null>(null)
   const submittingRef = useRef(false)
+  // Earliest selectable event date — Bengaluru business calendar (Asia/Kolkata).
+  const minEventDate = useMemo(() => todayInBengaluru(), [])
 
   // Card clicks / CTAs push prefill values into the form
   useEffect(() => {
@@ -104,6 +107,12 @@ export default function EnquiryForm({
     if (!form.outlet_slug) e.outlet_slug = 'Choose an outlet or Help me choose.'
     if (!form.occasion) e.occasion = 'Choose what you are planning.'
     if (!form.date_not_decided && !form.event_date) e.event_date = 'Choose a date or Date not decided.'
+    else if (
+      !form.date_not_decided &&
+      (!/^\d{4}-\d{2}-\d{2}$/.test(form.event_date) || form.event_date < minEventDate)
+    ) {
+      e.event_date = 'Please choose today or a future date.'
+    }
     const guests = parseInt(form.guest_count, 10)
     if (!Number.isInteger(guests) || guests < 1 || guests > 500) e.guest_count = 'Enter an expected guest count.'
     if (!form.consent) e.consent = 'Please agree to be contacted about this enquiry.'
@@ -286,6 +295,7 @@ export default function EnquiryForm({
           <input
             id="pe-date" type="date" required={!form.date_not_decided}
             disabled={form.date_not_decided}
+            min={minEventDate}
             value={form.event_date} onChange={(e) => set('event_date', e.target.value)}
             className={`${inputCls} disabled:cursor-not-allowed disabled:opacity-50 ${errors.event_date ? fieldErr : ''}`}
           />

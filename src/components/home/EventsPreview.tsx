@@ -244,7 +244,7 @@ export default function EventsPreview() {
                       {/* ── Image area ── */}
                       <div style={{ position: 'relative', width: '100%', height: '240px', flexShrink: 0, overflow: 'hidden' }}>
                         {imgUrl ? (
-                          <img src={imgUrl} alt={ev.title}
+                          <img src={imgUrl} alt={ev.title} loading="lazy" decoding="async"
                             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', transition: 'transform 0.5s ease' }} />
                         ) : (
                           <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(160deg, #2A120B ${i * 12}%, #6B3520, #C9943A)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -305,7 +305,7 @@ export default function EventsPreview() {
             {/* Controls — visible on cream background */}
             {maxIdx > 0 && (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1.2rem', marginTop: '2.5rem' }}>
-                <button onClick={() => go(-1)} disabled={active === 0}
+                <button onClick={() => go(-1)} disabled={active === 0} aria-label="Previous events"
                   style={{ width: 42, height: 42, borderRadius: '50%', border: `1.5px solid ${active === 0 ? 'rgba(61,31,13,0.18)' : 'rgba(61,31,13,0.45)'}`, background: active === 0 ? 'rgba(61,31,13,0.04)' : 'rgba(61,31,13,0.09)', color: active === 0 ? 'rgba(61,31,13,0.25)' : '#3D1F0D', cursor: active === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                   onMouseEnter={e => { if (active > 0) { (e.currentTarget as HTMLElement).style.background = '#3D1F0D'; (e.currentTarget as HTMLElement).style.color = '#FFF7ED' } }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = active === 0 ? 'rgba(61,31,13,0.04)' : 'rgba(61,31,13,0.09)'; (e.currentTarget as HTMLElement).style.color = active === 0 ? 'rgba(61,31,13,0.25)' : '#3D1F0D' }}>
@@ -314,12 +314,12 @@ export default function EventsPreview() {
 
                 <div style={{ display: 'flex', gap: '8px' }}>
                   {Array.from({ length: maxIdx + 1 }).map((_, i) => (
-                    <button key={i} onClick={() => setActive(i)}
+                    <button key={i} onClick={() => setActive(i)} aria-label={`Go to event slide ${i + 1}`}
                       style={{ width: i === active ? 24 : 8, height: 8, borderRadius: '100px', background: i === active ? '#C9943A' : 'rgba(61,31,13,0.22)', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s ease' }} />
                   ))}
                 </div>
 
-                <button onClick={() => go(1)} disabled={active === maxIdx}
+                <button onClick={() => go(1)} disabled={active === maxIdx} aria-label="Next events"
                   style={{ width: 42, height: 42, borderRadius: '50%', border: `1.5px solid ${active === maxIdx ? 'rgba(61,31,13,0.18)' : 'rgba(61,31,13,0.45)'}`, background: active === maxIdx ? 'rgba(61,31,13,0.04)' : 'rgba(61,31,13,0.09)', color: active === maxIdx ? 'rgba(61,31,13,0.25)' : '#3D1F0D', cursor: active === maxIdx ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                   onMouseEnter={e => { if (active < maxIdx) { (e.currentTarget as HTMLElement).style.background = '#3D1F0D'; (e.currentTarget as HTMLElement).style.color = '#FFF7ED' } }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = active === maxIdx ? 'rgba(61,31,13,0.04)' : 'rgba(61,31,13,0.09)'; (e.currentTarget as HTMLElement).style.color = active === maxIdx ? 'rgba(61,31,13,0.25)' : '#3D1F0D' }}>

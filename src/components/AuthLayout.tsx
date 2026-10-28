@@ -5,7 +5,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     <div className="relative min-h-screen w-full bg-[#FFF7ED]">
       {/* Full-page background — boy/barista image anchored to right */}
       <img
-        src="/images/auth/customer-auth-bg.png"
+        src="/images/auth/customer-auth-bg.webp"
         alt=""
         aria-hidden="true"
         className="fixed inset-0 h-full w-full object-cover object-right"

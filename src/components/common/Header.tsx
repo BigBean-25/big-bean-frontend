@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   Menu, X, Search, User, ShoppingBag, ChevronDown,
@@ -11,7 +12,9 @@ import {
 } from 'lucide-react'
 import { cartCount } from '@/lib/cart'
 import { getCustomer, clearCustomerSession, isCustomerLoggedIn } from '@/lib/customerAuth'
-import GooeySearch from '@/components/ui/gooey-search'
+// GooeySearch pulls in framer-motion — split it out of the initial bundle;
+// it still server-renders and hydrates lazily.
+const GooeySearch = dynamic(() => import('@/components/ui/gooey-search'))
 
 function GooeySearchTrigger({ onClick, isMobile = false }: { onClick: () => void; isMobile?: boolean }) {
   return (
@@ -419,7 +422,7 @@ export default function Header() {
 
               {/* More links */}
               <div className="mt-3 rounded-2xl border border-[#E6C7A8] bg-white p-2">
-                <p className="mb-2 px-3 text-[9px] font-black uppercase tracking-[0.2em] text-[#9B6B50]">More</p>
+                <p className="mb-2 px-3 text-[9px] font-black uppercase tracking-[0.2em] text-[#8B5A3C]">More</p>
                 <div className="grid grid-cols-2 gap-1">
                   {NAV_MORE.map((item) => {
                     const Icon = item.icon
@@ -538,13 +541,13 @@ export default function Header() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search menu, outlets, offers, blog..."
-                className="flex-1 bg-transparent text-base font-semibold text-[#3D1F0D] outline-none placeholder:text-[#A98A74]"
+                className="flex-1 bg-transparent text-base font-semibold text-[#3D1F0D] outline-none placeholder:text-[#8A7059]"
                 aria-label="Search"
               />
               <button
                 type="button"
                 onClick={() => setIsSearchOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-[#9B6B50] transition hover:bg-[#F5E6D3]"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-[#8B5A3C] transition hover:bg-[#F5E6D3]"
                 aria-label="Close search"
               >
                 <X className="h-4 w-4" />
@@ -555,7 +558,7 @@ export default function Header() {
             <div className="max-h-[60vh] overflow-y-auto p-3">
               {searchQuery.trim() === '' ? (
                 <>
-                  <p className="mb-2 px-3 text-[10px] font-black uppercase tracking-[0.18em] text-[#9B6B50]">Popular Searches</p>
+                  <p className="mb-2 px-3 text-[10px] font-black uppercase tracking-[0.18em] text-[#8B5A3C]">Popular Searches</p>
                   <div className="flex flex-wrap gap-2 px-3">
                     {QUICK_SEARCHES.map((q) => (
                       <button
@@ -571,7 +574,7 @@ export default function Header() {
                 </>
               ) : searchResults.length > 0 ? (
                 <>
-                  <p className="mb-1 px-3 text-[10px] font-black uppercase tracking-[0.18em] text-[#9B6B50]">{searchResults.length} result{searchResults.length !== 1 ? 's' : ''}</p>
+                  <p className="mb-1 px-3 text-[10px] font-black uppercase tracking-[0.18em] text-[#8B5A3C]">{searchResults.length} result{searchResults.length !== 1 ? 's' : ''}</p>
                   {searchResults.map((item) => (
                     <button
                       key={item.href}
@@ -584,21 +587,21 @@ export default function Header() {
                       </div>
                       <div>
                         <p className="text-sm font-black text-[#3D1F0D]">{item.title}</p>
-                        <p className="text-[11px] font-semibold text-[#9B6B50]">{item.type}</p>
+                        <p className="text-[11px] font-semibold text-[#8B5A3C]">{item.type}</p>
                       </div>
                     </button>
                   ))}
                 </>
               ) : (
                 <div className="py-8 text-center">
-                  <p className="text-sm font-bold text-[#9B6B50]">No results for "{searchQuery}"</p>
-                  <p className="mt-1 text-xs text-[#A98A74]">Try a different keyword.</p>
+                  <p className="text-sm font-bold text-[#8B5A3C]">No results for "{searchQuery}"</p>
+                  <p className="mt-1 text-xs text-[#8A7059]">Try a different keyword.</p>
                 </div>
               )}
             </div>
 
             <div className="border-t border-[#E6C7A8] px-5 py-2.5">
-              <p className="text-[10px] text-[#A98A74]">Press <kbd className="rounded bg-[#F5E6D3] px-1.5 py-0.5 font-mono text-[#6B3520]">Esc</kbd> to close · <kbd className="rounded bg-[#F5E6D3] px-1.5 py-0.5 font-mono text-[#6B3520]">Ctrl K</kbd> to open</p>
+              <p className="text-[10px] text-[#8A7059]">Press <kbd className="rounded bg-[#F5E6D3] px-1.5 py-0.5 font-mono text-[#6B3520]">Esc</kbd> to close · <kbd className="rounded bg-[#F5E6D3] px-1.5 py-0.5 font-mono text-[#6B3520]">Ctrl K</kbd> to open</p>
             </div>
           </div>
         </div>

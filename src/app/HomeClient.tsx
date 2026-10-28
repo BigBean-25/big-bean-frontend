@@ -1,22 +1,26 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import HeroBanner from '@/components/home/HeroBanner'
 import Highlights from '@/components/home/Highlights'
 import FeaturedMenu from '@/components/home/FeaturedMenu'
-import OrderingInfo from '@/components/home/OrderingInfo'
-import OutletsPreview from '@/components/home/OutletsPreview'
-import OffersPreview from '@/components/home/OffersPreview'
-import AppPromo from '@/components/home/AppPromo'
-import EventsPreview from '@/components/home/EventsPreview'
-import MerchandisePreview from '@/components/home/MerchandisePreview'
-import FranchiseCTA from '@/components/home/FranchiseCTA'
 import Header from '@/components/common/Header'
 import Footer from '@/components/common/Footer'
 import { getApiUrl } from '@/lib/api'
 import type { Outlet } from '@/lib/outlets'
 
-interface HeroBannerData {
+// Below-the-fold sections are code-split: their HTML is still server-rendered
+// (SEO/CLS unaffected) but their JS hydrates lazily instead of blocking LCP.
+const OrderingInfo = dynamic(() => import('@/components/home/OrderingInfo'))
+const OutletsPreview = dynamic(() => import('@/components/home/OutletsPreview'))
+const OffersPreview = dynamic(() => import('@/components/home/OffersPreview'))
+const AppPromo = dynamic(() => import('@/components/home/AppPromo'))
+const EventsPreview = dynamic(() => import('@/components/home/EventsPreview'))
+const MerchandisePreview = dynamic(() => import('@/components/home/MerchandisePreview'))
+const FranchiseCTA = dynamic(() => import('@/components/home/FranchiseCTA'))
+
+export interface HeroBannerData {
   id: number
   title: string
   subtitle?: string
@@ -36,12 +40,21 @@ interface HeroBannerData {
   sort_order: number
 }
 
-export default function Home({ initialOutlets = [] }: { initialOutlets?: Outlet[] }) {
-  const [heroBanners, setHeroBanners] = useState<HeroBannerData[]>([])
-  const [loading, setLoading] = useState(true)
+export default function Home({
+  initialOutlets = [],
+  initialBanners = [],
+}: {
+  initialOutlets?: Outlet[]
+  initialBanners?: HeroBannerData[]
+}) {
+  const [heroBanners, setHeroBanners] = useState<HeroBannerData[]>(initialBanners)
+  const [loading, setLoading] = useState(initialBanners.length === 0)
 
   useEffect(() => {
+    // Server already provided banners — no client-side waterfall needed.
+    if (initialBanners.length > 0) return
     fetchHeroBanners()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchHeroBanners = async () => {
@@ -62,7 +75,7 @@ export default function Home({ initialOutlets = [] }: { initialOutlets?: Outlet[
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-50 via-white to-cream-100">
       <Header />
-      <main className="animate-fade-in">
+      <main>
         <HeroBanner banners={heroBanners} loading={loading} />
         <div className="animate-slide-up">
           <Highlights />

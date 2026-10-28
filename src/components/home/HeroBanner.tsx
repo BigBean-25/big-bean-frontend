@@ -13,6 +13,10 @@ const getMediaUrl = (filePath?: string | null): string => {
   return `${API_BASE}${filePath.startsWith('/') ? filePath : '/' + filePath}`
 }
 
+// Poster derived from the hero video's first frame so the LCP element is a
+// real, fast-loading image while the (large) video streams in behind it.
+const VIDEO_POSTER = '/images/hero/home-hero-poster.webp'
+
 interface HeroBanner {
   id: number
   title: string
@@ -41,18 +45,6 @@ interface HeroBannerProps {
 export default function HeroBanner({ banners, loading = false }: HeroBannerProps) {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isPlaying, setIsPlaying] = useState(true)
-  // Initialize with real value on first client render to avoid a second render + double image fetch on mobile
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window !== 'undefined' ? window.innerWidth < 768 : false
-  )
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
 
   useEffect(() => {
     if (!isPlaying || banners.length <= 1) return
@@ -94,17 +86,16 @@ export default function HeroBanner({ banners, loading = false }: HeroBannerProps
   }
 
   const currentBanner = banners[currentSlide]
-  
-  // Responsive media selection logic
-  const getMediaUrlForDevice = () => {
-    if (isMobile && currentBanner.mobile_media) {
-      return getMediaUrl(currentBanner.mobile_media)
-    }
-    return getMediaUrl(currentBanner.desktop_media)
-  }
-  
-  const mediaUrl = getMediaUrlForDevice()
+
+  // Responsive media — art direction via <source media> so the browser picks
+  // the right asset in the initial HTML (no JS, no hydration mismatch).
+  const desktopUrl = getMediaUrl(currentBanner.desktop_media)
+  const mobileUrl = getMediaUrl(currentBanner.mobile_media)
+  const hasMobileMedia = !!mobileUrl && mobileUrl !== desktopUrl
   const isVideo = currentBanner.media_type === 'video'
+  const posterUrl = isVideo
+    ? getMediaUrl(currentBanner.fallback_image) || VIDEO_POSTER
+    : ''
 
   const hasButton1 = !!(currentBanner.button_1_text && currentBanner.button_1_text !== 'null' && currentBanner.button_1_url && currentBanner.button_1_url !== 'null')
   const hasButton2 = !!(currentBanner.button_2_text && currentBanner.button_2_text !== 'null' && currentBanner.button_2_url && currentBanner.button_2_url !== 'null')
@@ -114,25 +105,44 @@ export default function HeroBanner({ banners, loading = false }: HeroBannerProps
       {/* Media */}
       <div className="absolute inset-0">
         {isVideo ? (
-          <video
-            key={mediaUrl}
-            className="absolute inset-0 h-full w-full object-cover"
-            src={mediaUrl}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            crossOrigin="anonymous"
-            poster={currentBanner.fallback_image ? getMediaUrl(currentBanner.fallback_image) : undefined}
-          />
+          <>
+            {/* True LCP asset: the first frame as an optimized still, discovered
+                in the HTML at high priority while the video buffers behind it. */}
+            {posterUrl && (
+              <img
+                src={posterUrl}
+                alt=""
+                aria-hidden="true"
+                fetchPriority="high"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            )}
+            <video
+              className="absolute inset-0 h-full w-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              crossOrigin="anonymous"
+              poster={posterUrl || undefined}
+            >
+              {hasMobileMedia && <source src={mobileUrl} media="(max-width: 767px)" />}
+              <source src={desktopUrl} />
+            </video>
+          </>
         ) : (
-          <img
-            src={mediaUrl}
-            alt={currentBanner.title || 'Big Bean Café Hero Banner'}
-            className="absolute inset-0 h-full w-full object-cover"
-            loading="eager"
-          />
+          <picture>
+            {hasMobileMedia && <source media="(max-width: 767px)" srcSet={mobileUrl} />}
+            <img
+              src={desktopUrl}
+              alt={currentBanner.title || 'Big Bean Café Hero Banner'}
+              className="absolute inset-0 h-full w-full object-cover"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+            />
+          </picture>
         )}
       </div>
 
@@ -191,12 +201,14 @@ export default function HeroBanner({ banners, loading = false }: HeroBannerProps
         <>
           <button
             onClick={prevSlide}
+            aria-label="Previous slide"
             className="absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/20 p-3 text-white backdrop-blur-sm transition-colors hover:bg-white/30"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
           <button
             onClick={nextSlide}
+            aria-label="Next slide"
             className="absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/20 p-3 text-white backdrop-blur-sm transition-colors hover:bg-white/30"
           >
             <ChevronRight className="w-6 h-6" />
@@ -204,6 +216,7 @@ export default function HeroBanner({ banners, loading = false }: HeroBannerProps
 
           <button
             onClick={() => setIsPlaying(!isPlaying)}
+            aria-label={isPlaying ? 'Pause slideshow' : 'Play slideshow'}
             className="absolute bottom-8 right-8 z-20 rounded-full bg-white/20 p-3 text-white backdrop-blur-sm transition-colors hover:bg-white/30"
           >
             {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
@@ -214,6 +227,7 @@ export default function HeroBanner({ banners, loading = false }: HeroBannerProps
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
+                aria-label={`Go to slide ${index + 1}`}
                 className={`h-2.5 rounded-full transition-all ${
                   index === currentSlide ? 'w-7 bg-white' : 'w-2.5 bg-white/50'
                 }`}

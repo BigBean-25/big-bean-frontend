@@ -105,7 +105,7 @@ export default function OrderingInfo() {
 
           {/* ── Right: image ── */}
           <div className={`${styles.imgPanel}${visible ? ' ' + styles.visible : ''}`}>
-            <img src="/images/highlights/order.jpg" alt="Order from Big Bean Café" />
+            <img src="/images/highlights/order.webp" alt="Order from Big Bean Café" loading="lazy" decoding="async" />
             <div className={styles.imgOverlay} aria-hidden="true" />
             <div className={styles.imgBadge}>
               <span className={styles.imgBadgeTitle}>Order Online</span>

@@ -63,8 +63,8 @@ const SocialFlipNode = ({
 }) => {
     const Wrapper = item.href ? "a" : "div";
     const wrapperProps = item.href
-        ? { href: item.href, target: "_blank", rel: "noopener noreferrer" }
-        : { onClick: item.onClick };
+        ? { href: item.href, target: "_blank", rel: "noopener noreferrer", "aria-label": item.label }
+        : { onClick: item.onClick, "aria-label": item.label };
 
     const isIconMode = mode === 'icon';
     const showTooltip = isIconMode ? tooltipIndex === index : isHovered && tooltipIndex === index;

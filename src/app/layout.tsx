@@ -3,7 +3,6 @@ import { Fraunces, Manrope, Sora } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
 import GlobalSeoScripts from '@/components/common/GlobalSeoScripts'
-import DynamicGoogleTracking from '@/components/common/DynamicGoogleTracking'
 import GlobalWebsitePopup from '@/components/common/GlobalWebsitePopup'
 
 const fraunces = Fraunces({
@@ -59,7 +58,6 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <GlobalSeoScripts />
-        <DynamicGoogleTracking />
       </head>
       <body className={`${fraunces.variable} ${manrope.variable} ${sora.variable}`}>
         <div className="min-h-screen bg-cream-50">
