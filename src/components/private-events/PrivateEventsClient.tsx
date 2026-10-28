@@ -133,6 +133,51 @@ const STEPS = [
   { n: 4, title: 'Confirm your booking', desc: 'Finalise the agreed arrangements and booking terms directly with the team.' },
 ]
 
+/* ── Decorative coffee beans — pure inline SVG + CSS animation ──────
+   Bean positions/visibility per breakpoint live in the <style> block;
+   this table only carries size, palette, opacity, rotation and motion. */
+const PE_BEANS = [
+  { cls: 'pe-bean-1',  size: 46, color: '#3D1F0D', groove: '#170B05', opacity: 0.92, rot: -16, anim: 'pe-anim-a', delay: '0s'    },
+  { cls: 'pe-bean-2',  size: 62, color: '#6B3520', groove: '#3D1F0D', opacity: 0.88, rot: 22,  anim: 'pe-anim-b', delay: '-3s'   },
+  { cls: 'pe-bean-3',  size: 36, color: '#C9943A', groove: '#8B5A1E', opacity: 0.62, rot: -30, anim: 'pe-anim-c', delay: '-7s'   },
+  { cls: 'pe-bean-4',  size: 52, color: '#4A2518', groove: '#241109', opacity: 0.82, rot: 12,  anim: 'pe-anim-a', delay: '-5s'   },
+  { cls: 'pe-bean-5',  size: 34, color: '#8B4A2F', groove: '#542A16', opacity: 0.55, rot: -8,  anim: 'pe-anim-b', delay: '-9s'   },
+  { cls: 'pe-bean-6',  size: 44, color: '#C9943A', groove: '#9A6E24', opacity: 0.48, rot: 30,  anim: 'pe-anim-c', delay: '-2s'   },
+  { cls: 'pe-bean-7',  size: 28, color: '#B97855', groove: '#6B3B22', opacity: 0.42, rot: 40,  anim: 'pe-anim-b', delay: '-6s'   },
+  { cls: 'pe-bean-8',  size: 34, color: '#3D1F0D', groove: '#170B05', opacity: 0.6,  rot: -24, anim: 'pe-anim-a', delay: '-11s'  },
+  { cls: 'pe-bean-9',  size: 26, color: '#8B5A3C', groove: '#4A2E1B', opacity: 0.4,  rot: 55,  anim: 'pe-anim-c', delay: '-4s'   },
+  { cls: 'pe-bean-10', size: 42, color: '#3D1F0D', groove: '#170B05', opacity: 0.95, rot: -10, anim: 'pe-anim-d', delay: '-8s'   },
+  { cls: 'pe-bean-11', size: 26, color: '#C9943A', groove: '#9A6E24', opacity: 0.75, rot: 34,  anim: 'pe-anim-none', delay: '0s' },
+]
+
+function PeBean({ bean }: { bean: (typeof PE_BEANS)[number] }) {
+  return (
+    <span
+      className={`pe-bean ${bean.cls} ${bean.anim}`}
+      style={{ width: bean.size, opacity: bean.opacity, animationDelay: bean.delay }}
+    >
+      <svg
+        viewBox="0 0 64 44"
+        width={bean.size}
+        height={Math.round(bean.size * 0.6875)}
+        focusable="false"
+        style={{ transform: `rotate(${bean.rot}deg)` }}
+      >
+        <ellipse cx="32" cy="22" rx="30" ry="19" fill={bean.color} />
+        <ellipse cx="21" cy="15" rx="12" ry="6.5" fill="#FFF7ED" opacity="0.1" />
+        <path
+          d="M32 5 C 24 13, 41 31, 32 39"
+          stroke={bean.groove}
+          strokeWidth="3"
+          fill="none"
+          strokeLinecap="round"
+          opacity="0.55"
+        />
+      </svg>
+    </span>
+  )
+}
+
 export default function PrivateEventsClient({
   hero,
   gallery,
@@ -198,9 +243,73 @@ export default function PrivateEventsClient({
         .pe-faq-inner { overflow: hidden; }
         @keyframes pe-hero-in { from { transform: scale(1.06); opacity: .0; } to { transform: scale(1); opacity: 1; } }
         .pe-hero-img { animation: pe-hero-in 1.4s cubic-bezier(.22,.61,.36,1) both; }
+
+        /* ── Decorative coffee beans (enquiry section, left column) ──
+           Inline SVG + transform/opacity only — no JS, no network, no layout anim. */
+        .pe-beans { position: relative; height: 76px; margin-top: 1.5rem; pointer-events: none; }
+        .pe-bean { position: absolute; display: none; line-height: 0; will-change: transform; }
+        .pe-bean svg { display: block; }
+        .pe-aroma { display: none; }
+
+        .pe-anim-a { animation: pe-bean-a 11s ease-in-out infinite; }
+        .pe-anim-b { animation: pe-bean-b 14s ease-in-out infinite; }
+        .pe-anim-c { animation: pe-bean-c 16s ease-in-out infinite; }
+        .pe-anim-d { animation: pe-bean-drift 20s ease-in-out infinite; }
+        .pe-anim-none { animation: none; }
+        @keyframes pe-bean-a {
+          0%, 100% { transform: translate3d(0,0,0) rotate(-2deg); }
+          50% { transform: translate3d(7px,-13px,0) rotate(3deg); }
+        }
+        @keyframes pe-bean-b {
+          0%, 100% { transform: translate3d(0,0,0) rotate(2deg); }
+          50% { transform: translate3d(-8px,-10px,0) rotate(-3deg); }
+        }
+        @keyframes pe-bean-c {
+          0%, 100% { transform: translate3d(0,0,0) rotate(0deg); }
+          50% { transform: translate3d(5px,-16px,0) rotate(4deg); }
+        }
+        @keyframes pe-bean-drift {
+          0%, 100% { transform: translate3d(0,0,0); }
+          50% { transform: translate3d(3px,-4px,0) rotate(1deg); }
+        }
+
+        /* Mobile: 3 subtle beans in a small strip below the copy — no overlap, no big gap */
+        .pe-bean-1 { display: block; right: 8%;  top: 4px; }
+        .pe-bean-2 { display: block; right: 26%; top: 34px; }
+        .pe-bean-3 { display: block; right: 44%; top: 12px; }
+
+        /* Tablet: 6 beans spread across the strip */
+        @media (min-width: 640px) {
+          .pe-beans { height: 84px; }
+          .pe-bean-1 { right: 6%;  top: 8px; }
+          .pe-bean-2 { right: 18%; top: 42px; }
+          .pe-bean-3 { right: 30%; top: 12px; }
+          .pe-bean-4 { display: block; right: 46%; top: 40px; }
+          .pe-bean-5 { display: block; right: 60%; top: 10px; }
+          .pe-bean-6 { display: block; right: 74%; top: 36px; }
+        }
+
+        /* Desktop: beans overlay the empty lower-left column (copy stays centered) */
+        @media (min-width: 1024px) {
+          .pe-beans { position: absolute; inset: 0; height: auto; margin-top: 0; }
+          .pe-aroma { display: block; position: absolute; left: 0; bottom: 2%; width: 82%; height: 52%; }
+          .pe-bean-1 { left: 7%;  top: 63%; right: auto; }
+          .pe-bean-2 { left: 24%; top: 72%; right: auto; }
+          .pe-bean-3 { left: 43%; top: 58%; right: auto; }
+          .pe-bean-4 { left: 59%; top: 76%; right: auto; }
+          .pe-bean-5 { left: 77%; top: 59%; right: auto; }
+          .pe-bean-6 { left: 91%; top: 72%; right: auto; }
+          .pe-bean-7 { display: block; left: 35%; top: 88%; }
+          .pe-bean-8 { display: block; left: 70%; top: 90%; }
+          .pe-bean-9 { display: block; left: 88%; top: 40%; }
+          .pe-bean-10 { display: block; left: 1.5%; top: 83%; }
+          .pe-bean-11 { display: block; left: 11%; top: 90%; }
+        }
+
         @media (prefers-reduced-motion: reduce) {
           .pe-reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
           .pe-hero-img, .pe-card, .pe-ico, .pe-arrow, .pe-faq-body { animation: none !important; transition: none !important; }
+          .pe-bean { animation: none !important; }
         }
       `}</style>
 
@@ -634,7 +743,7 @@ export default function PrivateEventsClient({
         {/* ── SECTION 11 · ENQUIRY FORM ────────────────────────── */}
         <section id="event-enquiry" className="scroll-mt-24 border-t border-[#EADCC8] bg-[#F5EBDD] py-16 sm:py-20">
           <div className="mx-auto grid max-w-7xl gap-10 px-6 sm:px-10 lg:grid-cols-[42%_58%]">
-            <div className="flex flex-col justify-center">
+            <div className="relative flex flex-col justify-center">
               <p className="pe-reveal text-[11px] font-black uppercase tracking-[0.24em] text-[#C9943A]">Get in Touch</p>
               <h2 className="pe-reveal font-heading mt-4 text-3xl font-black leading-tight text-[#3D1F0D] sm:text-4xl" style={{ transitionDelay: '.08s' }}>
                 Tell Us About Your Gathering
@@ -647,6 +756,18 @@ export default function PrivateEventsClient({
                 Email <a href="mailto:info@bigbeancafe.in" className="font-bold text-[#8B4A2F] underline-offset-2 hover:underline">info@bigbeancafe.in</a>. For a
                 branch-specific question, use the phone number on the relevant outlet card.
               </p>
+
+              {/* Decorative coffee-bean composition — fills the empty lower-left
+                  column on desktop; a small subtle strip on stacked layouts. */}
+              <div className="pe-beans" aria-hidden="true">
+                <svg className="pe-aroma" viewBox="0 0 400 260" fill="none" focusable="false" preserveAspectRatio="xMidYMax meet">
+                  <path d="M36 226 C 104 168, 148 196, 208 128 S 322 66, 366 30" stroke="#C9943A" strokeWidth="1.6" strokeLinecap="round" opacity="0.2" />
+                  <path d="M18 168 C 76 116, 154 138, 238 84" stroke="#8B4A2F" strokeWidth="1.3" strokeLinecap="round" opacity="0.14" />
+                </svg>
+                {PE_BEANS.map((b) => (
+                  <PeBean key={b.cls} bean={b} />
+                ))}
+              </div>
             </div>
             <div className="pe-reveal" style={{ transitionDelay: '.16s' }}>
               <EnquiryForm
