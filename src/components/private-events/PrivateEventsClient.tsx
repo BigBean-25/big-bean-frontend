@@ -256,11 +256,11 @@ export default function PrivateEventsClient({
         }
         @keyframes pe-hero-clip {
           from { clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%); }
-          to { clip-path: polygon(18% 0, 100% 0, 100% 100%, 0% 100%); }
+          to { clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%); }
         }
 
         .pe-hero { display: flex; flex-direction: column; }
-        .pe-hero-copy { padding: 3.25rem 1.5rem 0; order: 1; }
+        .pe-hero-copy { padding: 2.75rem 1.5rem 0; order: 1; }
         .pe-hero-media {
           order: 2; position: relative; margin-top: 2.5rem;
           height: clamp(250px, 52vw, 330px);
@@ -274,37 +274,37 @@ export default function PrivateEventsClient({
         .pe-hero-info {
           order: 3; display: flex; flex-wrap: wrap;
           gap: 1.25rem 2.25rem;
-          padding: 1.75rem 1.5rem 2.5rem;
+          padding: 1.5rem 1.5rem 2.25rem;
           border-top: 1px solid #EADCC8;
         }
         .pe-hero-h1 {
-          margin-top: 1.5rem; max-width: 29rem;
-          font-size: clamp(2.35rem, 3.1vw + 1rem, 3.9rem); line-height: 1.06;
+          margin-top: 1.25rem; max-width: 26rem;
+          font-size: clamp(1.95rem, 2.4vw + 0.8rem, 3.1rem); line-height: 1.08;
         }
 
         @media (min-width: 1024px) {
           .pe-hero {
-            display: grid; grid-template-columns: 58% 42%; grid-template-rows: 1fr auto;
+            display: grid; grid-template-columns: 55% 45%; grid-template-rows: 1fr auto;
             min-height: clamp(620px, 78vh, 760px);
           }
           .pe-hero-copy {
             grid-column: 1; grid-row: 1;
             display: flex; flex-direction: column; justify-content: center;
-            padding: clamp(3rem, 7vh, 5rem) 3.5rem clamp(1.75rem, 3vh, 2.5rem) max(2.5rem, calc((100vw - 80rem) / 2 + 2.5rem));
+            padding: clamp(2.75rem, 6vh, 4.25rem) 3.5rem clamp(1.75rem, 3vh, 2.5rem) max(2.5rem, calc((100vw - 80rem) / 2 + 2.5rem));
           }
           .pe-hero-media {
             grid-column: 2; grid-row: 1 / 3; margin-top: 0; height: auto;
-            clip-path: polygon(18% 0, 100% 0, 100% 100%, 0% 100%);
+            clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
             animation: pe-hero-clip 1.05s cubic-bezier(.22,.61,.36,1) .15s both;
           }
           .pe-hero-edge {
-            background: linear-gradient(90deg, rgba(253,248,241,.72) 0%, rgba(253,248,241,.18) 16%, rgba(253,248,241,0) 30%);
+            background: linear-gradient(90deg, rgba(253,248,241,.72) 0%, rgba(253,248,241,.18) 18%, rgba(253,248,241,0) 34%);
           }
           .pe-hero-info {
             grid-column: 1; grid-row: 2; align-self: end;
-            gap: 1.5rem 2.5rem;
+            gap: 1.25rem 3rem;
             margin: 0 3.5rem 2.75rem max(2.5rem, calc((100vw - 80rem) / 2 + 2.5rem));
-            padding: 1.75rem 0 0;
+            padding: 1.5rem 0 0;
           }
         }
 
@@ -386,22 +386,22 @@ export default function PrivateEventsClient({
             <p className="pe-hin text-[11px] font-black uppercase tracking-[0.26em] text-[#8B4A2F]" style={{ animationDelay: '.08s' }}>
               Private Events
             </p>
-            <p className="pe-hin mt-2 text-xs font-bold uppercase tracking-[0.18em] text-[#8A7059]" style={{ animationDelay: '.14s' }}>
+            <p className="pe-hin mt-1.5 text-xs font-bold uppercase tracking-[0.18em] text-[#8A7059]" style={{ animationDelay: '.14s' }}>
               {hero?.eyebrow || 'Birthdays. Team gatherings. Time together.'}
             </p>
             <h1 className="pe-hin pe-hero-h1 font-heading font-black text-[#3D1F0D]" style={{ animationDelay: '.16s' }}>
               {hero?.heading || 'Event Spaces & Group Bookings in Bengaluru'}
             </h1>
-            <span className="pe-hin mt-7 block h-[3px] w-[78px] rounded-full bg-[#C9943A]" style={{ animationDelay: '.24s' }} aria-hidden="true" />
-            <p className="pe-hin mt-7 max-w-lg text-base leading-relaxed text-[#6B4F3A] sm:text-[17px]" style={{ animationDelay: '.32s' }}>
+            <span className="pe-hin mt-6 block h-[3px] w-[72px] rounded-full bg-[#C9943A]" style={{ animationDelay: '.24s' }} aria-hidden="true" />
+            <p className="pe-hin mt-6 max-w-lg text-base leading-relaxed text-[#6B4F3A] sm:text-[17px]" style={{ animationDelay: '.32s' }}>
               {hero?.description ||
                 'Bring your people together for a birthday, family celebration, team event or get-together at Big Bean Cafe. Choose a Bengaluru location that works for your guests, with seating capacities ranging from 50 to 100 depending on the outlet.'}
             </p>
-            <div className="pe-hin mt-9 flex flex-wrap items-center gap-x-7 gap-y-4" style={{ animationDelay: '.4s' }}>
+            <div className="pe-hin mt-8 flex flex-wrap items-center gap-x-6 gap-y-4" style={{ animationDelay: '.4s' }}>
               <button
                 type="button"
                 onClick={() => { gtag('event', 'event_enquiry_click', { location: 'hero' }); enquire({ intent: 'general' }) }}
-                className="inline-flex h-[50px] items-center justify-center gap-2 rounded-full bg-[#C9943A] px-8 text-xs font-black uppercase tracking-[0.14em] text-[#3D1F0D] shadow-[0_12px_30px_rgba(201,148,58,0.32)] transition hover:-translate-y-0.5 hover:bg-[#DBA851] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3D1F0D] focus-visible:ring-offset-2"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#C9943A] px-8 text-xs font-black uppercase tracking-[0.14em] text-[#3D1F0D] shadow-[0_12px_30px_rgba(201,148,58,0.32)] transition hover:-translate-y-0.5 hover:bg-[#DBA851] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3D1F0D] focus-visible:ring-offset-2"
               >
                 {hero?.primary_cta_text || 'Enquire About Your Event'}
                 <ArrowRight className="pe-arrow h-4 w-4" />
@@ -469,8 +469,8 @@ export default function PrivateEventsClient({
 
         {/* ── SECTION 2 · STAT STRIP ───────────────────────────── */}
         <section className="border-y border-[#EADCC8] bg-[#F5EBDD]">
-          <div className="mx-auto max-w-7xl px-6 py-10 sm:px-10">
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mx-auto max-w-7xl px-6 py-9 sm:px-10">
+            <div className="grid gap-x-10 gap-y-7 sm:grid-cols-2 lg:grid-cols-4">
               {[
                 { big: `${outlets.length || '—'} outlet locations`, small: "Across Bengaluru's neighbourhoods" },
                 { big: '50–100 seats', small: 'Depending on outlet' },
@@ -478,12 +478,12 @@ export default function PrivateEventsClient({
                 { big: 'Corporate events & get-togethers', small: 'Team gatherings & meetings' },
               ].map((s, i) => (
                 <div key={i} className="pe-reveal text-center sm:text-left" style={{ transitionDelay: `${i * 0.09}s` }}>
-                  <p className="font-heading text-2xl font-black text-[#3D1F0D]">{s.big}</p>
-                  <p className="mt-1 text-sm text-[#8A7059]">{s.small}</p>
+                  <p className="font-heading text-xl font-black text-[#3D1F0D]">{s.big}</p>
+                  <p className="mt-1.5 text-[13px] leading-relaxed text-[#8A7059]">{s.small}</p>
                 </div>
               ))}
             </div>
-            <p className="pe-reveal mt-6 text-center text-xs text-[#8A7059] sm:text-left">
+            <p className="pe-reveal mt-7 text-center text-xs text-[#8A7059] sm:text-left">
               Exact seating capacity, event arrangements and booking availability vary by outlet.
             </p>
           </div>
