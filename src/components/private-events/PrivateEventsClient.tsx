@@ -241,8 +241,72 @@ export default function PrivateEventsClient({
         .pe-faq-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .35s ease; }
         .pe-faq-body.open { grid-template-rows: 1fr; }
         .pe-faq-inner { overflow: hidden; }
-        @keyframes pe-hero-in { from { transform: scale(1.06); opacity: .0; } to { transform: scale(1); opacity: 1; } }
-        .pe-hero-img { animation: pe-hero-in 1.4s cubic-bezier(.22,.61,.36,1) both; }
+        /* ── HERO — split editorial layout (CSS-only, no animation library) ──
+           One-time entrance: staggered opacity/translateY on copy, clip-path
+           wipe on the right image pane. Base styles = final states, so the
+           hero is fully visible even if animations never run. */
+        @keyframes pe-hin {
+          from { opacity: 0; transform: translateY(16px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .pe-hin { animation: pe-hin .75s cubic-bezier(.22,.61,.36,1) both; }
+        @keyframes pe-hero-media-fade {
+          from { opacity: 0; transform: translateY(14px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pe-hero-clip {
+          from { clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%); }
+          to { clip-path: polygon(18% 0, 100% 0, 100% 100%, 0% 100%); }
+        }
+
+        .pe-hero { display: flex; flex-direction: column; }
+        .pe-hero-copy { padding: 3.25rem 1.5rem 0; order: 1; }
+        .pe-hero-media {
+          order: 2; position: relative; margin-top: 2.5rem;
+          height: clamp(250px, 52vw, 330px);
+          clip-path: polygon(0% 7%, 100% 0%, 100% 100%, 0% 100%);
+          overflow: hidden; background: #EFE3D2;
+          animation: pe-hero-media-fade .9s cubic-bezier(.22,.61,.36,1) .15s both;
+        }
+        .pe-hero-media picture { display: block; width: 100%; height: 100%; }
+        .pe-hero-img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 38%; display: block; }
+        .pe-hero-edge { position: absolute; inset: 0; pointer-events: none; }
+        .pe-hero-info {
+          order: 3; display: flex; flex-wrap: wrap;
+          gap: 1.25rem 2.25rem;
+          padding: 1.75rem 1.5rem 2.5rem;
+          border-top: 1px solid #EADCC8;
+        }
+        .pe-hero-h1 {
+          margin-top: 1.5rem; max-width: 29rem;
+          font-size: clamp(2.35rem, 3.1vw + 1rem, 3.9rem); line-height: 1.06;
+        }
+
+        @media (min-width: 1024px) {
+          .pe-hero {
+            display: grid; grid-template-columns: 58% 42%; grid-template-rows: 1fr auto;
+            min-height: clamp(620px, 78vh, 760px);
+          }
+          .pe-hero-copy {
+            grid-column: 1; grid-row: 1;
+            display: flex; flex-direction: column; justify-content: center;
+            padding: clamp(3rem, 7vh, 5rem) 3.5rem clamp(1.75rem, 3vh, 2.5rem) max(2.5rem, calc((100vw - 80rem) / 2 + 2.5rem));
+          }
+          .pe-hero-media {
+            grid-column: 2; grid-row: 1 / 3; margin-top: 0; height: auto;
+            clip-path: polygon(18% 0, 100% 0, 100% 100%, 0% 100%);
+            animation: pe-hero-clip 1.05s cubic-bezier(.22,.61,.36,1) .15s both;
+          }
+          .pe-hero-edge {
+            background: linear-gradient(90deg, rgba(253,248,241,.72) 0%, rgba(253,248,241,.18) 16%, rgba(253,248,241,0) 30%);
+          }
+          .pe-hero-info {
+            grid-column: 1; grid-row: 2; align-self: end;
+            gap: 1.5rem 2.5rem;
+            margin: 0 3.5rem 2.75rem max(2.5rem, calc((100vw - 80rem) / 2 + 2.5rem));
+            padding: 1.75rem 0 0;
+          }
+        }
 
         /* ── Decorative coffee beans (enquiry section, left column) ──
            Inline SVG + transform/opacity only — no JS, no network, no layout anim. */
@@ -308,74 +372,97 @@ export default function PrivateEventsClient({
 
         @media (prefers-reduced-motion: reduce) {
           .pe-reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
-          .pe-hero-img, .pe-card, .pe-ico, .pe-arrow, .pe-faq-body { animation: none !important; transition: none !important; }
+          .pe-card, .pe-ico, .pe-arrow, .pe-faq-body { animation: none !important; transition: none !important; }
+          .pe-hin, .pe-hero-media { animation: none !important; }
           .pe-bean { animation: none !important; }
         }
       `}</style>
 
       <main>
-        {/* ── SECTION 1 · HERO ─────────────────────────────────── */}
-        <section className="relative overflow-hidden">
-          <div className="mx-auto grid max-w-7xl items-center lg:min-h-[560px] lg:grid-cols-[47%_53%]">
-            <div className="flex flex-col justify-center px-6 py-12 sm:px-10 lg:py-16 lg:pl-8 lg:pr-14">
-              <p className="pe-reveal pe-in text-[11px] font-black uppercase tracking-[0.24em] text-[#C9943A]">
-                {hero?.eyebrow || 'Birthdays. Team gatherings. Time together.'}
-              </p>
-              <h1 className="pe-reveal pe-in font-heading mt-6 text-4xl font-black leading-[1.08] text-[#3D1F0D] sm:text-5xl" style={{ transitionDelay: '.08s' }}>
-                {hero?.heading || 'Event Spaces & Group Bookings in Bengaluru'}
-              </h1>
-              <p className="pe-reveal pe-in mt-6 max-w-md text-base leading-relaxed text-[#6B4F3A]" style={{ transitionDelay: '.16s' }}>
-                {hero?.description ||
-                  'Bring your people together for a birthday party, a family celebration, a team event or a get-together at Big Bean Cafe. Choose a Bengaluru location that works for your guests, with outlet seating capacities ranging from 50 to 100.'}
-              </p>
-              {(hero?.supporting_text || !hero) && (
-                <p className="pe-reveal pe-in mt-4 max-w-md text-sm leading-relaxed text-[#8A7059]" style={{ transitionDelay: '.22s' }}>
-                  {hero?.supporting_text ||
-                    'Explore our Big Bean Cafe locations across Bengaluru and tell us your preferred date, group size and occasion. Our team will help you check the arrangements available at your chosen outlet.'}
-                </p>
-              )}
-              <div className="pe-reveal pe-in mt-9 flex flex-col gap-3 sm:flex-row" style={{ transitionDelay: '.3s' }}>
-                <button
-                  type="button"
-                  onClick={() => { gtag('event', 'event_enquiry_click', { location: 'hero' }); enquire({ intent: 'general' }) }}
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#3D1F0D] px-7 text-xs font-black uppercase tracking-[0.14em] text-[#FFF7ED] shadow-[0_10px_28px_rgba(61,31,13,0.22)] transition hover:-translate-y-0.5 hover:bg-[#5A2D1D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9943A] focus-visible:ring-offset-2"
-                >
-                  {hero?.primary_cta_text || 'Enquire About Your Event'}
-                  <ArrowRight className="pe-arrow h-4 w-4" />
-                </button>
-                <a
-                  href="#outlet-locations"
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-full border-2 border-[#C9943A] bg-white/60 px-7 text-xs font-black uppercase tracking-[0.14em] text-[#8B4A2F] transition hover:-translate-y-0.5 hover:bg-[#C9943A] hover:text-[#3D1F0D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9943A] focus-visible:ring-offset-2"
-                >
-                  {hero?.secondary_cta_text || 'Explore Outlet Locations'}
-                </a>
-              </div>
+        {/* ── SECTION 1 · HERO — split editorial layout ───────── */}
+        <section className="pe-hero relative overflow-hidden">
+          {/* Copy — left ~58% on desktop, full width on mobile */}
+          <div className="pe-hero-copy">
+            <p className="pe-hin text-[11px] font-black uppercase tracking-[0.26em] text-[#8B4A2F]" style={{ animationDelay: '.08s' }}>
+              Private Events
+            </p>
+            <p className="pe-hin mt-2 text-xs font-bold uppercase tracking-[0.18em] text-[#8A7059]" style={{ animationDelay: '.14s' }}>
+              {hero?.eyebrow || 'Birthdays. Team gatherings. Time together.'}
+            </p>
+            <h1 className="pe-hin pe-hero-h1 font-heading font-black text-[#3D1F0D]" style={{ animationDelay: '.16s' }}>
+              {hero?.heading || 'Event Spaces & Group Bookings in Bengaluru'}
+            </h1>
+            <span className="pe-hin mt-7 block h-[3px] w-[78px] rounded-full bg-[#C9943A]" style={{ animationDelay: '.24s' }} aria-hidden="true" />
+            <p className="pe-hin mt-7 max-w-lg text-base leading-relaxed text-[#6B4F3A] sm:text-[17px]" style={{ animationDelay: '.32s' }}>
+              {hero?.description ||
+                'Bring your people together for a birthday, family celebration, team event or get-together at Big Bean Cafe. Choose a Bengaluru location that works for your guests, with seating capacities ranging from 50 to 100 depending on the outlet.'}
+            </p>
+            <div className="pe-hin mt-9 flex flex-wrap items-center gap-x-7 gap-y-4" style={{ animationDelay: '.4s' }}>
+              <button
+                type="button"
+                onClick={() => { gtag('event', 'event_enquiry_click', { location: 'hero' }); enquire({ intent: 'general' }) }}
+                className="inline-flex h-[50px] items-center justify-center gap-2 rounded-full bg-[#C9943A] px-8 text-xs font-black uppercase tracking-[0.14em] text-[#3D1F0D] shadow-[0_12px_30px_rgba(201,148,58,0.32)] transition hover:-translate-y-0.5 hover:bg-[#DBA851] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3D1F0D] focus-visible:ring-offset-2"
+              >
+                {hero?.primary_cta_text || 'Enquire About Your Event'}
+                <ArrowRight className="pe-arrow h-4 w-4" />
+              </button>
+              <a
+                href="#outlet-locations"
+                className="inline-flex items-center gap-1.5 rounded-sm text-[13px] font-bold text-[#8B4A2F] underline-offset-4 transition hover:text-[#3D1F0D] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9943A]"
+              >
+                {hero?.secondary_cta_text || 'Explore Outlet Locations'}
+                <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </a>
             </div>
+          </div>
 
-            <div className="relative px-6 pb-12 sm:px-10 lg:h-full lg:py-10 lg:pl-0 lg:pr-10">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-[26px] bg-[#EFE3D2] shadow-[0_28px_64px_rgba(61,31,13,0.16)] ring-1 ring-[#EADCC8]/70 sm:aspect-[16/10] lg:aspect-auto lg:h-full">
-                {heroImg ? (
-                  <picture>
-                    {heroMobileImg && heroMobileImg !== heroImg && (
-                      <source media="(max-width: 768px)" srcSet={heroMobileImg} />
-                    )}
-                    <img
-                      src={heroImg}
-                      alt={hero?.image_alt || 'Big Bean Cafe event space set for a private gathering'}
-                      className="pe-hero-img absolute inset-0 h-full w-full object-cover object-[50%_38%]"
-                      loading="eager"
-                      fetchPriority="high"
-                    />
-                  </picture>
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#3D1F0D] via-[#5A2D1D] to-[#8B4A2F]">
-                    <div className="text-center">
-                      <CalendarRange className="mx-auto h-14 w-14 text-[#C9943A]/60" />
-                      <p className="mt-4 text-xs font-black uppercase tracking-[0.3em] text-[#F6D58D]/70">Big Bean Cafe</p>
-                    </div>
-                  </div>
+          {/* Media — full-height right pane with diagonal reveal on desktop;
+              stacked below the copy with a subtle angled top edge on mobile */}
+          <div className="pe-hero-media">
+            {heroImg ? (
+              <picture>
+                {heroMobileImg && heroMobileImg !== heroImg && (
+                  <source media="(max-width: 768px)" srcSet={heroMobileImg} />
                 )}
+                <img
+                  src={heroImg}
+                  alt={hero?.image_alt || 'Big Bean Cafe event space set for a private gathering'}
+                  className="pe-hero-img"
+                  loading="eager"
+                  fetchPriority="high"
+                />
+              </picture>
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#3D1F0D] via-[#5A2D1D] to-[#8B4A2F]">
+                <div className="text-center">
+                  <CalendarRange className="mx-auto h-14 w-14 text-[#C9943A]/60" />
+                  <p className="mt-4 text-xs font-black uppercase tracking-[0.3em] text-[#F6D58D]/70">Big Bean Cafe</p>
+                </div>
               </div>
+            )}
+            <span className="pe-hero-edge" aria-hidden="true" />
+          </div>
+
+          {/* Info row — bottom of the left column on desktop, below the image on mobile */}
+          <div className="pe-hin pe-hero-info" style={{ animationDelay: '.5s' }}>
+            <div className="flex items-center gap-3">
+              <MapPin className="h-5 w-5 flex-shrink-0 text-[#C9943A]" aria-hidden="true" />
+              <span className="text-sm font-bold text-[#3D1F0D]">
+                {outlets.length > 0
+                  ? `${outlets.length} Bengaluru Location${outlets.length === 1 ? '' : 's'}`
+                  : 'Bengaluru Locations'}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Users className="h-5 w-5 flex-shrink-0 text-[#C9943A]" aria-hidden="true" />
+              <span>
+                <span className="block text-sm font-bold text-[#3D1F0D]">50–100 Seats</span>
+                <span className="block text-xs text-[#8A7059]">Depending on outlet</span>
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <PartyPopper className="h-5 w-5 flex-shrink-0 text-[#C9943A]" aria-hidden="true" />
+              <span className="text-sm font-bold text-[#3D1F0D]">Celebrations &amp; Team Events</span>
             </div>
           </div>
         </section>
