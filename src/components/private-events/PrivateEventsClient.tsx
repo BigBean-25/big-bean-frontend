@@ -67,22 +67,14 @@ const EVENT_TYPES: { key: string; label: string; desc: string; Icon: any }[] = [
 
 /* ── Per-outlet copy — approved PDF text ─────────────────────────── */
 const OUTLET_NOTES: Record<string, string> = {
-  koramangala:
-    'Planning a larger gathering in Koramangala? Big Bean Cafe on 80 Feet Road has a dedicated first-floor event space with a 100-seat capacity. Enquire for birthdays, team gatherings, family celebrations and group dining, and discuss the seating layout and food arrangements for your occasion.',
-  'hsr-layout':
-    'Bring your birthday party, team gathering or get-together to our HSR Layout outlet on 19th Main Road in Sector 1. Share your preferred date, guest count and event requirements so the team can discuss the seating and arrangements for your occasion.',
-  indiranagar:
-    'Considering Indiranagar for your next group meal or get-together? Our outlet is on 12th Main Road in HAL 2nd Stage. Share your date, preferred time and guest count to discuss the seating and group arrangements available at this location.',
-  jayanagar:
-    'For a gathering around Jayanagar, enquire at our 8th Block outlet on 2nd Main Road, 40th Cross. Tell us whether you are bringing family, friends or colleagues, and include your group size and food preferences to help the team review your request.',
-  kammanahalli:
-    'Looking at Kammanahalli or HRBR Layout for your gathering? Our outlet is at VN Heights on 5th Main Road, opposite Kailash Parbat. Send your preferred date and group details to discuss a cafe visit, group meal or celebration enquiry at this location.',
-  'rajarajeshwari-nagar':
-    'Our RR Nagar outlet is at YGR Signature Mall in Halagevaderahalli. If this location works for your guests, share your preferred date, occasion and expected numbers so the team can confirm suitable group arrangements.',
-  'electronic-city':
-    'Planning around Electronic City? Find Big Bean Cafe on the third floor of M5 Ecity Mall on Hosur Road. Send your group size, date and timing preferences to check the arrangements available for a team gathering or group meal.',
-  'jp-nagar':
-    'Planning a birthday party, a family get-together or a team event in JP Nagar? Choose our JP Nagar outlet and share your preferred date, guest count and food preferences. Discuss the seating and event arrangements for your group directly with the team.',
+  koramangala: 'A 100-seat first-floor event space for your gathering.',
+  'hsr-layout': 'Enquire about group events in HSR Layout.',
+  indiranagar: 'Plan group events at our Indiranagar cafe.',
+  jayanagar: 'Bring your group together in Jayanagar.',
+  kammanahalli: 'Enquire about celebrations in Kammanahalli / HRBR Layout.',
+  'rajarajeshwari-nagar': 'Plan birthdays and get-togethers in RR Nagar.',
+  'electronic-city': 'Arrange team gatherings at M5 Ecity Mall.',
+  'jp-nagar': 'Plan birthdays and team events in JP Nagar.',
 }
 
 const KORAMANGALA_SLUG = 'koramangala'
@@ -90,47 +82,48 @@ const KORAMANGALA_SLUG = 'koramangala'
 const outletDisplayName = (o: PageOutlet) =>
   (o._label ?? o.name ?? '').replace(/^Big Bean Cafe\s*[-–—]\s*/i, '') || 'This outlet'
 
-const FAQ_ITEMS: { q: string; a: string; link?: string }[] = [
+const FAQ_ITEMS: { q: string; a: string; link?: string; afterLink?: string }[] = [
   {
     q: 'Which Big Bean Cafe locations can I enquire about?',
-    a: 'You can enquire for any active Big Bean Cafe outlet listed on this page. Select the location that works best for your guests, or choose Help me choose.',
+    a: 'Choose any of our {N} Bengaluru outlets, or select Help me choose.',
   },
   {
     q: 'What is the seating capacity for events?',
-    a: 'Big Bean Cafe outlet seating capacities range from 50 to 100, depending on the location. Koramangala has a dedicated first-floor event space with a 100-seat capacity. Ask the team to confirm the exact capacity and suitable layout for your chosen outlet. Exclusive use must be discussed separately.',
+    a: "50-100 seats by outlet; Koramangala's first-floor venue seats 100.",
   },
   {
     q: 'What types of events can I enquire about?',
-    a: 'Enquire about birthday parties, anniversaries, family get-togethers, reunions, corporate meetings, team events, farewells, baby showers, small engagement gatherings, workshops, community meetups and group meals. Include your preferred outlet, date and guest count so the team can confirm suitability and arrangements.',
+    a: 'Birthdays, team events, family gatherings, workshops, reunions and group meals.',
   },
   {
     q: 'How much does an event booking cost?',
-    a: 'Request a quotation for your chosen outlet, date, duration, guest count and food requirements. Review the proposed inclusions and applicable charges with the team before confirming your booking.',
+    a: 'Pricing depends on your outlet, date, guest count and food. Request a quote.',
   },
   {
     q: 'Can I request specific food, decorations or equipment?',
-    a: 'Include these requests in your enquiry, along with any dietary or allergy requirements. The team will confirm what is available and permitted at the selected outlet; a request is not an agreed inclusion until confirmed.',
+    a: 'Share your requests; the outlet will confirm food, decor and equipment options.',
   },
   {
     q: 'Can I visit the space before booking?',
-    a: 'Contact the team to request a venue visit and agree a suitable time before you travel. If anyone in your group has access requirements, mention them in advance, particularly for a first-floor space.',
+    a: 'Yes. Contact the outlet team to arrange a visit.',
   },
   {
     q: 'Does an enquiry confirm my booking?',
-    a: 'No. The enquiry starts a discussion about availability and arrangements. Your booking is confirmed separately with the team after the details and terms are agreed.',
+    a: 'No. Bookings are confirmed after arrangements and terms are agreed.',
   },
   {
     q: 'Where can I find upcoming public events?',
-    a: 'Visit our Events page for public activities, workshops and other listed events. Use this page when you want to arrange your own gathering or group visit.',
+    a: 'Visit our ',
     link: '/events',
+    afterLink: ' for upcoming public activities and workshops.',
   },
 ]
 
 const STEPS = [
-  { n: 1, title: 'Choose a location', desc: 'Select the outlet that works for your guests, or ask us to help you choose.' },
-  { n: 2, title: 'Share your plans', desc: 'Send your date, timings, group size, occasion and any specific requirements.' },
-  { n: 3, title: 'Discuss the details', desc: 'Check outlet suitability, seating, food choices, available arrangements and the quotation with the team.' },
-  { n: 4, title: 'Confirm your booking', desc: 'Finalise the agreed arrangements and booking terms directly with the team.' },
+  { n: 1, title: 'Choose a location.', desc: 'Select your preferred outlet.' },
+  { n: 2, title: 'Share your plans.', desc: 'Send your date, guest count and occasion.' },
+  { n: 3, title: 'Discuss the details.', desc: 'Review the setup, food and quote.' },
+  { n: 4, title: 'Confirm your booking.', desc: 'Agree on the arrangements and terms.' },
 ]
 
 /* ── Decorative coffee beans — pure inline SVG + CSS animation ──────
@@ -399,8 +392,8 @@ export default function PrivateEventsClient({
             </p>
             <p className="pe-hin mt-3 max-w-lg text-sm leading-relaxed text-[#8A7059]" style={{ animationDelay: '.36s' }}>
               {outlets.length > 0
-                ? `Choose from ${outlets.length} active Bengaluru outlet${outlets.length === 1 ? '' : 's'}, with seating capacities ranging from 50 to 100 depending on the outlet.`
-                : 'Choose a Bengaluru outlet, with seating capacities ranging from 50 to 100 depending on the outlet.'}
+                ? `Choose from ${outlets.length} outlet${outlets.length === 1 ? '' : 's'} with seating capacities ranging from 50 to 100.`
+                : 'Choose an outlet with seating capacities ranging from 50 to 100.'}
             </p>
             <div className="pe-hin mt-8 flex flex-wrap items-center gap-x-6 gap-y-4" style={{ animationDelay: '.4s' }}>
               <button
@@ -477,20 +470,20 @@ export default function PrivateEventsClient({
           <div className="mx-auto max-w-7xl px-6 py-9 sm:px-10">
             <div className="grid gap-x-10 gap-y-7 sm:grid-cols-2 lg:grid-cols-4">
               {[
-                { big: `${outlets.length || '—'} outlet locations`, small: "Across Bengaluru's neighbourhoods" },
+                { big: `${outlets.length || '—'} outlet locations`, small: null },
                 { big: '50–100 seats', small: 'Depending on outlet' },
-                { big: 'Parties & celebrations', small: 'Birthdays, anniversaries & more' },
-                { big: 'Corporate events & get-togethers', small: 'Team gatherings & meetings' },
+                { big: 'Parties & celebrations', small: null },
+                { big: 'Corporate events & get-togethers', small: null },
               ].map((s, i) => (
                 <div key={i} className="pe-reveal text-center sm:text-left" style={{ transitionDelay: `${i * 0.09}s` }}>
                   <p className="font-heading text-xl font-black text-[#3D1F0D]">{s.big}</p>
-                  <p className="mt-1.5 text-[13px] leading-relaxed text-[#8A7059]">{s.small}</p>
+                  {s.small && <p className="mt-1.5 text-[13px] leading-relaxed text-[#8A7059]">{s.small}</p>}
                 </div>
               ))}
+              <p className="pe-reveal col-span-full mt-2 border-t border-[#EADCC8] pt-4 text-left text-xs leading-relaxed text-[#8A7059] lg:text-center" style={{ transitionDelay: '.4s' }}>
+                Exact seating capacity, event arrangements and booking availability vary by outlet.
+              </p>
             </div>
-            <p className="pe-reveal mt-7 text-center text-xs text-[#8A7059] sm:text-left">
-              Exact seating capacity, event arrangements and booking availability vary by outlet.
-            </p>
           </div>
         </section>
 
@@ -501,14 +494,10 @@ export default function PrivateEventsClient({
             A Cafe Setting for Your Next Gathering
           </h2>
           <p className="pe-reveal mt-6 text-base leading-relaxed text-[#6B4F3A]" style={{ transitionDelay: '.14s' }}>
-            Some gatherings need room for a celebration; others need a place for everyone to sit down, share a meal
-            and catch up. Big Bean Cafe offers outlet seating capacities of 50–100 across Bengaluru, depending on
-            the location. Start with your occasion, guest count and preferred neighbourhood.
+            Choose a cafe setting for birthdays, team events and get-togethers.
           </p>
           <p className="pe-reveal mt-4 text-base leading-relaxed text-[#6B4F3A]" style={{ transitionDelay: '.2s' }}>
-            For a larger gathering, explore the dedicated first-floor event space at Koramangala, which has a
-            100-seat capacity. For other locations, share your plans so our team can confirm whether the outlet
-            and available seating suit your event.
+            Koramangala offers a dedicated first-floor event space with 100 seats.
           </p>
         </section>
 
@@ -517,9 +506,6 @@ export default function PrivateEventsClient({
           <div className="pe-reveal mb-10 text-center">
             <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#C9943A]">Occasions</p>
             <h2 className="font-heading mt-3 text-3xl font-black text-[#3D1F0D] sm:text-4xl">What Are You Planning?</h2>
-            <p className="mx-auto mt-3 max-w-lg text-sm text-[#8A7059]">
-              Choose your occasion — the enquiry form will pick it up automatically.
-            </p>
           </div>
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {EVENT_TYPES.map(({ key, label, desc, Icon }, i) => (
@@ -548,7 +534,9 @@ export default function PrivateEventsClient({
           <div className="mx-auto max-w-7xl px-6 sm:px-10">
             <div className="pe-reveal mb-10 text-center">
               <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#C9943A]">Locations</p>
-              <h2 className="font-heading mt-3 text-3xl font-black text-[#3D1F0D] sm:text-4xl">Explore Our Bengaluru Outlet Locations</h2>
+              <h2 className="font-heading mt-3 text-3xl font-black text-[#3D1F0D] sm:text-4xl">
+                Explore Our {outlets.length} Bengaluru Outlet Locations
+              </h2>
               <p className="mx-auto mt-3 max-w-xl text-sm text-[#8A7059]">
                 Choose your preferred outlet; our team will confirm capacity and arrangements.
               </p>
@@ -655,14 +643,10 @@ export default function PrivateEventsClient({
                 Food &amp; Dining for Your Gathering
               </h2>
               <p className="pe-reveal mt-5 text-base leading-relaxed text-[#6B4F3A]" style={{ transitionDelay: '.14s' }}>
-                Start with the menu at your chosen outlet and tell us what your group has in mind. Share whether you
-                are planning lunch, dinner, snacks or a celebration with desserts, together with any dietary or
-                allergy requirements.
+                Choose lunch, dinner, snacks or desserts from your selected outlet's menu.
               </p>
               <p className="pe-reveal mt-4 text-sm leading-relaxed text-[#6B4F3A]" style={{ transitionDelay: '.22s' }}>
-                The outlet team can discuss available choices and the arrangements for your date. Your event
-                quotation should confirm the selected items, quantities, service arrangements and any agreed
-                inclusions before you finalise the booking.
+                Share food preferences and dietary needs when requesting a quote.
               </p>
               <div className="pe-reveal mt-6 flex flex-col gap-3 sm:flex-row" style={{ transitionDelay: '.3s' }}>
                 <Link
@@ -683,9 +667,10 @@ export default function PrivateEventsClient({
                 <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#C9943A]">Gallery</p>
                 <h2 className="font-heading mt-3 text-3xl font-black text-[#3D1F0D] sm:text-4xl">See the Space Before You Decide</h2>
                 <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-[#8A7059]">
-                  Explore photographs of the outlet you are considering, including its seating and gathering areas.
-                  For Koramangala, view the dedicated first-floor event space and discuss the layout for your group.
-                  If you would like to see an outlet in person, include a visit request in your enquiry.
+                  Explore photos of your chosen outlet and its seating.
+                </p>
+                <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-[#8A7059]">
+                  Request a venue visit before confirming your booking.
                 </p>
                 <button
                   type="button"
@@ -749,12 +734,10 @@ export default function PrivateEventsClient({
               Request a Quote for Your Gathering
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-[#F6D58D]/85">
-              Tell us your preferred outlet, event date, time and expected number of guests. Include the occasion,
-              food preferences and any setup requests so the team can discuss a quotation for your plans.
+              Share your preferred outlet, date, time and guest count for a quote.
             </p>
             <p className="mx-auto mt-3 max-w-xl text-xs leading-relaxed text-[#F6D58D]/70">
-              Before confirming, review the agreed venue arrangements, duration, food inclusions, applicable
-              charges and booking terms with the team.
+              Confirm the inclusions, charges and booking terms with our team.
             </p>
             <button
               type="button"
@@ -815,16 +798,13 @@ export default function PrivateEventsClient({
                   <div id={`pe-faq-${i}`} className={`pe-faq-body ${open ? 'open' : ''}`}>
                     <div className="pe-faq-inner">
                       <p className="px-5 pb-5 text-sm leading-relaxed text-[#6B4F3A]">
-                        {f.a}
+                        {f.a.replace('{N}', String(outlets.length || '—'))}
                         {f.link && (
-                          <>
-                            {' '}
-                            <Link href={f.link} className="font-bold text-[#C9943A] underline-offset-2 hover:underline">
-                              Visit the Events page
-                            </Link>
-                            .
-                          </>
+                          <Link href={f.link} className="font-bold text-[#C9943A] underline-offset-2 hover:underline">
+                            Events page
+                          </Link>
                         )}
+                        {f.afterLink ?? (f.link ? '.' : '')}
                       </p>
                     </div>
                   </div>
@@ -843,12 +823,10 @@ export default function PrivateEventsClient({
                 Tell Us About Your Gathering
               </h2>
               <p className="pe-reveal mt-5 max-w-md text-base leading-relaxed text-[#6B4F3A]" style={{ transitionDelay: '.14s' }}>
-                Choose your preferred outlet and share a few details. Our team will use your enquiry to discuss
-                availability, seating, food and the arrangements for your occasion.
+                Share your outlet, date and guest count. Our team will contact you.
               </p>
               <p className="pe-reveal mt-4 max-w-md text-sm leading-relaxed text-[#8A7059]" style={{ transitionDelay: '.2s' }}>
-                Email <a href="mailto:info@bigbeancafe.in" className="font-bold text-[#8B4A2F] underline-offset-2 hover:underline">info@bigbeancafe.in</a>. For a
-                branch-specific question, use the phone number on the relevant outlet card.
+                Email <a href="mailto:info@bigbeancafe.in" className="font-bold text-[#8B4A2F] underline-offset-2 hover:underline">info@bigbeancafe.in</a> or call your chosen outlet.
               </p>
 
               {/* Decorative coffee-bean composition — fills the empty lower-left
@@ -877,7 +855,7 @@ export default function PrivateEventsClient({
         <section className="mx-auto max-w-7xl px-6 py-16 sm:px-10 sm:py-20">
           <div className="pe-reveal text-center">
             <h2 className="font-heading mx-auto max-w-2xl text-2xl font-black leading-snug text-[#3D1F0D] sm:text-3xl">
-              Your occasion, your people and a place to come together. Start planning your next gathering with Big Bean Cafe.
+              Plan your next gathering with Big Bean Cafe.
             </h2>
             <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <button
@@ -887,12 +865,6 @@ export default function PrivateEventsClient({
               >
                 Enquire About Your Event <ArrowRight className="pe-arrow h-4 w-4" />
               </button>
-              <Link
-                href="/events"
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-full px-7 text-[11px] font-black uppercase tracking-[0.12em] text-[#8B4A2F] transition hover:text-[#3D1F0D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9943A]"
-              >
-                See Public Events <ArrowRight className="pe-arrow h-4 w-4" />
-              </Link>
             </div>
           </div>
         </section>
