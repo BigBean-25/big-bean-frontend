@@ -53,16 +53,16 @@ type PageOutlet = Outlet & { _label?: string }
 
 /* ── Event types — approved PDF copy ─────────────────────────────── */
 const EVENT_TYPES: { key: string; label: string; desc: string; Icon: any }[] = [
-  { key: 'birthday',    label: 'Birthday Parties',                        desc: 'Bring friends and family together for a birthday party with food, conversation and time to celebrate. Share your guest count, preferred outlet and date, along with any cake or decoration requests, so the team can confirm what can be arranged before you book.', Icon: Cake },
-  { key: 'corporate',   label: 'Corporate Meetings & Team Events',        desc: 'Plan a team lunch, an informal office get-together or a small business gathering at a location convenient for your group. Include your timings, seating needs and any presentation or equipment requirements in the enquiry so the outlet can advise on suitability.', Icon: Briefcase },
-  { key: 'family',      label: 'Family Get-Togethers & Celebrations',     desc: 'Make time for an anniversary, a family catch-up or another occasion worth sharing. Tell us about your group, the kind of meal you have in mind and any access or dietary needs that will help you plan the visit.', Icon: Users },
-  { key: 'reunion',     label: "Friends' Get-Togethers & Reunions",       desc: 'Bring your friends, classmates or extended group together for a reunion or catch-up. Share your expected numbers and food preferences so seating and meal arrangements can be discussed before the day.', Icon: HeartHandshake },
-  { key: 'anniversary', label: 'Anniversary Celebrations',                desc: 'Celebrate a relationship milestone with the people closest to you. Enquire about the outlet, seating and food arrangements for an anniversary lunch, dinner or gathering.', Icon: Heart },
-  { key: 'farewell',    label: 'Farewell Parties & Office Celebrations',  desc: "Arrange a farewell, a colleague's birthday, a work anniversary or a team milestone. Share the occasion, timings and group size so the outlet can review your celebration plans.", Icon: PartyPopper },
-  { key: 'baby-shower', label: 'Baby Showers & Family Occasions',         desc: 'Enquire about a baby shower or another small family occasion. Include your seating, decoration and access requests so the team can confirm whether the selected outlet suits the gathering.', Icon: Baby },
-  { key: 'engagement',  label: 'Small Engagement & Pre-Wedding Gatherings', desc: 'Bring close family and friends together for a small engagement celebration or a pre-wedding get-together. Discuss your guest count, timing and setup requests with the team before confirming the venue.', Icon: Gem },
-  { key: 'workshop',    label: 'Workshops & Community Meetups',           desc: 'Looking for a cafe setting for a workshop, club gathering or community session? Send the activity details, attendance, duration and any equipment needs so the team can confirm the arrangements available.', Icon: Presentation },
-  { key: 'group-dining', label: 'Group Lunches, Dinners & Other Occasions', desc: 'For a group meal or an occasion that does not fit the categories above, tell us what you are planning. Start with your preferred outlet and numbers, then discuss the seating and food arrangements for the date.', Icon: UtensilsCrossed },
+  { key: 'birthday',    label: 'Birthday Parties',                        desc: 'Celebrate birthdays with friends, family and food.', Icon: Cake },
+  { key: 'corporate',   label: 'Corporate Meetings & Team Events',        desc: 'Bring colleagues together for team meals and meetings.', Icon: Briefcase },
+  { key: 'family',      label: 'Family Get-Togethers & Celebrations',     desc: 'Enjoy a relaxed gathering with your family.', Icon: Users },
+  { key: 'reunion',     label: "Friends' Get-Togethers & Reunions",       desc: 'Reconnect with friends over food and conversation.', Icon: HeartHandshake },
+  { key: 'anniversary', label: 'Anniversary Celebrations',                desc: 'Celebrate your milestone with the people closest to you.', Icon: Heart },
+  { key: 'farewell',    label: 'Farewell Parties & Office Celebrations',  desc: 'Mark farewells, work anniversaries and team milestones.', Icon: PartyPopper },
+  { key: 'baby-shower', label: 'Baby Showers & Family Occasions',         desc: 'Plan a welcoming gathering for your family occasion.', Icon: Baby },
+  { key: 'engagement',  label: 'Small Engagement & Pre-Wedding Gatherings', desc: 'Bring close friends and family together to celebrate.', Icon: Gem },
+  { key: 'workshop',    label: 'Workshops & Community Meetups',           desc: 'Enquire about space for workshops and community meetups.', Icon: Presentation },
+  { key: 'group-dining', label: 'Group Lunches, Dinners & Other Occasions', desc: 'Enjoy lunch or dinner with your group.', Icon: UtensilsCrossed },
 ]
 
 /* ── Per-outlet copy — approved PDF text ─────────────────────────── */
@@ -384,7 +384,7 @@ export default function PrivateEventsClient({
           {/* Copy — left ~58% on desktop, full width on mobile */}
           <div className="pe-hero-copy">
             <p className="pe-hin text-[11px] font-black uppercase tracking-[0.26em] text-[#8B4A2F]" style={{ animationDelay: '.08s' }}>
-              Private Events
+              PRIVATE EVENTS
             </p>
             <p className="pe-hin mt-1.5 text-xs font-bold uppercase tracking-[0.18em] text-[#8A7059]" style={{ animationDelay: '.14s' }}>
               {hero?.eyebrow || 'Birthdays. Team gatherings. Time together.'}
@@ -395,7 +395,12 @@ export default function PrivateEventsClient({
             <span className="pe-hin mt-6 block h-[3px] w-[72px] rounded-full bg-[#C9943A]" style={{ animationDelay: '.24s' }} aria-hidden="true" />
             <p className="pe-hin mt-6 max-w-lg text-base leading-relaxed text-[#6B4F3A] sm:text-[17px]" style={{ animationDelay: '.32s' }}>
               {hero?.description ||
-                'Bring your people together for a birthday, family celebration, team event or get-together at Big Bean Cafe. Choose a Bengaluru location that works for your guests, with seating capacities ranging from 50 to 100 depending on the outlet.'}
+                'Plan birthdays, team events and get-togethers at Big Bean Cafe in Bengaluru.'}
+            </p>
+            <p className="pe-hin mt-3 max-w-lg text-sm leading-relaxed text-[#8A7059]" style={{ animationDelay: '.36s' }}>
+              {outlets.length > 0
+                ? `Choose from ${outlets.length} active Bengaluru outlet${outlets.length === 1 ? '' : 's'}, with seating capacities ranging from 50 to 100 depending on the outlet.`
+                : 'Choose a Bengaluru outlet, with seating capacities ranging from 50 to 100 depending on the outlet.'}
             </p>
             <div className="pe-hin mt-8 flex flex-wrap items-center gap-x-6 gap-y-4" style={{ animationDelay: '.4s' }}>
               <button
@@ -516,21 +521,23 @@ export default function PrivateEventsClient({
               Choose your occasion — the enquiry form will pick it up automatically.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {EVENT_TYPES.map(({ key, label, desc, Icon }, i) => (
               <button
                 key={label}
                 type="button"
                 onClick={() => { gtag('event', 'outlet_select', { type: 'occasion', value: key }); enquire({ occasion: key }) }}
-                className="pe-card pe-reveal rounded-3xl border border-[#EADCC8] bg-white p-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9943A]"
-                style={{ transitionDelay: `${(i % 4) * 0.06}s` }}
+                className={`pe-card pe-reveal h-full rounded-3xl border border-[#EADCC8] bg-white p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9943A] ${
+                  EVENT_TYPES.length % 3 === 1 && i === EVENT_TYPES.length - 1 ? 'lg:col-start-2' : ''
+                }`}
+                style={{ transitionDelay: `${(i % 3) * 0.07}s` }}
                 aria-label={`Enquire about ${label}`}
               >
-                <span className="pe-ico inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#C9943A]/30 bg-[#C9943A]/10 text-[#8B4A2F]">
+                <span className="pe-ico inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-[#C9943A]/30 bg-[#C9943A]/10 text-[#8B4A2F]">
                   <Icon className="h-5 w-5" />
                 </span>
-                <h3 className="mt-4 text-sm font-black text-[#3D1F0D]">{label}</h3>
-                <p className="mt-1 hidden text-xs leading-relaxed text-[#8A7059] sm:block">{desc}</p>
+                <h3 className="mt-4 text-base font-black text-[#3D1F0D]">{label}</h3>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-[#8A7059]">{desc}</p>
               </button>
             ))}
           </div>
@@ -543,12 +550,10 @@ export default function PrivateEventsClient({
               <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#C9943A]">Locations</p>
               <h2 className="font-heading mt-3 text-3xl font-black text-[#3D1F0D] sm:text-4xl">Explore Our Bengaluru Outlet Locations</h2>
               <p className="mx-auto mt-3 max-w-xl text-sm text-[#8A7059]">
-                Choose your preferred neighbourhood below. Outlet seating capacities range from 50 to 100; the team
-                will confirm the exact capacity and arrangement at your selected location. Exclusive use is discussed
-                separately.
+                Choose your preferred outlet; our team will confirm capacity and arrangements.
               </p>
             </div>
-            <div className="grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {outlets.map((o, i) => {
                 const img = imgUrl(o.image)
                 const isKoram = o.slug === KORAMANGALA_SLUG
@@ -557,10 +562,12 @@ export default function PrivateEventsClient({
                   <article
                     key={o.slug || `outlet-${i}`}
                     id={o.slug || undefined}
-                    className="pe-card pe-reveal flex scroll-mt-28 flex-col overflow-hidden rounded-3xl border border-[#EADCC8] bg-white"
-                    style={{ transitionDelay: `${(i % 4) * 0.07}s` }}
+                    className={`pe-card pe-reveal flex scroll-mt-28 flex-col overflow-hidden rounded-3xl border border-[#EADCC8] bg-white ${
+                      outlets.length % 3 === 1 && i === outlets.length - 1 ? 'lg:col-start-2' : ''
+                    }`}
+                    style={{ transitionDelay: `${(i % 3) * 0.07}s` }}
                   >
-                    <div className="relative h-36 overflow-hidden bg-[#EFE3D2]">
+                    <div className="relative h-44 overflow-hidden bg-[#EFE3D2]">
                       {img ? (
                         <img src={img} alt={`${label} — Big Bean Cafe`} loading="lazy" className="h-full w-full object-cover" />
                       ) : (
