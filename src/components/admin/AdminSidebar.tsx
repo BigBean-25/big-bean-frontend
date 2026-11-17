@@ -102,7 +102,7 @@ export default function AdminSidebar({ nav, pathname, user, onLogout, onNav }: A
                 pathname === href ||
                 (href !== '/admin/dashboard' &&
                   href !== '/' &&
-                  pathname.startsWith(href))
+                  pathname.startsWith(href + '/'))
               return (
                 <Link
                   key={href}
